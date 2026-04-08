@@ -1,0 +1,45 @@
+[1m[38;2;173;127;168m▲ Next.js 16.2.2[39m[22m (Turbopack)
+- Local:         http://localhost:3002
+- Network:       http://192.168.31.191:3002
+- Environments: .env
+[32m[1m✓[22m[39m Ready in 219ms
+
+ HEAD / [32m200[39m in 246ms[2m (next.js: 74ms, application-code: 172ms)[22m
+ GET / [32m200[39m in 18ms[2m (next.js: 1264µs, application-code: 16ms)[22m
+ GET / [32m200[39m in 37ms[2m (next.js: 5ms, application-code: 32ms)[22m
+ GET /c/cmnq5i6y30002spjnzsq9s74l [32m200[39m in 321ms[2m (next.js: 306ms, application-code: 15ms)[22m
+ GET /settings/contexts [32m200[39m in 424ms[2m (next.js: 358ms, application-code: 67ms)[22m
+ POST /settings/contexts [32m200[39m in 16ms[2m (next.js: 3ms, application-code: 13ms)[22m
+  └─ ƒ deleteContext("cmnq5i6y30002spjnzsq9s74l") in 3ms [2mapp/(app)/settings/contexts/actions.ts[22m
+ GET /dev/logs [32m200[39m in 293ms[2m (next.js: 267ms, application-code: 26ms)[22m
+ GET /api/logs [32m200[39m in 152ms[2m (next.js: 146ms, application-code: 6ms)[22m
+ GET /api/logs [32m200[39m in 12ms[2m (next.js: 4ms, application-code: 8ms)[22m
+ GET /api/logs [32m200[39m in 20ms[2m (next.js: 5ms, application-code: 15ms)[22m
+ GET /api/logs [32m200[39m in 9ms[2m (next.js: 4ms, application-code: 6ms)[22m
+ GET /api/logs [32m200[39m in 10ms[2m (next.js: 3ms, application-code: 6ms)[22m
+ GET /api/logs [32m200[39m in 9ms[2m (next.js: 3ms, application-code: 6ms)[22m
+ GET /api/logs [32m200[39m in 9ms[2m (next.js: 3ms, application-code: 6ms)[22m
+ GET /api/logs [32m200[39m in 10ms[2m (next.js: 3ms, application-code: 7ms)[22m
+ GET /api/logs [32m200[39m in 10ms[2m (next.js: 3ms, application-code: 7ms)[22m
+ GET /api/logs [32m200[39m in 10ms[2m (next.js: 3ms, application-code: 7ms)[22m
+ GET /api/logs [32m200[39m in 8ms[2m (next.js: 3ms, application-code: 6ms)[22m
+ GET /api/logs [32m200[39m in 13ms[2m (next.js: 3ms, application-code: 10ms)[22m
+ GET /api/logs [32m200[39m in 9ms[2m (next.js: 3ms, application-code: 5ms)[22m
+ GET /api/logs [32m200[39m in 8ms[2m (next.js: 3ms, application-code: 5ms)[22m
+ GET /api/logs [32m200[39m in 8ms[2m (next.js: 3ms, application-code: 6ms)[22m
+ GET /api/logs [32m200[39m in 3ms[2m (next.js: 835µs, application-code: 2ms)[22m
+ GET /api/logs [32m200[39m in 9ms[2m (next.js: 3ms, application-code: 6ms)[22m
+ GET /api/logs [32m200[39m in 9ms[2m (next.js: 3ms, application-code: 6ms)[22m
+ GET /api/logs [32m200[39m in 9ms[2m (next.js: 4ms, application-code: 6ms)[22m
+ GET /api/logs [32m200[39m in 7ms[2m (next.js: 1002µs, application-code: 6ms)[22m
+ GET /api/logs [32m200[39m in 4ms[2m (next.js: 1464µs, application-code: 3ms)[22m
+ GET /api/logs [32m200[39m in 8ms[2m (next.js: 3ms, application-code: 5ms)[22m
+ GET /api/logs [32m200[39m in 8ms[2m (next.js: 3ms, application-code: 5ms)[22m
+ GET /api/logs [32m200[39m in 13ms[2m (next.js: 4ms, application-code: 9ms)[22m
+ GET /api/logs [32m200[39m in 8ms[2m (next.js: 3ms, application-code: 6ms)[22m
+ GET /api/logs [32m200[39m in 8ms[2m (next.js: 3ms, application-code: 5ms)[22m
+ GET /api/logs [32m200[39m in 5ms[2m (next.js: 1894µs, application-code: 3ms)[22m
+[32m[1m✓[22m[39m Compiled in 198ms
+ GET /api/logs [32m200[39m in 12ms[2m (next.js: 5ms, application-code: 8ms)[22m
+ GET /api/logs [32m200[39m in 9ms[2m (next.js: 3ms, application-code: 6ms)[22m
+ GET /api/logs [32m200[39m in 10ms[2m (next.js: 3ms, application-code: 7ms)[22m
