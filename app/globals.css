@@ -1,26 +1,42 @@
 @import "tailwindcss";
 
+/* Wyczesany HQ — bazowa paleta i typografia.
+   Jasny motyw, ciepłe kremowe tlo. NIGDY dark mode. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #FBF8F3;
+  --foreground: #1F1F2E;
+  --border-strong: #1F1F2E;
+
+  /* Kolory startowych kontekstow */
+  --ctx-salony: #5B3DF5;
+  --ctx-not-bad-stuff: #DC2626;
+  --ctx-szkolenia: #F97316;
+  --ctx-marka-osobista: #FF6B4A;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-nunito);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  font-size: 17px;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-nunito), system-ui, sans-serif;
+  line-height: 1.65;
+  font-weight: 500;
 }
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+h1 { font-size: 2.25rem; }
+h2 { font-size: 1.75rem; }
+h3 { font-size: 1.375rem; }
