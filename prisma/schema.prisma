@@ -1,0 +1,142 @@
+// Wyczesany HQ — schema bazy danych.
+// WAZNE: schema musi byc Postgres-compatible od dnia pierwszego.
+// Migracja SQLite -> Postgres = zmiana tylko provider'a ponizej.
+// Uzywamy tylko: String, Int, Boolean, DateTime, Float.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// =====================================================
+// Context — kregoslup aplikacji.
+// Hierarchia o dowolnej glebokosci (parent/children).
+// =====================================================
+model Context {
+  id        String   @id @default(cuid())
+  name      String
+  color     String   // hex, np. #5B3DF5
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Self-relation: parent + children
+  parentId String?
+  parent   Context?  @relation("ContextHierarchy", fields: [parentId], references: [id])
+  children Context[] @relation("ContextHierarchy")
+
+  // Zasoby zyjace w kontekscie
+  projects Project[]
+  tasks    Task[]    // luzne taski (bez projectId)
+  ideas    Idea[]
+  problems Problem[]
+  notes    Note[]
+  links    Link[]
+}
+
+// =====================================================
+// Project — rozpisana inicjatywa wewnatrz kontekstu.
+// =====================================================
+model Project {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  status      String    @default("todo") // todo | in_progress | done | on_hold
+  deadline    DateTime?
+  order       Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  contextId String
+  context   Context @relation(fields: [contextId], references: [id])
+
+  // Wlasne zasoby projektu
+  tasks Task[]
+  notes Note[]
+  links Link[]
+}
+
+// =====================================================
+// Task — konkretne zadanie. Moze byc luzne (w kontekscie)
+// albo czesc projektu.
+// =====================================================
+model Task {
+  id        String    @id @default(cuid())
+  title     String
+  done      Boolean   @default(false)
+  deadline  DateTime?
+  priority  Int       @default(0) // 0 = brak, 1 = low, 2 = medium, 3 = high
+  order     Int       @default(0)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  // Task moze byc luzny (tylko contextId) albo czesc projektu (oba ID)
+  contextId String
+  context   Context @relation(fields: [contextId], references: [id])
+
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id])
+}
+
+// =====================================================
+// Idea — surowiec. Pomysl ktory czeka na decyzje.
+// =====================================================
+model Idea {
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+
+  contextId String
+  context   Context @relation(fields: [contextId], references: [id])
+}
+
+// =====================================================
+// Problem — surowiec. Bloker albo trudnosc do przemyslenia.
+// =====================================================
+model Problem {
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+
+  contextId String
+  context   Context @relation(fields: [contextId], references: [id])
+}
+
+// =====================================================
+// Note — wolnotekstowa notatka.
+// Moze byc w kontekscie albo w projekcie.
+// =====================================================
+model Note {
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  contextId String
+  context   Context @relation(fields: [contextId], references: [id])
+
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id])
+}
+
+// =====================================================
+// Link — URL z etykieta i typem (figma/dropbox/pdf/inne).
+// Moze byc w kontekscie albo w projekcie.
+// =====================================================
+model Link {
+  id        String   @id @default(cuid())
+  url       String
+  label     String
+  type      String   @default("other") // figma | dropbox | pdf | other
+  createdAt DateTime @default(now())
+
+  contextId String
+  context   Context @relation(fields: [contextId], references: [id])
+
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id])
+}
