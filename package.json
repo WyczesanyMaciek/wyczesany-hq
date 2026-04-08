@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "mkdir -p .next && next dev 2>&1 | tee .next/dev-server.log",
+    "dev": "mkdir -p .next && next dev -p 3002 2>&1 | tee .next/dev-server.log",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
