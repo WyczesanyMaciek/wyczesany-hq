@@ -33,11 +33,13 @@ export function DashboardSectionCard({
   count,
   delayMs,
   children,
+  footer,
 }: {
   theme: SectionTheme;
   count: number;
   delayMs: number;
   children: React.ReactNode;
+  footer?: React.ReactNode;
 }) {
   const Icon = ICONS[theme.iconKey];
   return (
@@ -74,6 +76,7 @@ export function DashboardSectionCard({
       </header>
       {/* Body */}
       <div className="divide-y-[1.5px] divide-[var(--ink)]/10">{children}</div>
+      {footer}
     </section>
   );
 }

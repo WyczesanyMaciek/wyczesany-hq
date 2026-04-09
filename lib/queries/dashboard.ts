@@ -19,6 +19,9 @@ export type DashboardProject = {
   deadline: Date | null;
   createdAt: Date;
   context: OriginContext;
+  // Liczniki taskow dla progress baru
+  taskTotal: number;
+  taskDone: number;
 };
 
 export type DashboardTask = {
@@ -134,6 +137,7 @@ export async function getContextDashboard(
     prisma.project.findMany({
       where: contextFilter,
       orderBy: [{ createdAt: "desc" }],
+      include: { tasks: { select: { done: true } } },
     }),
     prisma.task.findMany({
       where: { ...contextFilter, projectId: null },
@@ -171,6 +175,8 @@ export async function getContextDashboard(
       deadline: p.deadline,
       createdAt: p.createdAt,
       context: toOrigin(p.contextId),
+      taskTotal: p.tasks.length,
+      taskDone: p.tasks.filter((t) => t.done).length,
     })),
     looseTasks: tasks
       .filter((t) => !t.done)
@@ -217,7 +223,10 @@ export async function getGlobalDashboard(): Promise<DashboardData> {
   const all = await loadAllContexts();
 
   const [projects, tasks, ideas, problems] = await Promise.all([
-    prisma.project.findMany({ orderBy: [{ createdAt: "desc" }] }),
+    prisma.project.findMany({
+      orderBy: [{ createdAt: "desc" }],
+      include: { tasks: { select: { done: true } } },
+    }),
     prisma.task.findMany({
       where: { projectId: null },
       orderBy: [{ done: "asc" }, { createdAt: "desc" }],
@@ -243,6 +252,8 @@ export async function getGlobalDashboard(): Promise<DashboardData> {
       deadline: p.deadline,
       createdAt: p.createdAt,
       context: toOrigin(p.contextId),
+      taskTotal: p.tasks.length,
+      taskDone: p.tasks.filter((t) => t.done).length,
     })),
     looseTasks: tasks
       .filter((t) => !t.done)
