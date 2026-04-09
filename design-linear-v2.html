@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Wyczesany HQ — Linear v2 (nowa logika)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #eceef1; font-family: 'Inter', system-ui, sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased; }
+  .wrap { padding: 16px; }
+  h2.title { margin: 0 0 4px; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: #6b7280; font-weight: 700; }
+  p.sub { margin: 0 0 12px; font-size: 12.5px; color: #6b7280; }
+
+  .app {
+    --bg: #ffffff;
+    --ink: #0f172a;
+    --muted: #64748b;
+    --line: #e5e7eb;
+    --line2: #eef0f3;
+    --accent: #6366f1;
+    --hover: #f3f4f6;
+    font-size: 13px; line-height: 1.5;
+    background: var(--bg);
+    border: 1px solid var(--line); border-radius: 10px; overflow: hidden;
+    display: grid; grid-template-columns: 230px 1fr 320px; height: 760px;
+  }
+
+  /* ========== SIDEBAR ========== */
+  .app aside { background: #fafbfc; border-right: 1px solid var(--line); padding: 12px 8px; overflow: auto; }
+  .app aside .brand { padding: 4px 8px 10px; font-weight: 700; font-size: 13.5px; display: flex; align-items: center; gap: 8px; }
+  .app aside .brand .logo { width: 18px; height: 18px; background: var(--accent); border-radius: 5px; }
+  .app aside input.s { width: 100%; padding: 6px 10px; border: 1px solid var(--line); border-radius: 6px; font-size: 12.5px; font-family: inherit; margin-bottom: 6px; }
+  .app aside .sect { text-transform: uppercase; font-size: 10px; letter-spacing: .08em; color: var(--muted); padding: 10px 8px 4px; font-weight: 700; }
+  .app aside .row { display: flex; align-items: center; gap: 7px; padding: 5px 8px; border-radius: 5px; cursor: pointer; font-size: 12.8px; }
+  .app aside .row:hover { background: var(--hover); }
+  .app aside .row.active { background: #eef2ff; color: #4338ca; font-weight: 600; }
+  .app aside .row.drop { background: #ecfdf5; outline: 2px dashed #10b981; }
+  .app aside .row .dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+  .app aside .row .cnt { margin-left: auto; font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .app aside .nest { padding-left: 14px; border-left: 1px dashed var(--line); margin-left: 10px; }
+
+  /* ========== MAIN ========== */
+  .app main { overflow: auto; }
+  .app .bar { display: flex; align-items: center; padding: 10px 16px; border-bottom: 1px solid var(--line); gap: 10px; position: sticky; top: 0; background: #fff; z-index: 2; }
+  .app .bar .crumb { font-size: 12.5px; color: var(--muted); }
+  .app .bar .crumb b { color: var(--ink); font-size: 14px; }
+  .app .bar .pill-ctx { background: #ede9fe; color: #6d28d9; font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 600; margin-left: 6px; }
+  .app .bar .btn { background: var(--accent); color: #fff; border: 0; padding: 6px 11px; border-radius: 6px; font: 600 12px 'Inter'; cursor: pointer; }
+  .app .bar .btn.ghost { background: #fff; color: var(--ink); border: 1px solid var(--line); }
+  .app .bar .spacer { margin-left: auto; display: flex; gap: 6px; }
+
+  .sec { margin: 14px 12px 4px; display: flex; align-items: center; gap: 7px; }
+  .sec h3 { margin: 0; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; }
+  .sec .n { background: #f3f4f6; padding: 1px 7px; border-radius: 10px; font-size: 10.5px; color: var(--ink); font-weight: 600; }
+  .sec .add { margin-left: auto; font-size: 11px; color: var(--muted); cursor: pointer; background: transparent; border: 0; padding: 2px 6px; }
+  .sec .add:hover { color: var(--accent); }
+
+  /* ---- Projekt (karta) ---- */
+  .prj { margin: 6px 12px; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+  .prj.drag { opacity: .5; }
+  .prj.drop { border: 2px dashed #6366f1; }
+  .prj .head { display: grid; grid-template-columns: 14px 1fr auto auto; gap: 8px; align-items: center; padding: 9px 10px; cursor: grab; }
+  .prj .head .grip { color: #cbd5e1; font-size: 12px; line-height: 1; cursor: grab; user-select: none; }
+  .prj .head .grip:hover { color: #64748b; }
+  .prj .head b { font-size: 13.5px; }
+  .prj .head .ctx { font-size: 10px; background: #ede9fe; color: #6d28d9; padding: 1px 6px; border-radius: 8px; font-weight: 600; }
+  .prj .head .chev { color: var(--muted); font-size: 11px; width: 14px; text-align: center; }
+  .prj .head .meta { font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+  .prj .head .bar { width: 60px; height: 4px; background: #eef0f3; border-radius: 2px; overflow: hidden; }
+  .prj .head .bar > i { display: block; height: 100%; background: var(--accent); }
+
+  .prj .body { border-top: 1px solid var(--line2); padding: 4px 6px 6px; }
+  .prj .body.collapsed { display: none; }
+
+  /* ---- Task row ---- */
+  .task { display: grid; grid-template-columns: 14px 14px 1fr 80px 22px 24px; gap: 8px; align-items: center; padding: 5px 8px; border-radius: 5px; font-size: 12.8px; cursor: pointer; }
+  .task:hover { background: var(--hover); }
+  .task.selected { background: #eef2ff; }
+  .task.drag { opacity: .4; }
+  .task .grip { color: #d1d5db; cursor: grab; font-size: 11px; user-select: none; line-height: 1; }
+  .task:hover .grip { color: #94a3b8; }
+  .task .ck { width: 14px; height: 14px; border: 1.5px solid #cbd5e1; border-radius: 3px; }
+  .task.done .ck { background: #22c55e; border-color: #22c55e; }
+  .task.done .name { color: var(--muted); text-decoration: line-through; }
+  .task .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .task .due { font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; text-align: right; }
+  .task .due.late { color: #b91c1c; font-weight: 600; }
+  .task .prio { display: flex; gap: 2px; justify-content: center; }
+  .task .prio i { width: 3px; height: 11px; background: #e5e7eb; border-radius: 1px; }
+  .task .prio.hi i:nth-child(-n+3) { background: #ef4444; }
+  .task .prio.md i:nth-child(-n+2) { background: #f59e0b; }
+  .task .prio.lo i:nth-child(1) { background: #64748b; }
+  .task .who { width: 22px; height: 22px; border-radius: 50%; background: #ddd6fe; color: #5b21b6; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+
+  .add-row { font-size: 12px; color: var(--muted); padding: 5px 10px 5px 32px; cursor: pointer; }
+  .add-row:hover { color: var(--accent); }
+
+  /* ---- Pomysły / Problemy ---- */
+  .chip-row { margin: 6px 12px; background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
+  .chip-row:hover { background: #fafbfc; }
+  .chip-row .icn { width: 22px; height: 22px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; }
+  .chip-row .icn.i { background: #fef3c7; color: #92400e; }
+  .chip-row .icn.p { background: #fee2e2; color: #b91c1c; }
+  .chip-row .txt { font-size: 12.8px; flex: 1; }
+  .chip-row .txt .meta { font-size: 11px; color: var(--muted); margin-top: 1px; }
+  .chip-row .actions { display: flex; gap: 4px; opacity: 0; }
+  .chip-row:hover .actions { opacity: 1; }
+  .chip-row .actions button { font-size: 10.5px; padding: 2px 6px; border: 1px solid var(--line); background: #fff; border-radius: 4px; cursor: pointer; color: var(--ink); }
+  .chip-row .actions button:hover { background: var(--hover); }
+
+  /* ========== RIGHT PANEL — TASK DETAIL ========== */
+  .right { background: #fafbfc; border-left: 1px solid var(--line); overflow: auto; }
+  .right .head { padding: 12px 16px 10px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: #fafbfc; z-index: 2; }
+  .right .head .topline { font-size: 10.5px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; margin-bottom: 4px; display: flex; gap: 6px; align-items: center; }
+  .right .head .topline .path { color: #4338ca; }
+  .right .head h4 { margin: 0 0 8px; font-size: 16px; font-weight: 700; line-height: 1.3; }
+  .right .head .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+  .right .head .actions button { font: 600 11px 'Inter'; padding: 4px 9px; border-radius: 5px; border: 1px solid var(--line); background: #fff; cursor: pointer; color: var(--ink); }
+  .right .head .actions button.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .right .head .actions button:hover { background: var(--hover); }
+  .right .head .actions button.primary:hover { background: #4f46e5; }
+
+  .right .meta { padding: 10px 16px 4px; }
+  .right .meta .row { display: grid; grid-template-columns: 90px 1fr; gap: 8px; padding: 4px 0; font-size: 12.5px; align-items: center; }
+  .right .meta .row label { color: var(--muted); font-size: 11.5px; }
+  .right .meta .row .v { color: var(--ink); }
+  .right .meta .row .av { width: 20px; height: 20px; border-radius: 50%; background: #ddd6fe; color: #5b21b6; font-size: 10px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; margin-right: 5px; vertical-align: middle; }
+  .right .meta .row .pill { font-size: 10.5px; padding: 1px 7px; border-radius: 8px; background: #ede9fe; color: #6d28d9; font-weight: 600; }
+
+  .right .sect-h { font-size: 10.5px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; padding: 14px 16px 4px; }
+
+  .right .notes { margin: 0 16px; background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; font-size: 12.5px; color: var(--ink); min-height: 60px; line-height: 1.5; }
+  .right .notes[contenteditable]:focus { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+  .right .files { margin: 6px 16px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .right .files .tile { aspect-ratio: 1; border: 1px solid var(--line); border-radius: 6px; background: #fff; font-size: 10px; color: var(--muted); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 2px; overflow: hidden; }
+  .right .files .tile.img { background: linear-gradient(135deg, #ddd6fe, #c4b5fd); color: #4338ca; font-weight: 700; }
+  .right .files .tile.vid { background: linear-gradient(135deg, #fee2e2, #fecaca); color: #b91c1c; font-weight: 700; }
+  .right .files .tile.add { border-style: dashed; cursor: pointer; }
+
+  .right .links { margin: 6px 16px 16px; }
+  .right .links .ln { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border: 1px solid var(--line); border-radius: 5px; background: #fff; font-size: 12px; margin-bottom: 4px; cursor: pointer; }
+  .right .links .ln:hover { background: var(--hover); }
+  .right .links .ln .ic { width: 16px; height: 16px; border-radius: 3px; background: #f3f4f6; display: flex; align-items: center; justify-content: center; font-size: 10px; }
+  .right .links .ln .url { color: var(--muted); font-size: 11px; margin-left: auto; }
+  .right .links .add { font-size: 11.5px; color: var(--muted); padding: 5px 8px; cursor: pointer; border: 1px dashed var(--line); border-radius: 5px; text-align: center; background: #fff; }
+
+  /* hint bar with dnd instructions */
+  .hint { background: #fff8e1; border: 1px dashed #fcd34d; margin: 10px 12px 0; padding: 7px 10px; border-radius: 6px; font-size: 11.5px; color: #92400e; display: flex; gap: 6px; align-items: center; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <h2 class="title">Linear v2 — nowa logika</h2>
+  <p class="sub">Drag handles przy projektach i taskach. Kliknij task → po prawej szczegóły z notatkami, plikami i przyciskami. Pomysły/Problemy pod Luźnymi. Projekt można przeciągnąć na drzewo kontekstów (podświetli się „Głogów" na zielono — symulacja).</p>
+
+  <div class="app">
+
+    <!-- ========= SIDEBAR ========= -->
+    <aside>
+      <div class="brand"><span class="logo"></span> Wyczesany HQ</div>
+      <input class="s" placeholder="Szukaj…">
+      <div class="sect">Pulpit</div>
+      <div class="row"><span class="dot" style="background:#64748b"></span> Wszystko <span class="cnt">47</span></div>
+      <div class="row"><span class="dot" style="background:#ef4444"></span> Dziś <span class="cnt">8</span></div>
+      <div class="row"><span class="dot" style="background:#f59e0b"></span> Zaległe <span class="cnt">3</span></div>
+      <div class="sect">Konteksty</div>
+      <div class="row active"><span class="dot" style="background:#8b5cf6"></span> Salony <span class="cnt">18</span></div>
+      <div class="nest">
+        <div class="row"><span class="dot" style="background:#a78bfa"></span> WFM <span class="cnt">11</span></div>
+        <div class="nest">
+          <div class="row"><span class="dot" style="background:#c4b5fd"></span> Legnicka <span class="cnt">5</span></div>
+          <div class="row"><span class="dot" style="background:#c4b5fd"></span> Łódzka <span class="cnt">4</span></div>
+          <div class="row"><span class="dot" style="background:#c4b5fd"></span> Zakładowa <span class="cnt">2</span></div>
+        </div>
+        <div class="row"><span class="dot" style="background:#a78bfa"></span> Luxfera <span class="cnt">4</span></div>
+        <div class="row drop"><span class="dot" style="background:#a78bfa"></span> Głogów <span class="cnt">3</span></div>
+      </div>
+      <div class="row"><span class="dot" style="background:#ef4444"></span> Not Bad Stuff <span class="cnt">12</span></div>
+      <div class="row"><span class="dot" style="background:#f59e0b"></span> Szkolenia <span class="cnt">6</span></div>
+      <div class="row"><span class="dot" style="background:#fb7185"></span> Marka Osobista <span class="cnt">9</span></div>
+      <div class="row"><span class="dot" style="background:#94a3b8"></span> Prywatne <span class="cnt">2</span></div>
+    </aside>
+
+    <!-- ========= MAIN ========= -->
+    <main>
+      <div class="bar">
+        <span class="crumb">Konteksty / <b>Salony</b><span class="pill-ctx">● Salony</span></span>
+        <div class="spacer">
+          <button class="btn ghost">Filtry</button>
+          <button class="btn ghost">+ Nowy projekt</button>
+          <button class="btn">+ Nowy task</button>
+        </div>
+      </div>
+
+      <div class="hint">↕ Przeciągnij projekt żeby zmienić kolejność · przeciągnij na drzewo kontekstów po lewej żeby zmienić kontekst projektu (Głogów podświetlony na zielono — przykład)</div>
+
+      <!-- ======= PROJEKTY ======= -->
+      <div class="sec"><h3>Projekty</h3><span class="n">4</span><button class="add">+ dodaj projekt</button></div>
+
+      <div class="prj drag" style="cursor:grabbing">
+        <div class="head">
+          <span class="grip">⋮⋮</span>
+          <div><b>Remont Legnicka — wrzesień</b> <span class="ctx">Legnicka</span></div>
+          <div class="meta"><div class="bar"><i style="width:62%"></i></div> 8/13 · 12 kwi</div>
+          <span class="chev">▾</span>
+        </div>
+        <div class="body">
+          <div class="task done" onclick="pick(this,'Demontaż starych foteli')"><span class="grip">⋮⋮</span><span class="ck"></span><span class="name">Demontaż starych foteli</span><span class="due">4 kwi</span><span class="prio lo"><i></i><i></i><i></i></span><span class="who">MK</span></div>
+          <div class="task done" onclick="pick(this,'Zamówienie materiałów (lustra, oświetlenie)')"><span class="grip">⋮⋮</span><span class="ck"></span><span class="name">Zamówienie materiałów (lustra, oświetlenie)</span><span class="due">6 kwi</span><span class="prio md"><i></i><i></i><i></i></span><span class="who">MK</span></div>
+          <div class="task selected" onclick="pick(this,'Koordynacja z elektrykiem')"><span class="grip">⋮⋮</span><span class="ck"></span><span class="name">Koordynacja z elektrykiem</span><span class="due late">dziś</span><span class="prio hi"><i></i><i></i><i></i></span><span class="who">MK</span></div>
+          <div class="task"><span class="grip">⋮⋮</span><span class="ck"></span><span class="name">Malowanie — wybór koloru z Anią</span><span class="due">11 kwi</span><span class="prio md"><i></i><i></i><i></i></span><span class="who">AW</span></div>
+          <div class="task"><span class="grip">⋮⋮</span><span class="ck"></span><span class="name">Montaż nowych foteli (5 szt.)</span><span class="due">12 kwi</span><span class="prio hi"><i></i><i></i><i></i></span><span class="who">MK</span></div>
+          <div class="add-row">+ Dodaj zadanie</div>
+        </div>
+      </div>
+
+      <div class="prj">
+        <div class="head">
+          <span class="grip">⋮⋮</span>
+          <div><b>Kampania otwarcia Luxfera</b> <span class="ctx">Luxfera</span></div>
+          <div class="meta"><div class="bar"><i style="width:40%"></i></div> 6/15 · 18 kwi</div>
+          <span class="chev">▾</span>
+        </div>
+        <div class="body">
+          <div class="task"><span class="grip">⋮⋮</span><span class="ck"></span><span class="name">Brief dla agencji reklamowej</span><span class="due">10 kwi</span><span class="prio md"><i></i><i></i><i></i></span><span class="who">AW</span></div>
+          <div class="task"><span class="grip">⋮⋮</span><span class="ck"></span><span class="name">Sesja foto — modelki i fryzjerki</span><span class="due">13 kwi</span><span class="prio md"><i></i><i></i><i></i></span><span class="who">AW</span></div>
+          <div class="task"><span class="grip">⋮⋮</span><span class="ck"></span><span class="name">Plakaty — druk 50 szt.</span><span class="due">16 kwi</span><span class="prio lo"><i></i><i></i><i></i></span><span class="who">MK</span></div>
+          <div class="add-row">+ Dodaj zadanie</div>
+        </div>
+      </div>
+
+      <div class="prj">
+        <div class="head">
+          <span class="grip">⋮⋮</span>
+          <div><b>Rekrutacja fryzjerów Głogów</b> <span class="ctx">Głogów</span></div>
+          <div class="meta"><div class="bar"><i style="width:25%"></i></div> 2/8 · 25 kwi</div>
+          <span class="chev">▸</span>
+        </div>
+        <div class="body collapsed"></div>
+      </div>
+
+      <div class="prj">
+        <div class="head">
+          <span class="grip">⋮⋮</span>
+          <div><b>Negocjacje czynsz Łódzka</b> <span class="ctx">Łódzka</span></div>
+          <div class="meta"><div class="bar"><i style="width:10%"></i></div> 1/10 · 30 kwi</div>
+          <span class="chev">▸</span>
+        </div>
+        <div class="body collapsed"></div>
+      </div>
+
+      <!-- ======= LUŹNE TASKI ======= -->
+      <div class="sec" style="margin-top:22px"><h3>Luźne taski</h3><span class="n">7</span><button class="add">+ dodaj task</button></div>
+      <div style="margin:0 12px; border:1px solid var(--line); border-radius:8px; background:#fff; padding:4px 6px;">
+        <div class="task" onclick="pick(this,'Zamówić nowy fotel do Legnicka')"><span class="grip">⋮⋮</span><span class="ck"></span><span class="name">Zamówić nowy fotel do Legnicka</span><span class="due late">dziś</span><span class="prio hi"><i></i><i></i><i></i></span><span class="who">MK</span></div>
+        <div class="task"><span class="grip">⋮⋮</span><span class="ck"></span><span class="name">Odpisać Mariuszowi z BHP</span><span class="due late">zaległe</span><span class="prio hi"><i></i><i></i><i></i></span><span class="who">MK</span></div>
+        <div class="task"><span class="grip">⋮⋮</span><span class="ck"></span><span class="name">Zapłacić fakturę za klimę</span><span class="due">jutro</span><span class="prio md"><i></i><i></i><i></i></span><span class="who">AW</span></div>
+        <div class="task done"><span class="grip">⋮⋮</span><span class="ck"></span><span class="name">Update grafiku na maj</span><span class="due">wczoraj</span><span class="prio lo"><i></i><i></i><i></i></span><span class="who">MK</span></div>
+        <div class="task"><span class="grip">⋮⋮</span><span class="ck"></span><span class="name">Spotkanie z księgową — kwartał</span><span class="due">15 kwi</span><span class="prio md"><i></i><i></i><i></i></span><span class="who">MK</span></div>
+        <div class="task"><span class="grip">⋮⋮</span><span class="ck"></span><span class="name">Fotki przed-po do Insta</span><span class="due">19 kwi</span><span class="prio lo"><i></i><i></i><i></i></span><span class="who">AW</span></div>
+        <div class="task"><span class="grip">⋮⋮</span><span class="ck"></span><span class="name">Umówić serwis klimy w Łódzkiej</span><span class="due">22 kwi</span><span class="prio lo"><i></i><i></i><i></i></span><span class="who">MK</span></div>
+        <div class="add-row">+ Dodaj zadanie</div>
+      </div>
+
+      <!-- ======= POMYSŁY ======= -->
+      <div class="sec" style="margin-top:22px"><h3>Pomysły</h3><span class="n">3</span><button class="add">+ dodaj pomysł</button></div>
+      <div class="chip-row">
+        <span class="icn i">💡</span>
+        <div class="txt">Voucher startowy dla nowych klientek<div class="meta">Salony · dodano 3 kwi</div></div>
+        <div class="actions"><button>→ Task</button><button>→ Projekt</button><button>Wyrzuć</button></div>
+      </div>
+      <div class="chip-row">
+        <span class="icn i">💡</span>
+        <div class="txt">Rolki przed/po u klientek<div class="meta">Marka Osobista · dodano 5 kwi</div></div>
+        <div class="actions"><button>→ Task</button><button>→ Projekt</button><button>Wyrzuć</button></div>
+      </div>
+      <div class="chip-row">
+        <span class="icn i">💡</span>
+        <div class="txt">Program poleceń — bonus 50zł<div class="meta">Salony · dodano 6 kwi</div></div>
+        <div class="actions"><button>→ Task</button><button>→ Projekt</button><button>Wyrzuć</button></div>
+      </div>
+
+      <!-- ======= PROBLEMY ======= -->
+      <div class="sec" style="margin-top:22px"><h3>Problemy</h3><span class="n">2</span><button class="add">+ dodaj problem</button></div>
+      <div class="chip-row">
+        <span class="icn p">!</span>
+        <div class="txt">Rotacja fryzjerek w Legnickiej<div class="meta">Legnicka · otwarte 6 dni</div></div>
+        <div class="actions"><button>→ Task</button><button>→ Projekt</button><button>Wyrzuć</button></div>
+      </div>
+      <div class="chip-row" style="margin-bottom:20px">
+        <span class="icn p">!</span>
+        <div class="txt">Mało rezerwacji w pn/wt<div class="meta">Łódzka · otwarte 2 dni</div></div>
+        <div class="actions"><button>→ Task</button><button>→ Projekt</button><button>Wyrzuć</button></div>
+      </div>
+    </main>
+
+    <!-- ========= RIGHT — TASK DETAIL ========= -->
+    <div class="right">
+      <div class="head">
+        <div class="topline">ZADANIE · <span class="path">Remont Legnicka / Salony</span></div>
+        <h4 id="t-title">Koordynacja z elektrykiem</h4>
+        <div class="actions">
+          <button class="primary">✓ Oznacz jako zrobione</button>
+          <button>↶ Zwolnij z projektu</button>
+          <button>⋯</button>
+        </div>
+      </div>
+
+      <div class="meta">
+        <div class="row"><label>Projekt</label><span class="v"><span class="pill">Remont Legnicka</span></span></div>
+        <div class="row"><label>Kontekst</label><span class="v"><span class="pill" style="background:#ede9fe;color:#6d28d9">Legnicka</span></span></div>
+        <div class="row"><label>Przypisane</label><span class="v"><span class="av">MK</span>Maciek K.</span></div>
+        <div class="row"><label>Dodane</label><span class="v">5 kwietnia, przez MK</span></div>
+        <div class="row"><label>Deadline</label><span class="v" style="color:#b91c1c;font-weight:600">dziś, 9 kwietnia</span></div>
+        <div class="row"><label>Priorytet</label><span class="v"><span class="prio hi" style="display:inline-flex;gap:2px;vertical-align:middle"><i style="width:3px;height:11px;background:#ef4444;border-radius:1px;display:inline-block"></i><i style="width:3px;height:11px;background:#ef4444;border-radius:1px;display:inline-block"></i><i style="width:3px;height:11px;background:#ef4444;border-radius:1px;display:inline-block"></i></span> Wysoki</span></div>
+      </div>
+
+      <div class="sect-h">Notatki</div>
+      <div class="notes" contenteditable>Elektryk (Darek, 601-234-567) ma być we wtorek 9:00. Musi rozprowadzić kable pod 5 nowymi stanowiskami + oświetlenie LED nad lustrami. Potwierdź materiały: kabel YDY 3×1,5 — 40m, puszki podtynkowe — 10 szt.</div>
+
+      <div class="sect-h">Pliki i zdjęcia</div>
+      <div class="files">
+        <div class="tile img">IMG<br>fotel_v1.jpg</div>
+        <div class="tile img">IMG<br>plan.png</div>
+        <div class="tile vid">▶<br>obejrzyj</div>
+        <div class="tile add">+ dodaj</div>
+      </div>
+
+      <div class="sect-h">Linki</div>
+      <div class="links">
+        <div class="ln"><span class="ic">📐</span> Projekt salonu v3 <span class="url">figma.com</span></div>
+        <div class="ln"><span class="ic">📁</span> Materiały zakupowe <span class="url">dropbox.com</span></div>
+        <div class="add">+ Dodaj link</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function pick(el, title) {
+    document.querySelectorAll('.task.selected').forEach(t => t.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('t-title').textContent = title;
+  }
+  // kolaps projektu na klik w chev
+  document.querySelectorAll('.prj .head').forEach(h => {
+    h.addEventListener('click', (e) => {
+      if (e.target.classList.contains('grip')) return;
+      const b = h.parentElement.querySelector('.body');
+      const c = h.querySelector('.chev');
+      if (!b) return;
+      b.classList.toggle('collapsed');
+      c.textContent = b.classList.contains('collapsed') ? '▸' : '▾';
+    });
+  });
+</script>
+</body>
+</html>

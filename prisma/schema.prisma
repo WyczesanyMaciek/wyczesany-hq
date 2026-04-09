@@ -65,14 +65,16 @@ model Project {
 // albo czesc projektu.
 // =====================================================
 model Task {
-  id        String    @id @default(cuid())
-  title     String
-  done      Boolean   @default(false)
-  deadline  DateTime?
-  priority  Int       @default(0) // 0 = brak, 1 = low, 2 = medium, 3 = high
-  order     Int       @default(0)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id         String    @id @default(cuid())
+  title      String
+  done       Boolean   @default(false)
+  deadline   DateTime?
+  priority   Int       @default(0) // 0 = brak, 1 = low, 2 = medium, 3 = high
+  order      Int       @default(0)
+  assigneeId String?   // na razie string (bez FK) — user system w Etapie 8
+  notes      String?   // dlugie notatki, plaintext/markdown
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
   // Task moze byc luzny (tylko contextId) albo czesc projektu (oba ID)
   contextId String
@@ -80,6 +82,36 @@ model Task {
 
   projectId String?
   project   Project? @relation(fields: [projectId], references: [id])
+
+  // Wlasne zasoby taska
+  attachments TaskAttachment[]
+  links       TaskLink[]
+}
+
+// =====================================================
+// TaskAttachment — pliki i zdjecia doklejone do taska.
+// Na razie url zewnetrzny, upload zrobimy pozniej.
+// =====================================================
+model TaskAttachment {
+  id        String   @id @default(cuid())
+  taskId    String
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  kind      String   // "image" | "video" | "file"
+  url       String
+  name      String
+  createdAt DateTime @default(now())
+}
+
+// =====================================================
+// TaskLink — linki per task (odrebne od Link na kontekscie/projekcie).
+// =====================================================
+model TaskLink {
+  id        String   @id @default(cuid())
+  taskId    String
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  label     String
+  url       String
+  createdAt DateTime @default(now())
 }
 
 // =====================================================

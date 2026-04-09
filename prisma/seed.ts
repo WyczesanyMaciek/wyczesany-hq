@@ -96,7 +96,8 @@ async function main() {
       projectId: remont.id,
     },
   });
-  await prisma.task.create({
+  // Task z notatkami, linkami i zalacznikami — dla demo panelu szczegolow
+  const zatwierdz = await prisma.task.create({
     data: {
       title: "Zatwierdzić projekt oklejenia",
       done: false,
@@ -105,8 +106,44 @@ async function main() {
       order: 1,
       contextId: legnicka.id,
       projectId: remont.id,
+      assigneeId: "MK",
+      notes:
+        "Grafik (Darek, 601-234-567) dostarczy 3 warianty do piątku. " +
+        "Musimy sie zdecydowac czy idziemy w minimalizm czy w mocne logo. " +
+        "Budzet materialu: okolo 1800 zl netto.",
     },
   });
+  await prisma.taskLink.create({
+    data: {
+      taskId: zatwierdz.id,
+      label: "Projekt oklejenia v3",
+      url: "https://figma.com/file/projekt-oklejenia",
+    },
+  });
+  await prisma.taskLink.create({
+    data: {
+      taskId: zatwierdz.id,
+      label: "Materialy zakupowe",
+      url: "https://dropbox.com/folder/materialy",
+    },
+  });
+  await prisma.taskAttachment.create({
+    data: {
+      taskId: zatwierdz.id,
+      kind: "image",
+      name: "fotel_v1.jpg",
+      url: "https://placehold.co/400x400/ddd6fe/4338ca?text=fotel_v1",
+    },
+  });
+  await prisma.taskAttachment.create({
+    data: {
+      taskId: zatwierdz.id,
+      kind: "image",
+      name: "plan.png",
+      url: "https://placehold.co/400x400/c4b5fd/4338ca?text=plan",
+    },
+  });
+
   await prisma.task.create({
     data: {
       title: "Zamówić LED z nazwą salonu",
@@ -115,6 +152,7 @@ async function main() {
       order: 2,
       contextId: legnicka.id,
       projectId: remont.id,
+      assigneeId: "AW",
     },
   });
 

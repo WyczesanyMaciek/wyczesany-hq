@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Wyczesany HQ — 4 propozycje designu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Lexend:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: #eceef1;
+    color: #111;
+    -webkit-font-smoothing: antialiased;
+  }
+  .picker {
+    position: sticky; top: 0; z-index: 50;
+    background: #1f2937; color: #fff;
+    padding: 10px 16px;
+    display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+    border-bottom: 1px solid #111;
+  }
+  .picker h1 { margin: 0 12px 0 0; font-size: 14px; font-weight: 700; letter-spacing: .02em; }
+  .picker button {
+    background: #374151; color: #fff; border: 1px solid #4b5563;
+    padding: 7px 12px; border-radius: 6px; font: 500 13px 'Inter', sans-serif; cursor: pointer;
+  }
+  .picker button:hover { background: #4b5563; }
+  .picker button.active { background: #fbbf24; color: #111; border-color: #fbbf24; }
+  .picker .note { margin-left: auto; font-size: 12px; color: #9ca3af; }
+
+  .frame { display: none; padding: 18px; }
+  .frame.active { display: block; }
+  .frame h2.title { margin: 0 0 4px; font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: #6b7280; font-weight: 600; }
+  .frame p.sub { margin: 0 0 14px; font-size: 13px; color: #6b7280; }
+
+  /* ============ DESIGN 1: LINEAR-LIKE DENSE ============ */
+  .d1 {
+    --bg: #ffffff;
+    --panel: #ffffff;
+    --ink: #0f172a;
+    --muted: #64748b;
+    --line: #e5e7eb;
+    --accent: #6366f1;
+    --hover: #f3f4f6;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px; line-height: 1.5;
+    color: var(--ink);
+    background: var(--bg);
+    border: 1px solid var(--line); border-radius: 10px; overflow: hidden;
+    display: grid; grid-template-columns: 220px 1fr 280px; height: 720px;
+  }
+  .d1 aside { background: #fafbfc; border-right: 1px solid var(--line); padding: 12px 8px; overflow: auto; }
+  .d1 aside .brand { padding: 4px 8px 10px; font-weight: 700; font-size: 13px; display: flex; align-items: center; gap: 6px; }
+  .d1 aside .brand .logo { width: 16px; height: 16px; background: var(--accent); border-radius: 4px; }
+  .d1 aside .sect { text-transform: uppercase; font-size: 10px; letter-spacing: .08em; color: var(--muted); padding: 10px 8px 4px; font-weight: 600; }
+  .d1 aside .row { display: flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 5px; cursor: pointer; font-size: 12.5px; }
+  .d1 aside .row:hover { background: var(--hover); }
+  .d1 aside .row.active { background: #eef2ff; color: #4338ca; font-weight: 600; }
+  .d1 aside .row .dot { width: 7px; height: 7px; border-radius: 2px; }
+  .d1 aside .row .cnt { margin-left: auto; font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .d1 aside .nest { padding-left: 16px; border-left: 1px dashed var(--line); margin-left: 12px; }
+
+  .d1 main { overflow: auto; }
+  .d1 .bar { display: flex; align-items: center; padding: 10px 16px; border-bottom: 1px solid var(--line); gap: 10px; }
+  .d1 .bar .crumb { font-size: 12.5px; color: var(--muted); }
+  .d1 .bar .crumb b { color: var(--ink); }
+  .d1 .bar .btn { margin-left: auto; background: var(--accent); color: #fff; border: 0; padding: 6px 10px; border-radius: 6px; font: 600 12px 'Inter'; cursor: pointer; }
+  .d1 .bar .btn.ghost { background: #fff; color: var(--ink); border: 1px solid var(--line); margin-left: 0; }
+  .d1 main h3 { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 14px 16px 6px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+  .d1 main h3 .n { background: #f3f4f6; padding: 1px 6px; border-radius: 10px; font-size: 10px; color: var(--ink); }
+  .d1 .tbl { margin: 0 8px; }
+  .d1 .tr { display: grid; grid-template-columns: 16px 1fr 90px 80px 70px 50px; gap: 8px; align-items: center; padding: 6px 8px; border-radius: 5px; font-size: 12.5px; }
+  .d1 .tr:hover { background: var(--hover); }
+  .d1 .tr .ck { width: 13px; height: 13px; border: 1.5px solid #cbd5e1; border-radius: 3px; }
+  .d1 .tr.done .ck { background: #22c55e; border-color: #22c55e; }
+  .d1 .tr.done .name { text-decoration: line-through; color: var(--muted); }
+  .d1 .tr .pill { padding: 1px 7px; border-radius: 10px; font-size: 11px; font-weight: 500; background: #eef2ff; color: #4338ca; display: inline-block; }
+  .d1 .tr .pill.red { background: #fee2e2; color: #b91c1c; }
+  .d1 .tr .pill.orange { background: #ffedd5; color: #c2410c; }
+  .d1 .tr .pill.green { background: #dcfce7; color: #166534; }
+  .d1 .tr .date { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 12px; }
+  .d1 .tr .prio { display: flex; gap: 2px; }
+  .d1 .tr .prio i { width: 3px; height: 10px; background: #e5e7eb; display: inline-block; border-radius: 1px; }
+  .d1 .tr .prio.hi i:nth-child(-n+3) { background: #ef4444; }
+  .d1 .tr .prio.md i:nth-child(-n+2) { background: #f59e0b; }
+  .d1 .tr .prio.lo i:nth-child(1) { background: #64748b; }
+  .d1 .tr .who { width: 22px; height: 22px; border-radius: 50%; background: #ddd6fe; color: #5b21b6; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+
+  .d1 .right { background: #fafbfc; border-left: 1px solid var(--line); overflow: auto; padding: 12px 14px; }
+  .d1 .right .card { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; }
+  .d1 .right .card h4 { margin: 0 0 6px; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; }
+  .d1 .right .card .bar2 { height: 6px; background: #f3f4f6; border-radius: 3px; overflow: hidden; }
+  .d1 .right .card .bar2 > i { display: block; height: 100%; background: var(--accent); }
+  .d1 .right .card .stat { display: flex; justify-content: space-between; font-size: 12px; padding: 2px 0; }
+  .d1 .right .card .stat b { font-variant-numeric: tabular-nums; }
+  .d1 .right .idea { font-size: 12px; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+  .d1 .right .idea:last-child { border: 0; }
+  .d1 .right .idea .tag { color: var(--muted); font-size: 11px; }
+
+  /* ============ DESIGN 2: NOTION / WARM PAPER ============ */
+  .d2 {
+    --bg: #faf9f6;
+    --panel: #fff;
+    --ink: #191919;
+    --muted: #787774;
+    --line: #ececea;
+    --accent: #2383e2;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px; line-height: 1.55;
+    color: var(--ink);
+    background: var(--bg);
+    border-radius: 10px; overflow: hidden; border: 1px solid #e5e5e0;
+    display: grid; grid-template-columns: 240px 1fr; height: 720px;
+  }
+  .d2 aside { background: #f7f6f3; border-right: 1px solid var(--line); padding: 14px 10px; overflow: auto; }
+  .d2 aside .user { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 6px; font-size: 13px; font-weight: 600; }
+  .d2 aside .user .av { width: 22px; height: 22px; border-radius: 5px; background: #fde68a; color: #92400e; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+  .d2 aside .search { margin: 10px 4px; background: #ececea; border: 0; border-radius: 6px; padding: 7px 10px; width: calc(100% - 8px); font: 13px 'Inter'; color: #444; }
+  .d2 aside .sect { font-size: 11px; color: var(--muted); padding: 10px 10px 4px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+  .d2 aside .row { display: flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 5px; cursor: pointer; font-size: 13.5px; }
+  .d2 aside .row:hover { background: #eeece6; }
+  .d2 aside .row.active { background: #e7ecf4; color: #1f5ea6; font-weight: 600; }
+  .d2 aside .row .arrow { color: var(--muted); font-size: 10px; width: 12px; }
+  .d2 aside .row .ico { width: 14px; height: 14px; border-radius: 3px; }
+  .d2 aside .row .cnt { margin-left: auto; color: var(--muted); font-size: 11px; }
+  .d2 aside .nest { padding-left: 18px; }
+
+  .d2 main { overflow: auto; padding: 22px 34px 40px; }
+  .d2 main .crumb { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  .d2 main h1 { font-size: 26px; margin: 0 0 4px; font-weight: 700; letter-spacing: -0.01em; }
+  .d2 main .meta { font-size: 13px; color: var(--muted); margin-bottom: 18px; }
+  .d2 main .meta .dot { display: inline-block; width: 6px; height: 6px; background: #8b5cf6; border-radius: 50%; vertical-align: middle; margin: 0 6px 2px; }
+  .d2 .grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 20px; }
+  .d2 .col h3 { font-size: 12px; color: var(--muted); margin: 0 0 8px; text-transform: uppercase; letter-spacing: .05em; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+  .d2 .col h3 .add { margin-left: auto; color: var(--muted); font-size: 15px; cursor: pointer; }
+  .d2 .proj { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; margin-bottom: 10px; }
+  .d2 .proj .top { display: flex; align-items: center; gap: 8px; }
+  .d2 .proj .top b { font-size: 14px; }
+  .d2 .proj .top .ctx { font-size: 11px; color: #7c3aed; background: #ede9fe; padding: 1px 6px; border-radius: 4px; margin-left: auto; }
+  .d2 .proj .bar { height: 4px; background: #f1f1ee; border-radius: 2px; margin: 8px 0 6px; overflow: hidden; }
+  .d2 .proj .bar > i { display: block; height: 100%; background: #2383e2; }
+  .d2 .proj .foot { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
+  .d2 .task { display: flex; align-items: center; gap: 8px; padding: 5px 2px; font-size: 13.5px; border-bottom: 1px solid #f1f1ee; }
+  .d2 .task:last-child { border: 0; }
+  .d2 .task .ck { width: 14px; height: 14px; border: 1.5px solid #c8c7c2; border-radius: 3px; }
+  .d2 .task.done .ck { background: #22c55e; border-color: #22c55e; }
+  .d2 .task.done .n { color: var(--muted); text-decoration: line-through; }
+  .d2 .task .ctx { margin-left: auto; font-size: 11px; color: var(--muted); }
+  .d2 .idea { display: flex; gap: 8px; align-items: flex-start; padding: 7px 0; border-bottom: 1px solid #f1f1ee; font-size: 13.5px; }
+  .d2 .idea .bulb { width: 16px; height: 16px; background: #fef3c7; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #92400e; }
+  .d2 .idea .ctx { color: var(--muted); font-size: 11px; display: block; }
+
+  /* ============ DESIGN 3: TRELLO-STYLE COLUMNS ============ */
+  .d3 {
+    --bg: #f4f5f7;
+    --col: #ebecf0;
+    --ink: #172b4d;
+    --muted: #5e6c84;
+    --line: #dfe1e6;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px; line-height: 1.5;
+    color: var(--ink);
+    background: var(--bg);
+    border-radius: 10px; overflow: hidden; border: 1px solid var(--line);
+    display: grid; grid-template-rows: auto 1fr; height: 720px;
+  }
+  .d3 .top { background: #0747a6; color: #fff; padding: 10px 16px; display: flex; align-items: center; gap: 14px; }
+  .d3 .top .logo { font-weight: 700; font-size: 14px; }
+  .d3 .top nav { display: flex; gap: 6px; }
+  .d3 .top nav a { color: #fff; opacity: .85; text-decoration: none; font-size: 12.5px; padding: 4px 10px; border-radius: 4px; }
+  .d3 .top nav a.active { background: rgba(255,255,255,0.18); opacity: 1; font-weight: 600; }
+  .d3 .top .search { margin-left: auto; background: rgba(255,255,255,0.15); border: 0; padding: 5px 10px; border-radius: 4px; color: #fff; font: 12.5px 'IBM Plex Sans'; width: 200px; }
+  .d3 .top .search::placeholder { color: #c7d6ef; }
+  .d3 .sub { background: #deebff; color: #0747a6; padding: 7px 16px; font-size: 12px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #b3d4ff; }
+  .d3 .sub b { font-weight: 700; }
+  .d3 .sub .chips { margin-left: auto; display: flex; gap: 4px; }
+  .d3 .sub .chips span { background: #fff; border: 1px solid #b3d4ff; padding: 1px 8px; border-radius: 10px; font-size: 11px; }
+
+  .d3 .board { overflow-x: auto; padding: 14px 14px 20px; display: flex; gap: 12px; align-items: flex-start; }
+  .d3 .lane { background: var(--col); border-radius: 8px; width: 260px; flex-shrink: 0; padding: 8px; max-height: 640px; display: flex; flex-direction: column; }
+  .d3 .lane h4 { margin: 2px 6px 8px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: .04em; }
+  .d3 .lane h4 .n { background: #fff; border: 1px solid var(--line); padding: 0 6px; border-radius: 10px; font-size: 10px; }
+  .d3 .lane h4 .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .d3 .lane .scroll { overflow-y: auto; padding-right: 2px; }
+  .d3 .card { background: #fff; border-radius: 6px; padding: 8px 10px; margin-bottom: 6px; box-shadow: 0 1px 0 rgba(9,30,66,0.12); font-size: 12.5px; }
+  .d3 .card .label { display: inline-block; height: 4px; width: 32px; border-radius: 2px; margin-right: 4px; vertical-align: middle; }
+  .d3 .card .label.purple { background: #8b5cf6; }
+  .d3 .card .label.red { background: #ef4444; }
+  .d3 .card .label.orange { background: #f59e0b; }
+  .d3 .card .label.coral { background: #f87171; }
+  .d3 .card .title { font-weight: 600; margin: 3px 0; line-height: 1.35; }
+  .d3 .card .meta { display: flex; justify-content: space-between; color: var(--muted); font-size: 11px; margin-top: 6px; align-items: center; }
+  .d3 .card .due.late { color: #b91c1c; font-weight: 600; }
+  .d3 .card .av { width: 18px; height: 18px; border-radius: 50%; background: #c7d2fe; color: #3730a3; font-size: 9px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
+  .d3 .lane .add { font-size: 12px; color: var(--muted); padding: 4px 8px; cursor: pointer; }
+  .d3 .lane.ideas .card { background: #fffbeb; }
+  .d3 .lane.problems .card { background: #fef2f2; }
+
+  /* ============ DESIGN 4: DYSLEXIA-OPTIMIZED WARM ============ */
+  .d4 {
+    --bg: #fbf8f3;
+    --panel: #fffdf8;
+    --ink: #2b2930;
+    --muted: #726d7a;
+    --line: #e8e3da;
+    --accent: #7c3aed;
+    font-family: 'Atkinson Hyperlegible', 'Lexend', sans-serif;
+    font-size: 14px; line-height: 1.6;
+    color: var(--ink);
+    background: var(--bg);
+    border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
+    display: grid; grid-template-columns: 200px 1fr; height: 720px;
+  }
+  .d4 aside { background: #f5f0e6; border-right: 2px solid var(--line); padding: 14px 10px; overflow: auto; }
+  .d4 aside .brand { font-weight: 700; font-size: 15px; padding: 4px 8px 12px; display: flex; align-items: center; gap: 8px; }
+  .d4 aside .brand .sq { width: 18px; height: 18px; background: var(--accent); border-radius: 5px; }
+  .d4 aside .row { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 8px; cursor: pointer; font-size: 13.5px; margin-bottom: 2px; }
+  .d4 aside .row:hover { background: #ebe3d3; }
+  .d4 aside .row.active { background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.06); font-weight: 700; }
+  .d4 aside .row .dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+  .d4 aside .row .cnt { margin-left: auto; font-size: 11px; background: rgba(0,0,0,.06); padding: 1px 7px; border-radius: 10px; }
+  .d4 aside .nest { margin-left: 10px; padding-left: 10px; border-left: 2px solid var(--line); }
+
+  .d4 main { overflow: auto; padding: 18px 22px 28px; }
+  .d4 main .hdr { display: flex; align-items: baseline; gap: 10px; margin-bottom: 4px; }
+  .d4 main .hdr h1 { margin: 0; font-size: 22px; font-weight: 700; }
+  .d4 main .hdr .ctx { background: #ede9fe; color: #6d28d9; font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 700; }
+  .d4 main .hdr .add { margin-left: auto; background: var(--accent); color: #fff; border: 0; padding: 7px 12px; border-radius: 7px; font: 700 12.5px 'Atkinson Hyperlegible'; cursor: pointer; }
+  .d4 main .meta { font-size: 12.5px; color: var(--muted); margin-bottom: 14px; }
+
+  .d4 .grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 14px; }
+  .d4 .panel { background: var(--panel); border: 2px solid var(--line); border-radius: 10px; padding: 12px 14px; margin-bottom: 12px; }
+  .d4 .panel h3 { margin: 0 0 8px; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 700; display: flex; align-items: center; gap: 6px; }
+  .d4 .panel h3 .n { background: #f5f0e6; padding: 1px 7px; border-radius: 10px; font-size: 11px; color: var(--ink); }
+  .d4 .proj { padding: 8px 2px; border-bottom: 1px dashed var(--line); }
+  .d4 .proj:last-child { border: 0; }
+  .d4 .proj .top { display: flex; align-items: center; gap: 8px; }
+  .d4 .proj .top b { font-size: 14px; }
+  .d4 .proj .top .ctx { background: #ede9fe; color: #6d28d9; font-size: 10px; padding: 1px 6px; border-radius: 8px; margin-left: auto; font-weight: 700; }
+  .d4 .proj .bar { height: 8px; background: #f5f0e6; border-radius: 4px; margin: 6px 0 4px; overflow: hidden; }
+  .d4 .proj .bar > i { display: block; height: 100%; background: var(--accent); border-radius: 4px; }
+  .d4 .proj .foot { font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; }
+  .d4 .task { display: grid; grid-template-columns: 18px 1fr auto auto; gap: 10px; align-items: center; padding: 6px 2px; font-size: 13.5px; border-bottom: 1px solid var(--line); }
+  .d4 .task:last-child { border: 0; }
+  .d4 .task .ck { width: 16px; height: 16px; border: 2px solid #c9c2b5; border-radius: 4px; }
+  .d4 .task.done .ck { background: #22c55e; border-color: #22c55e; }
+  .d4 .task.done .n { color: var(--muted); text-decoration: line-through; }
+  .d4 .task .due { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .d4 .task .due.late { color: #b91c1c; font-weight: 700; }
+  .d4 .task .ctx { font-size: 10px; padding: 1px 6px; border-radius: 8px; font-weight: 700; }
+  .d4 .task .ctx.salony { background: #ede9fe; color: #6d28d9; }
+  .d4 .task .ctx.notbad { background: #fee2e2; color: #b91c1c; }
+  .d4 .task .ctx.szkolenia { background: #ffedd5; color: #c2410c; }
+
+  .d4 .idea { display: flex; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--line); font-size: 13px; align-items: flex-start; }
+  .d4 .idea:last-child { border: 0; }
+  .d4 .idea .icn { width: 18px; height: 18px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; }
+  .d4 .idea .icn.i { background: #fef3c7; color: #92400e; }
+  .d4 .idea .icn.p { background: #fee2e2; color: #b91c1c; }
+  .d4 .idea .ctx { display: block; font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+  .d4 .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 12px; }
+  .d4 .kpi { background: var(--panel); border: 2px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+  .d4 .kpi .lbl { font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 700; }
+  .d4 .kpi .val { font-size: 22px; font-weight: 800; line-height: 1.2; margin-top: 2px; }
+  .d4 .kpi .sub { font-size: 11px; color: var(--muted); }
+
+</style>
+</head>
+<body>
+
+<div class="picker">
+  <h1>WYCZESANY HQ — 4 PROPOZYCJE DESIGNU</h1>
+  <button data-t="1" class="active">1. Linear — gęste i ostre</button>
+  <button data-t="2">2. Notion — ciepły papier</button>
+  <button data-t="3">3. Trello — kolumny/kanban</button>
+  <button data-t="4">4. Dysleksja-friendly</button>
+  <span class="note">rozmiar 13–14 px, ten sam content w każdym wariancie</span>
+</div>
+
+<!-- ============ DESIGN 1 ============ -->
+<div class="frame active" id="f1">
+  <h2 class="title">Design 1 — Linear-style (gęste, ostre, pro)</h2>
+  <p class="sub">Inspiracja: Linear, Height. Mały font (13px), max info na ekranie, cienkie linie, szybka nawigacja klawiaturą. Dla ludzi którzy lubią widzieć wszystko naraz.</p>
+
+  <div class="d1">
+    <aside>
+      <div class="brand"><span class="logo"></span> Wyczesany HQ</div>
+      <input placeholder="Szukaj…" style="width:100%;padding:6px 8px;border:1px solid var(--line);border-radius:5px;font-size:12px;margin-bottom:4px;">
+      <div class="sect">Pulpit</div>
+      <div class="row"><span class="dot" style="background:#64748b"></span> Wszystko <span class="cnt">47</span></div>
+      <div class="row"><span class="dot" style="background:#ef4444"></span> Dziś <span class="cnt">8</span></div>
+      <div class="row"><span class="dot" style="background:#f59e0b"></span> Zaległe <span class="cnt">3</span></div>
+      <div class="sect">Konteksty</div>
+      <div class="row active"><span class="dot" style="background:#8b5cf6"></span> Salony <span class="cnt">18</span></div>
+      <div class="nest">
+        <div class="row"><span class="dot" style="background:#a78bfa"></span> WFM <span class="cnt">11</span></div>
+        <div class="nest">
+          <div class="row"><span class="dot" style="background:#c4b5fd"></span> Legnicka <span class="cnt">5</span></div>
+          <div class="row"><span class="dot" style="background:#c4b5fd"></span> Łódzka <span class="cnt">4</span></div>
+          <div class="row"><span class="dot" style="background:#c4b5fd"></span> Zakładowa <span class="cnt">2</span></div>
+        </div>
+        <div class="row"><span class="dot" style="background:#a78bfa"></span> Luxfera <span class="cnt">4</span></div>
+        <div class="row"><span class="dot" style="background:#a78bfa"></span> Głogów <span class="cnt">3</span></div>
+      </div>
+      <div class="row"><span class="dot" style="background:#ef4444"></span> Not Bad Stuff <span class="cnt">12</span></div>
+      <div class="nest">
+        <div class="row"><span class="dot" style="background:#f87171"></span> Produkcja <span class="cnt">7</span></div>
+        <div class="row"><span class="dot" style="background:#f87171"></span> Sprzedaż <span class="cnt">5</span></div>
+      </div>
+      <div class="row"><span class="dot" style="background:#f59e0b"></span> Szkolenia <span class="cnt">6</span></div>
+      <div class="row"><span class="dot" style="background:#fb7185"></span> Marka Osobista <span class="cnt">9</span></div>
+      <div class="nest">
+        <div class="row"><span class="dot" style="background:#fda4af"></span> Instagram <span class="cnt">3</span></div>
+        <div class="row"><span class="dot" style="background:#fda4af"></span> Live <span class="cnt">2</span></div>
+        <div class="row"><span class="dot" style="background:#fda4af"></span> Wyczesany Ali <span class="cnt">3</span></div>
+        <div class="row"><span class="dot" style="background:#fda4af"></span> Naffy <span class="cnt">1</span></div>
+      </div>
+      <div class="row"><span class="dot" style="background:#94a3b8"></span> Prywatne <span class="cnt">2</span></div>
+    </aside>
+
+    <main>
+      <div class="bar">
+        <span class="crumb">Konteksty / <b>Salony</b></span>
+        <button class="btn ghost">Filtry</button>
+        <button class="btn">+ Nowy task</button>
+      </div>
+
+      <h3>Aktywne projekty <span class="n">4</span></h3>
+      <div class="tbl">
+        <div class="tr"><span class="ck"></span><span class="name"><b>Remont Legnicka — wrzesień</b></span><span class="pill">Legnicka</span><span class="date">12 kwi</span><span class="prio hi"><i></i><i></i><i></i></span><span class="who">MK</span></div>
+        <div class="tr"><span class="ck"></span><span class="name"><b>Kampania otwarcia Luxfera</b></span><span class="pill orange">Luxfera</span><span class="date">18 kwi</span><span class="prio md"><i></i><i></i><i></i></span><span class="who">AW</span></div>
+        <div class="tr"><span class="ck"></span><span class="name"><b>Rekrutacja fryzjerów Głogów</b></span><span class="pill green">Głogów</span><span class="date">25 kwi</span><span class="prio md"><i></i><i></i><i></i></span><span class="who">MK</span></div>
+        <div class="tr"><span class="ck"></span><span class="name"><b>Negocjacje czynsz Łódzka</b></span><span class="pill">Łódzka</span><span class="date">30 kwi</span><span class="prio lo"><i></i><i></i><i></i></span><span class="who">MK</span></div>
+      </div>
+
+      <h3>Luźne taski <span class="n">11</span></h3>
+      <div class="tbl">
+        <div class="tr"><span class="ck"></span><span class="name">Zamówić nowy fotel do Legnicka</span><span class="pill">Legnicka</span><span class="date">dziś</span><span class="prio hi"><i></i><i></i><i></i></span><span class="who">MK</span></div>
+        <div class="tr"><span class="ck"></span><span class="name">Odpisać Mariuszowi z BHP</span><span class="pill red">Zakładowa</span><span class="date">zaległe</span><span class="prio hi"><i></i><i></i><i></i></span><span class="who">MK</span></div>
+        <div class="tr"><span class="ck"></span><span class="name">Zapłacić fakturę za klimę</span><span class="pill">Łódzka</span><span class="date">jutro</span><span class="prio md"><i></i><i></i><i></i></span><span class="who">AW</span></div>
+        <div class="tr done"><span class="ck"></span><span class="name">Update grafiku na maj</span><span class="pill">WFM</span><span class="date">wczoraj</span><span class="prio lo"><i></i><i></i><i></i></span><span class="who">MK</span></div>
+        <div class="tr"><span class="ck"></span><span class="name">Skontaktować się z dostawcą kosmetyków</span><span class="pill orange">Luxfera</span><span class="date">14 kwi</span><span class="prio md"><i></i><i></i><i></i></span><span class="who">MK</span></div>
+        <div class="tr"><span class="ck"></span><span class="name">Spotkanie z księgową — kwartał</span><span class="pill">Salony</span><span class="date">15 kwi</span><span class="prio md"><i></i><i></i><i></i></span><span class="who">MK</span></div>
+        <div class="tr"><span class="ck"></span><span class="name">Fotki przed-po do Insta</span><span class="pill green">Głogów</span><span class="date">19 kwi</span><span class="prio lo"><i></i><i></i><i></i></span><span class="who">AW</span></div>
+      </div>
+    </main>
+
+    <div class="right">
+      <div class="card">
+        <h4>Dzisiaj</h4>
+        <div class="stat"><span>Do zrobienia</span><b>8</b></div>
+        <div class="stat"><span>Zrobione</span><b>3</b></div>
+        <div class="stat"><span>Zaległe</span><b style="color:#b91c1c">3</b></div>
+        <div class="bar2" style="margin-top:6px"><i style="width:27%"></i></div>
+      </div>
+      <div class="card">
+        <h4>Progres projektów</h4>
+        <div style="font-size:12px;margin-bottom:2px;">Remont Legnicka</div>
+        <div class="bar2"><i style="width:62%"></i></div>
+        <div style="font-size:11px;color:var(--muted);margin:2px 0 8px">8/13 tasków · 3 dni do deadline</div>
+        <div style="font-size:12px;margin-bottom:2px;">Kampania Luxfera</div>
+        <div class="bar2"><i style="width:40%"></i></div>
+        <div style="font-size:11px;color:var(--muted);margin:2px 0 8px">6/15 tasków · 9 dni</div>
+        <div style="font-size:12px;margin-bottom:2px;">Rekrutacja Głogów</div>
+        <div class="bar2"><i style="width:25%"></i></div>
+        <div style="font-size:11px;color:var(--muted);margin:2px 0">2/8 tasków · 16 dni</div>
+      </div>
+      <div class="card">
+        <h4>Pomysły (3)</h4>
+        <div class="idea">Voucher startowy dla nowych klientek <span class="tag">Salony</span></div>
+        <div class="idea">Rolki przed/po u klientek <span class="tag">Marka Osobista</span></div>
+        <div class="idea">Program poleceń — bonus 50zł <span class="tag">Salony</span></div>
+      </div>
+      <div class="card">
+        <h4>Problemy (2)</h4>
+        <div class="idea">Rotacja fryzjerek w Legnickiej <span class="tag">Legnicka</span></div>
+        <div class="idea">Mało rezerwacji w pn/wt <span class="tag">Łódzka</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ DESIGN 2 ============ -->
+<div class="frame" id="f2">
+  <h2 class="title">Design 2 — Notion-style (ciepły papier, oddech, minimalizm)</h2>
+  <p class="sub">Inspiracja: Notion, Craft. Kremowe tło, lekkie linie, typografia na pierwszym planie. Mniej elementów UI, więcej treści. Nawigacja po lewej cicha, nie rzuca się.</p>
+
+  <div class="d2">
+    <aside>
+      <div class="user"><div class="av">MK</div> Maciek K.</div>
+      <input class="search" placeholder="Szukaj po wszystkim…">
+      <div class="sect">Pulpit</div>
+      <div class="row"><span class="arrow">›</span><span class="ico" style="background:#e5e5e0"></span> Wszystko <span class="cnt">47</span></div>
+      <div class="row"><span class="arrow">›</span><span class="ico" style="background:#fee2e2"></span> Dziś <span class="cnt">8</span></div>
+      <div class="sect">Konteksty</div>
+      <div class="row active"><span class="arrow">▾</span><span class="ico" style="background:#8b5cf6"></span> Salony <span class="cnt">18</span></div>
+      <div class="nest">
+        <div class="row"><span class="arrow">▾</span><span class="ico" style="background:#a78bfa"></span> WFM <span class="cnt">11</span></div>
+        <div class="nest">
+          <div class="row"><span class="arrow"> </span><span class="ico" style="background:#c4b5fd"></span> Legnicka</div>
+          <div class="row"><span class="arrow"> </span><span class="ico" style="background:#c4b5fd"></span> Łódzka</div>
+          <div class="row"><span class="arrow"> </span><span class="ico" style="background:#c4b5fd"></span> Zakładowa</div>
+        </div>
+        <div class="row"><span class="arrow">›</span><span class="ico" style="background:#a78bfa"></span> Luxfera</div>
+        <div class="row"><span class="arrow">›</span><span class="ico" style="background:#a78bfa"></span> Głogów</div>
+      </div>
+      <div class="row"><span class="arrow">›</span><span class="ico" style="background:#ef4444"></span> Not Bad Stuff <span class="cnt">12</span></div>
+      <div class="row"><span class="arrow">›</span><span class="ico" style="background:#f59e0b"></span> Szkolenia <span class="cnt">6</span></div>
+      <div class="row"><span class="arrow">›</span><span class="ico" style="background:#fb7185"></span> Marka Osobista <span class="cnt">9</span></div>
+      <div class="row"><span class="arrow">›</span><span class="ico" style="background:#94a3b8"></span> Prywatne <span class="cnt">2</span></div>
+    </aside>
+
+    <main>
+      <div class="crumb">Konteksty › <span style="color:#6d28d9">● Salony</span></div>
+      <h1>Salony</h1>
+      <div class="meta">18 tasków aktywnych · 4 projekty · 3 pomysły · 2 problemy <span class="dot"></span> Współpracownicy: MK · AW</div>
+
+      <div class="grid">
+        <div class="col">
+          <h3>Aktywne projekty <span class="add">+</span></h3>
+
+          <div class="proj">
+            <div class="top"><b>Remont Legnicka — wrzesień</b><span class="ctx">Legnicka</span></div>
+            <div class="bar"><i style="width:62%"></i></div>
+            <div class="foot"><span>8/13 tasków zrobione</span><span>deadline 12 kwietnia</span></div>
+          </div>
+          <div class="proj">
+            <div class="top"><b>Kampania otwarcia Luxfera</b><span class="ctx">Luxfera</span></div>
+            <div class="bar"><i style="width:40%"></i></div>
+            <div class="foot"><span>6/15 tasków</span><span>deadline 18 kwietnia</span></div>
+          </div>
+          <div class="proj">
+            <div class="top"><b>Rekrutacja fryzjerów Głogów</b><span class="ctx">Głogów</span></div>
+            <div class="bar"><i style="width:25%"></i></div>
+            <div class="foot"><span>2/8 tasków</span><span>deadline 25 kwietnia</span></div>
+          </div>
+
+          <h3 style="margin-top:18px">Luźne taski w kontekście <span class="add">+</span></h3>
+          <div class="task"><span class="ck"></span><span class="n">Zamówić nowy fotel do Legnicka</span><span class="ctx">Legnicka · dziś</span></div>
+          <div class="task"><span class="ck"></span><span class="n">Odpisać Mariuszowi z BHP</span><span class="ctx" style="color:#b91c1c">Zakładowa · zaległe</span></div>
+          <div class="task"><span class="ck"></span><span class="n">Zapłacić fakturę za klimę</span><span class="ctx">Łódzka · jutro</span></div>
+          <div class="task done"><span class="ck"></span><span class="n">Update grafiku na maj</span><span class="ctx">WFM · wczoraj</span></div>
+          <div class="task"><span class="ck"></span><span class="n">Spotkanie z księgową — kwartał</span><span class="ctx">Salony · 15 kwi</span></div>
+          <div class="task"><span class="ck"></span><span class="n">Fotki przed-po do Insta</span><span class="ctx">Głogów · 19 kwi</span></div>
+        </div>
+
+        <div class="col">
+          <h3>Pomysły <span class="add">+</span></h3>
+          <div class="idea"><span class="bulb">💡</span><div>Voucher startowy dla nowych klientek<span class="ctx">Salony</span></div></div>
+          <div class="idea"><span class="bulb">💡</span><div>Rolki przed/po u klientek<span class="ctx">Marka Osobista</span></div></div>
+          <div class="idea"><span class="bulb">💡</span><div>Program poleceń — bonus 50zł<span class="ctx">Salony</span></div></div>
+
+          <h3 style="margin-top:18px">Problemy <span class="add">+</span></h3>
+          <div class="idea"><span class="bulb" style="background:#fee2e2;color:#b91c1c">!</span><div>Rotacja fryzjerek w Legnickiej<span class="ctx">Legnicka · otwarte 6 dni</span></div></div>
+          <div class="idea"><span class="bulb" style="background:#fee2e2;color:#b91c1c">!</span><div>Mało rezerwacji w pn/wt<span class="ctx">Łódzka · otwarte 2 dni</span></div></div>
+
+          <h3 style="margin-top:18px">Notatki</h3>
+          <div class="task"><span>📝</span><span class="n">Spotkanie z Anią — ustalenia remontu</span><span class="ctx">7 kwi</span></div>
+          <div class="task"><span>📝</span><span class="n">Budżet kampanii Luxfera — wersja 2</span><span class="ctx">5 kwi</span></div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ============ DESIGN 3 ============ -->
+<div class="frame" id="f3">
+  <h2 class="title">Design 3 — Trello/Kanban (kolumny, wszystko widać, wizualne)</h2>
+  <p class="sub">Inspiracja: Trello, Jira. Kolumny per etap albo per sekcja. Świetne jak lubisz widzieć status projektów jednym rzutem oka. Dużo koloru, szybko się orientujesz.</p>
+
+  <div class="d3">
+    <div class="top">
+      <span class="logo">WYCZESANY HQ</span>
+      <nav>
+        <a>Pulpit</a><a class="active">Salony</a><a>Not Bad Stuff</a><a>Szkolenia</a><a>Marka</a><a>Prywatne</a>
+      </nav>
+      <input class="search" placeholder="Szukaj…">
+    </div>
+    <div>
+      <div class="sub">
+        <span style="width:10px;height:10px;background:#8b5cf6;border-radius:50%;display:inline-block"></span>
+        <b>Salony</b> · 18 tasków · 4 projekty · 3 pomysły · 2 problemy
+        <span class="chips"><span>WFM</span><span>Legnicka</span><span>Łódzka</span><span>Zakładowa</span><span>Luxfera</span><span>Głogów</span></span>
+      </div>
+      <div class="board">
+
+        <div class="lane">
+          <h4><span class="dot" style="background:#64748b"></span> Do zrobienia <span class="n">7</span></h4>
+          <div class="scroll">
+            <div class="card"><span class="label purple"></span><span class="label red"></span><div class="title">Zamówić nowy fotel do Legnicka</div><div class="meta"><span class="due late">dziś</span><span class="av">MK</span></div></div>
+            <div class="card"><span class="label purple"></span><div class="title">Odpisać Mariuszowi z BHP</div><div class="meta"><span class="due late">zaległe</span><span class="av">MK</span></div></div>
+            <div class="card"><span class="label purple"></span><div class="title">Skontaktować się z dostawcą kosmetyków</span></div><div class="meta"><span class="due">14 kwi</span><span class="av">MK</span></div></div>
+            <div class="card"><span class="label purple"></span><div class="title">Spotkanie z księgową — Q1</div><div class="meta"><span class="due">15 kwi</span><span class="av">MK</span></div></div>
+            <div class="card"><span class="label purple"></span><div class="title">Fotki przed-po do Insta</div><div class="meta"><span class="due">19 kwi</span><span class="av">AW</span></div></div>
+          </div>
+          <div class="add">+ Dodaj task</div>
+        </div>
+
+        <div class="lane">
+          <h4><span class="dot" style="background:#f59e0b"></span> W toku <span class="n">4</span></h4>
+          <div class="scroll">
+            <div class="card"><span class="label purple"></span><div class="title">Remont Legnicka — wrzesień</div><div class="meta"><span>62% · 8/13</span><span class="av">MK</span></div></div>
+            <div class="card"><span class="label purple"></span><div class="title">Kampania otwarcia Luxfera</div><div class="meta"><span>40% · 6/15</span><span class="av">AW</span></div></div>
+            <div class="card"><span class="label purple"></span><div class="title">Rekrutacja fryzjerów Głogów</div><div class="meta"><span>25% · 2/8</span><span class="av">MK</span></div></div>
+            <div class="card"><span class="label purple"></span><div class="title">Negocjacje czynsz Łódzka</div><div class="meta"><span>10%</span><span class="av">MK</span></div></div>
+            <div class="card"><span class="label purple"></span><div class="title">Zapłacić fakturę za klimę</div><div class="meta"><span class="due">jutro</span><span class="av">AW</span></div></div>
+          </div>
+          <div class="add">+ Dodaj</div>
+        </div>
+
+        <div class="lane">
+          <h4><span class="dot" style="background:#22c55e"></span> Zrobione <span class="n">5</span></h4>
+          <div class="scroll">
+            <div class="card" style="opacity:.7"><span class="label purple"></span><div class="title" style="text-decoration:line-through">Update grafiku na maj</div><div class="meta"><span>wczoraj</span><span class="av">MK</span></div></div>
+            <div class="card" style="opacity:.7"><span class="label purple"></span><div class="title" style="text-decoration:line-through">Wysłać umowę Głogów</div><div class="meta"><span>2 dni temu</span><span class="av">MK</span></div></div>
+            <div class="card" style="opacity:.7"><span class="label purple"></span><div class="title" style="text-decoration:line-through">Briefing z fotografem</div><div class="meta"><span>3 dni temu</span><span class="av">AW</span></div></div>
+            <div class="card" style="opacity:.7"><span class="label purple"></span><div class="title" style="text-decoration:line-through">Wymiana zamka Legnicka</div><div class="meta"><span>5 dni temu</span><span class="av">MK</span></div></div>
+          </div>
+        </div>
+
+        <div class="lane ideas">
+          <h4><span class="dot" style="background:#fbbf24"></span> Pomysły <span class="n">3</span></h4>
+          <div class="scroll">
+            <div class="card"><div class="title">Voucher startowy dla nowych klientek</div><div class="meta"><span>Salony</span><span>💡</span></div></div>
+            <div class="card"><div class="title">Rolki przed/po u klientek</div><div class="meta"><span>Marka</span><span>💡</span></div></div>
+            <div class="card"><div class="title">Program poleceń — bonus 50zł</div><div class="meta"><span>Salony</span><span>💡</span></div></div>
+          </div>
+          <div class="add">+ Dodaj pomysł</div>
+        </div>
+
+        <div class="lane problems">
+          <h4><span class="dot" style="background:#ef4444"></span> Problemy <span class="n">2</span></h4>
+          <div class="scroll">
+            <div class="card"><div class="title">Rotacja fryzjerek w Legnickiej</div><div class="meta"><span>Legnicka · 6 dni</span><span>!</span></div></div>
+            <div class="card"><div class="title">Mało rezerwacji w pn/wt</div><div class="meta"><span>Łódzka · 2 dni</span><span>!</span></div></div>
+          </div>
+          <div class="add">+ Dodaj problem</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ DESIGN 4 ============ -->
+<div class="frame" id="f4">
+  <h2 class="title">Design 4 — Dysleksja-friendly (Atkinson Hyperlegible, wysoki kontrast)</h2>
+  <p class="sub">Font <b>Atkinson Hyperlegible</b> (zaprojektowany dla osób słabowidzących), ciepłe tło #FBF8F3, mocniejsze bordery 2px, większe odstępy między literami. Rozmiar 14 px ale litery mają wyraźne rożnice (b/d/p/q) — mają ci się nie mylić.</p>
+
+  <div class="d4">
+    <aside>
+      <div class="brand"><span class="sq"></span> Wyczesany HQ</div>
+      <div class="row active"><span class="dot" style="background:#8b5cf6"></span> Salony <span class="cnt">18</span></div>
+      <div class="nest">
+        <div class="row"><span class="dot" style="background:#a78bfa"></span> WFM <span class="cnt">11</span></div>
+        <div class="nest">
+          <div class="row"><span class="dot" style="background:#c4b5fd"></span> Legnicka <span class="cnt">5</span></div>
+          <div class="row"><span class="dot" style="background:#c4b5fd"></span> Łódzka <span class="cnt">4</span></div>
+          <div class="row"><span class="dot" style="background:#c4b5fd"></span> Zakładowa <span class="cnt">2</span></div>
+        </div>
+        <div class="row"><span class="dot" style="background:#a78bfa"></span> Luxfera <span class="cnt">4</span></div>
+        <div class="row"><span class="dot" style="background:#a78bfa"></span> Głogów <span class="cnt">3</span></div>
+      </div>
+      <div class="row"><span class="dot" style="background:#ef4444"></span> Not Bad Stuff <span class="cnt">12</span></div>
+      <div class="row"><span class="dot" style="background:#f59e0b"></span> Szkolenia <span class="cnt">6</span></div>
+      <div class="row"><span class="dot" style="background:#fb7185"></span> Marka Osobista <span class="cnt">9</span></div>
+      <div class="row"><span class="dot" style="background:#94a3b8"></span> Prywatne <span class="cnt">2</span></div>
+    </aside>
+
+    <main>
+      <div class="hdr"><h1>Salony</h1><span class="ctx">● Salony</span><button class="add">+ Nowy task</button></div>
+      <div class="meta">18 aktywnych tasków · 4 projekty · 3 pomysły · 2 problemy · współpraca: MK, AW</div>
+
+      <div class="kpis">
+        <div class="kpi"><div class="lbl">Dziś</div><div class="val">8</div><div class="sub">3 zrobione</div></div>
+        <div class="kpi"><div class="lbl">Zaległe</div><div class="val" style="color:#b91c1c">3</div><div class="sub">sprawdź</div></div>
+        <div class="kpi"><div class="lbl">Ten tydzień</div><div class="val">19</div><div class="sub">7 zrobione</div></div>
+        <div class="kpi"><div class="lbl">Projekty</div><div class="val">4</div><div class="sub">śr. 34%</div></div>
+      </div>
+
+      <div class="grid">
+        <div>
+          <div class="panel">
+            <h3>Projekty <span class="n">4</span></h3>
+            <div class="proj">
+              <div class="top"><b>Remont Legnicka — wrzesień</b><span class="ctx">Legnicka</span></div>
+              <div class="bar"><i style="width:62%"></i></div>
+              <div class="foot"><span>8/13 tasków</span><span>12 kwietnia</span></div>
+            </div>
+            <div class="proj">
+              <div class="top"><b>Kampania otwarcia Luxfera</b><span class="ctx">Luxfera</span></div>
+              <div class="bar"><i style="width:40%"></i></div>
+              <div class="foot"><span>6/15 tasków</span><span>18 kwietnia</span></div>
+            </div>
+            <div class="proj">
+              <div class="top"><b>Rekrutacja fryzjerów Głogów</b><span class="ctx">Głogów</span></div>
+              <div class="bar"><i style="width:25%"></i></div>
+              <div class="foot"><span>2/8 tasków</span><span>25 kwietnia</span></div>
+            </div>
+            <div class="proj">
+              <div class="top"><b>Negocjacje czynsz Łódzka</b><span class="ctx">Łódzka</span></div>
+              <div class="bar"><i style="width:10%"></i></div>
+              <div class="foot"><span>1/10 tasków</span><span>30 kwietnia</span></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Luźne taski <span class="n">11</span></h3>
+            <div class="task"><span class="ck"></span><span class="n">Zamówić nowy fotel do Legnicka</span><span class="due late">dziś</span><span class="ctx salony">Legnicka</span></div>
+            <div class="task"><span class="ck"></span><span class="n">Odpisać Mariuszowi z BHP</span><span class="due late">zaległe</span><span class="ctx salony">Zakładowa</span></div>
+            <div class="task"><span class="ck"></span><span class="n">Zapłacić fakturę za klimę</span><span class="due">jutro</span><span class="ctx salony">Łódzka</span></div>
+            <div class="task done"><span class="ck"></span><span class="n">Update grafiku na maj</span><span class="due">wczoraj</span><span class="ctx salony">WFM</span></div>
+            <div class="task"><span class="ck"></span><span class="n">Skontaktować się z dostawcą kosmetyków</span><span class="due">14 kwi</span><span class="ctx salony">Luxfera</span></div>
+            <div class="task"><span class="ck"></span><span class="n">Spotkanie z księgową — kwartał</span><span class="due">15 kwi</span><span class="ctx salony">Salony</span></div>
+            <div class="task"><span class="ck"></span><span class="n">Fotki przed-po do Insta</span><span class="due">19 kwi</span><span class="ctx salony">Głogów</span></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="panel">
+            <h3>Pomysły <span class="n">3</span></h3>
+            <div class="idea"><span class="icn i">💡</span><div>Voucher startowy dla nowych klientek<span class="ctx">Salony</span></div></div>
+            <div class="idea"><span class="icn i">💡</span><div>Rolki przed/po u klientek<span class="ctx">Marka Osobista</span></div></div>
+            <div class="idea"><span class="icn i">💡</span><div>Program poleceń — bonus 50zł<span class="ctx">Salony</span></div></div>
+          </div>
+
+          <div class="panel">
+            <h3>Problemy <span class="n">2</span></h3>
+            <div class="idea"><span class="icn p">!</span><div>Rotacja fryzjerek w Legnickiej<span class="ctx">Legnicka · 6 dni</span></div></div>
+            <div class="idea"><span class="icn p">!</span><div>Mało rezerwacji w pn/wt<span class="ctx">Łódzka · 2 dni</span></div></div>
+          </div>
+
+          <div class="panel">
+            <h3>Notatki</h3>
+            <div class="idea"><span class="icn" style="background:#e0e7ff;color:#3730a3">📝</span><div>Spotkanie z Anią — ustalenia remontu<span class="ctx">7 kwi</span></div></div>
+            <div class="idea"><span class="icn" style="background:#e0e7ff;color:#3730a3">📝</span><div>Budżet Luxfera v2<span class="ctx">5 kwi</span></div></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+  const buttons = document.querySelectorAll('.picker button');
+  const frames = document.querySelectorAll('.frame');
+  buttons.forEach(b => b.addEventListener('click', () => {
+    buttons.forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    frames.forEach(f => f.classList.remove('active'));
+    document.getElementById('f' + b.dataset.t).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }));
+</script>
+</body>
+</html>
