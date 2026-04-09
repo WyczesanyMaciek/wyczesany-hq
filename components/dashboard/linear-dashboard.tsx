@@ -19,6 +19,7 @@ import {
   addTaskAttachment,
   removeTaskAttachment,
 } from "@/app/(app)/c/[id]/actions";
+import { LinearNewProjectButton } from "./linear-new-project";
 
 // YYYY-MM-DD z Date, pod <input type="date">.
 function toDateInput(d: Date | null): string {
@@ -964,7 +965,12 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
           </span>
           <div className="spacer">
             <button className="lbtn ghost">Filtry</button>
-            <button className="lbtn ghost">+ Nowy projekt</button>
+            {data.current ? (
+              <LinearNewProjectButton
+                contextId={data.current.id}
+                variant="ghost"
+              />
+            ) : null}
             <button className="lbtn">+ Nowy task</button>
           </div>
         </div>
@@ -973,7 +979,12 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
         <div className="lsec">
           <h3>Projekty</h3>
           <span className="n">{data.projects.length}</span>
-          <button className="add">+ dodaj projekt</button>
+          {data.current ? (
+            <LinearNewProjectButton
+              contextId={data.current.id}
+              variant="addline"
+            />
+          ) : null}
         </div>
         {data.projects.length === 0 ? (
           <div style={{ margin: "6px 12px", color: "#94a3b8", fontSize: 12.5 }}>
