@@ -5,18 +5,56 @@
 @custom-variant dark (&:is(.dark *));
 
 /* Wyczesany HQ — bazowa paleta i typografia.
-   Jasny motyw, ciepłe kremowe tlo. NIGDY dark mode. */
+   Jasny motyw, ciepłe kremowe tlo. NIGDY dark mode.
+   Kierunek: Neo-brutalist warm — grube bordery, twarde cienie offset,
+   duze editorial naglowki, pastelowe tla per kontekst. */
 :root {
+  /* Kremowe tlo + ciemny tekst */
+  --background: #FBF8F3;
+  --background-soft: #F5EFE3;
+  --foreground: #1F1F2E;
+  --foreground-muted: #4A4A5E;
+
+  /* Ink — kolor borderow i twardych cieni */
+  --ink: #1F1F2E;
   --border-strong: #1F1F2E;
 
-  /* Kolory startowych kontekstow */
-  --ctx-salony: #5B3DF5;
-  --ctx-not-bad-stuff: #DC2626;
-  --ctx-szkolenia: #F97316;
-  --ctx-marka-osobista: #FF6B4A;
-  /* Wyczesany HQ — kremowe tlo, ciemny tekst. NIGDY dark mode. */
-  --background: #FBF8F3;
-  --foreground: #1F1F2E;
+  /* Skala cieni (wszystkie hard offset, zero rozmycia) */
+  --shadow-sm: 2px 2px 0 var(--ink);
+  --shadow-md: 4px 4px 0 var(--ink);
+  --shadow-lg: 6px 6px 0 var(--ink);
+  --shadow-xl: 8px 8px 0 var(--ink);
+
+  /* Paleta 10 kolorow kontekstow — pelny hex */
+  --ctx-fioletowy: #5B3DF5;
+  --ctx-czerwony: #DC2626;
+  --ctx-pomaranczowy: #F97316;
+  --ctx-koralowy: #FF6B4A;
+  --ctx-szary: #64748B;
+  --ctx-zielony: #16A34A;
+  --ctx-turkusowy: #0D9488;
+  --ctx-rozowy: #DB2777;
+  --ctx-niebieski: #2563EB;
+  --ctx-zolty: #CA8A04;
+
+  /* Pastelowe warianty — tla sekcji (miks z kremowym, oko przyjazne) */
+  --ctx-fioletowy-soft: #E8E2FE;
+  --ctx-czerwony-soft: #FCE4E4;
+  --ctx-pomaranczowy-soft: #FEE7D0;
+  --ctx-koralowy-soft: #FFE1D8;
+  --ctx-szary-soft: #E6E9ED;
+  --ctx-zielony-soft: #DDF3E2;
+  --ctx-turkusowy-soft: #D5EEEA;
+  --ctx-rozowy-soft: #FBDDEB;
+  --ctx-niebieski-soft: #DCE7FB;
+  --ctx-zolty-soft: #FBEFCF;
+
+  /* Aliasy kontekstow startowych — zostaja dla kompatybilnosci */
+  --ctx-salony: var(--ctx-fioletowy);
+  --ctx-not-bad-stuff: var(--ctx-czerwony);
+  --ctx-szkolenia: var(--ctx-pomaranczowy);
+  --ctx-marka-osobista: var(--ctx-koralowy);
+
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
@@ -99,16 +137,97 @@ html {
 body {
   line-height: 1.65;
   font-weight: 500;
+  letter-spacing: -0.005em;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-weight: 800;
-  line-height: 1.2;
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
 }
 
-h1 { font-size: 2.25rem; }
-h2 { font-size: 1.75rem; }
-h3 { font-size: 1.375rem; }
+/* Editorial skala — duze, dorosle naglowki, duzo whitespace */
+h1 { font-size: 2.75rem; }   /* ~47px */
+h2 { font-size: 2rem; }      /* ~34px */
+h3 { font-size: 1.5rem; }    /* ~25px */
+h4 { font-size: 1.15rem; letter-spacing: 0.04em; text-transform: uppercase; font-weight: 800; }
+
+/* Display — jeszcze wiekszy, na hero'y dashboardow */
+.display-1 {
+  font-size: 3.5rem;
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.035em;
+}
+
+/* Eyebrow — mala etykieta nad naglowkiem */
+.eyebrow {
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--foreground-muted);
+}
+
+/* Brutal card — bazowy styl karty */
+.brutal-card {
+  background: #FFFFFF;
+  border: 3px solid var(--ink);
+  border-radius: 14px;
+  box-shadow: var(--shadow-md);
+  transition: transform 180ms cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 180ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.brutal-card-hoverable:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.brutal-card-hoverable:active {
+  transform: translate(1px, 1px);
+  box-shadow: var(--shadow-sm);
+  transition-duration: 80ms;
+}
+
+/* Brutal button */
+.brutal-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.25rem;
+  background: #FFFFFF;
+  border: 3px solid var(--ink);
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--ink);
+  cursor: pointer;
+  transition: transform 160ms cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 160ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.brutal-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-lg);
+}
+.brutal-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: var(--shadow-sm);
+}
+.brutal-btn-primary {
+  background: var(--ink);
+  color: #FBF8F3;
+}
+
+/* Stagger — dla list wjezdzajacych kaskadowo */
+@keyframes brutal-rise {
+  0%   { opacity: 0; transform: translateY(14px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.rise-in {
+  animation: brutal-rise 520ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
 
 /* NIGDY dark mode — blok .dark celowo usuniety. */
 
