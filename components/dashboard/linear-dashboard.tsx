@@ -8,7 +8,20 @@
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import type { DashboardData, DashboardTask } from "@/lib/queries/dashboard";
-import { toggleTask, deleteTask } from "@/app/(app)/c/[id]/actions";
+import {
+  toggleTask,
+  deleteTask,
+  updateTaskDetails,
+} from "@/app/(app)/c/[id]/actions";
+
+// YYYY-MM-DD z Date, pod <input type="date">.
+function toDateInput(d: Date | null): string {
+  if (!d) return "";
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
 
 // ============================================================
 // Helpery formatujace
@@ -193,6 +206,11 @@ function TaskDetailPanel({
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
+  const [editing, setEditing] = useState<
+    null | "title" | "deadline" | "priority" | "assignee"
+  >(null);
+  // Reset edit state przy zmianie taska jest zalatwiony przez `key`
+  // na TaskDetailPanel w rodzicu (React re-mountuje komponente).
 
   if (!task) {
     return (
@@ -222,6 +240,18 @@ function TaskDetailPanel({
     });
   };
 
+  // Uniwersalny save: wywoluje updateTaskDetails i odswieza dane.
+  const saveField = (
+    patch: Parameters<typeof updateTaskDetails>[1]
+  ) => {
+    const id = task.id;
+    startTransition(async () => {
+      await updateTaskDetails(id, patch);
+      setEditing(null);
+      router.refresh();
+    });
+  };
+
   return (
     <div className="lright">
       <div className="head">
@@ -232,7 +262,44 @@ function TaskDetailPanel({
             {task.context.name}
           </span>
         </div>
-        <h4>{task.title}</h4>
+        {editing === "title" ? (
+          <input
+            autoFocus
+            defaultValue={task.title}
+            disabled={pending}
+            onBlur={(e) => {
+              const v = e.currentTarget.value.trim();
+              if (v && v !== task.title) saveField({ title: v });
+              else setEditing(null);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.currentTarget.blur();
+              } else if (e.key === "Escape") {
+                setEditing(null);
+              }
+            }}
+            className="edit-title"
+            style={{
+              width: "100%",
+              font: "inherit",
+              fontSize: 15,
+              fontWeight: 600,
+              padding: "4px 6px",
+              border: "1px solid var(--l-accent)",
+              borderRadius: 4,
+              background: "#fff",
+            }}
+          />
+        ) : (
+          <h4
+            onClick={() => setEditing("title")}
+            style={{ cursor: "text" }}
+            title="Kliknij zeby edytowac"
+          >
+            {task.title}
+          </h4>
+        )}
         <div className="dactions">
           <button
             className="primary"
@@ -277,33 +344,132 @@ function TaskDetailPanel({
         </div>
         <div className="mrow">
           <label>Przypisane</label>
-          <span className="v">
-            {task.assigneeId ? (
-              <>
-                <span className="av">{task.assigneeId}</span>
-                {task.assigneeId}
-              </>
-            ) : (
-              "—"
-            )}
-          </span>
+          {editing === "assignee" ? (
+            <input
+              autoFocus
+              defaultValue={task.assigneeId ?? ""}
+              disabled={pending}
+              placeholder="imie lub inicjaly"
+              onBlur={(e) => {
+                const v = e.currentTarget.value.trim();
+                const next = v || null;
+                if (next !== (task.assigneeId ?? null)) {
+                  saveField({ assigneeId: next });
+                } else {
+                  setEditing(null);
+                }
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") e.currentTarget.blur();
+                else if (e.key === "Escape") setEditing(null);
+              }}
+              style={{
+                font: "inherit",
+                padding: "2px 6px",
+                border: "1px solid var(--l-accent)",
+                borderRadius: 4,
+                background: "#fff",
+                maxWidth: 160,
+              }}
+            />
+          ) : (
+            <span
+              className="v"
+              onClick={() => setEditing("assignee")}
+              style={{ cursor: "text" }}
+              title="Kliknij zeby edytowac"
+            >
+              {task.assigneeId ? (
+                <>
+                  <span className="av">{task.assigneeId}</span>
+                  {task.assigneeId}
+                </>
+              ) : (
+                "—"
+              )}
+            </span>
+          )}
         </div>
         <div className="mrow">
           <label>Deadline</label>
-          <span
-            className="v"
-            style={
-              due?.late
-                ? { color: "#b91c1c", fontWeight: 600 }
-                : undefined
-            }
-          >
-            {task.deadline ? formatDateLong(task.deadline) : "—"}
-          </span>
+          {editing === "deadline" ? (
+            <input
+              type="date"
+              autoFocus
+              defaultValue={toDateInput(task.deadline)}
+              disabled={pending}
+              onBlur={(e) => {
+                const v = e.currentTarget.value; // "" albo YYYY-MM-DD
+                const current = toDateInput(task.deadline);
+                if (v !== current) {
+                  saveField({ deadline: v ? v : null });
+                } else {
+                  setEditing(null);
+                }
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Escape") setEditing(null);
+              }}
+              style={{
+                font: "inherit",
+                padding: "2px 6px",
+                border: "1px solid var(--l-accent)",
+                borderRadius: 4,
+                background: "#fff",
+              }}
+            />
+          ) : (
+            <span
+              className="v"
+              onClick={() => setEditing("deadline")}
+              style={{
+                cursor: "text",
+                ...(due?.late
+                  ? { color: "#b91c1c", fontWeight: 600 }
+                  : undefined),
+              }}
+              title="Kliknij zeby edytowac"
+            >
+              {task.deadline ? formatDateLong(task.deadline) : "—"}
+            </span>
+          )}
         </div>
         <div className="mrow">
           <label>Priorytet</label>
-          <span className="v">{prioLabel(task.priority)}</span>
+          {editing === "priority" ? (
+            <select
+              autoFocus
+              defaultValue={String(task.priority)}
+              disabled={pending}
+              onBlur={() => setEditing(null)}
+              onChange={(e) => {
+                const v = Number(e.currentTarget.value);
+                if (v !== task.priority) saveField({ priority: v });
+                else setEditing(null);
+              }}
+              style={{
+                font: "inherit",
+                padding: "2px 6px",
+                border: "1px solid var(--l-accent)",
+                borderRadius: 4,
+                background: "#fff",
+              }}
+            >
+              <option value="0">Brak</option>
+              <option value="1">Niski</option>
+              <option value="2">Sredni</option>
+              <option value="3">Wysoki</option>
+            </select>
+          ) : (
+            <span
+              className="v"
+              onClick={() => setEditing("priority")}
+              style={{ cursor: "pointer" }}
+              title="Kliknij zeby zmienic"
+            >
+              {prioLabel(task.priority)}
+            </span>
+          )}
         </div>
       </div>
 
@@ -495,6 +661,7 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
 
       {/* ============ PRAWY PANEL ============ */}
       <TaskDetailPanel
+        key={selectedTaskId ?? "none"}
         task={selected?.task ?? null}
         projectName={selected?.projectName ?? null}
         onDeleted={() => setSelectedTaskId(null)}
