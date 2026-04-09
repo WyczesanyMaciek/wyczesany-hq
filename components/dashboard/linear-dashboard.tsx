@@ -23,6 +23,7 @@ import { LinearNewProjectButton } from "./linear-new-project";
 import { LinearAddTask } from "./linear-add-task";
 import { TaskCheckbox } from "./task-checkbox";
 import { LinearAddItem } from "./linear-add-item";
+import { ChipActions } from "./chip-actions";
 
 // YYYY-MM-DD z Date, pod <input type="date">.
 function toDateInput(d: Date | null): string {
@@ -1129,6 +1130,7 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
               {i.content}
               <div className="meta">{i.context.name}</div>
             </div>
+            <ChipActions kind="idea" id={i.id} />
           </div>
         ))}
 
@@ -1147,6 +1149,7 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
               {p.content}
               <div className="meta">{p.context.name}</div>
             </div>
+            <ChipActions kind="problem" id={p.id} />
           </div>
         ))}
 
