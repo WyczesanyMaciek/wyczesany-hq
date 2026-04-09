@@ -5,8 +5,25 @@
 // + prawy panel szczegolow klikanego taska (320px).
 // Interakcje CRUD podlaczone do server actions z /c/[id]/actions.ts.
 
-import { useMemo, useState, useTransition } from "react";
+import { useMemo, useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import {
+  DndContext,
+  type DragEndEvent,
+  PointerSensor,
+  KeyboardSensor,
+  useSensor,
+  useSensors,
+  closestCorners,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+  arrayMove,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { GripVertical } from "lucide-react";
 import type { DashboardData, DashboardTask } from "@/lib/queries/dashboard";
 import {
   toggleTask,
@@ -14,6 +31,8 @@ import {
   updateTaskDetails,
   moveTaskToProject,
   releaseTaskFromProject,
+  reorderTasks,
+  reorderProjects,
   addTaskLink,
   removeTaskLink,
   addTaskAttachment,
@@ -118,6 +137,21 @@ function TaskRow({
   const [editingName, setEditingName] = useState(false);
   const due = formatDue(task.deadline);
 
+  // DnD — sortowalny w ramach kontenera (projekt albo luzne)
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: `task:${task.id}` });
+  const dndStyle: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.4 : 1,
+  };
+
   const handleToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
     const id = task.id;
@@ -140,12 +174,23 @@ function TaskRow({
 
   return (
     <div
+      ref={setNodeRef}
+      style={dndStyle}
+      {...attributes}
       className={`ltask ${task.done ? "done" : ""} ${selected ? "selected" : ""}`}
       onClick={() => {
         if (!editingName) onSelect(task.id);
       }}
     >
-      <span className="grip">⋮⋮</span>
+      <span
+        className="grip"
+        {...listeners}
+        onClick={(e) => e.stopPropagation()}
+        style={{ cursor: "grab", display: "flex", alignItems: "center" }}
+        aria-label="Przeciagnij"
+      >
+        <GripVertical size={12} />
+      </span>
       <TaskCheckbox
         compact
         done={task.done}
@@ -218,17 +263,46 @@ function ProjectCard({
       : 0;
   const due = formatDue(project.deadline);
 
+  // DnD — projekt sortowalny w ramach kontekstu
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: `project:${project.id}` });
+  const dndStyle: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.4 : 1,
+  };
+
+  // Id taskow projektu jako `task:xxx` — dla wewnetrznego SortableContext
+  const taskItemIds = useMemo(
+    () => project.tasks.map((t) => `task:${t.id}`),
+    [project.tasks]
+  );
+
   return (
-    <div className="lprj">
+    <div ref={setNodeRef} style={dndStyle} {...attributes} className="lprj">
       <div
         className="head"
         onClick={(e) => {
           // Klik w grip nie zwija
-          if ((e.target as HTMLElement).classList.contains("grip")) return;
+          if ((e.target as HTMLElement).closest(".grip")) return;
           onToggle();
         }}
       >
-        <span className="grip">⋮⋮</span>
+        <span
+          className="grip"
+          {...listeners}
+          onClick={(e) => e.stopPropagation()}
+          style={{ cursor: "grab", display: "flex", alignItems: "center" }}
+          aria-label="Przeciagnij projekt"
+        >
+          <GripVertical size={12} />
+        </span>
         <div>
           <b>{project.name}</b>{" "}
           <span
@@ -249,20 +323,25 @@ function ProjectCard({
       </div>
       {!collapsed ? (
         <div className="body">
-          {project.tasks.length === 0 ? (
-            <div className="add-row" style={{ color: "var(--l-muted)" }}>
-              Brak zadan
-            </div>
-          ) : (
-            project.tasks.map((t) => (
-              <TaskRow
-                key={t.id}
-                task={t}
-                selected={selectedTaskId === t.id}
-                onSelect={onSelectTask}
-              />
-            ))
-          )}
+          <SortableContext
+            items={taskItemIds}
+            strategy={verticalListSortingStrategy}
+          >
+            {project.tasks.length === 0 ? (
+              <div className="add-row" style={{ color: "var(--l-muted)" }}>
+                Brak zadan
+              </div>
+            ) : (
+              project.tasks.map((t) => (
+                <TaskRow
+                  key={t.id}
+                  task={t}
+                  selected={selectedTaskId === t.id}
+                  onSelect={onSelectTask}
+                />
+              ))
+            )}
+          </SortableContext>
           <LinearAddTask projectId={project.id} />
         </div>
       ) : null}
@@ -984,8 +1063,18 @@ function TaskDetailPanel({
 // ============================================================
 
 export function LinearDashboard({ data }: { data: DashboardData }) {
+  const router = useRouter();
+  const [, startTransition] = useTransition();
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+
+  // Optimistic state dla DnD — synchronizowany z `data` na zmiany servera
+  const [projects, setProjects] = useState(data.projects);
+  const [looseTasks, setLooseTasks] = useState(data.looseTasks);
+  useEffect(() => {
+    setProjects(data.projects);
+    setLooseTasks(data.looseTasks);
+  }, [data]);
 
   const toggleCollapse = (id: string) => {
     setCollapsed((prev) => {
@@ -999,22 +1088,134 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
   // Mapa wszystkich taskow: id -> { task, projectName }
   const taskMap = useMemo(() => {
     const map = new Map<string, { task: DashboardTask; projectName: string | null }>();
-    for (const p of data.projects) {
+    for (const p of projects) {
       for (const t of p.tasks) {
         map.set(t.id, { task: t, projectName: p.name });
       }
     }
-    for (const t of data.looseTasks) map.set(t.id, { task: t, projectName: null });
+    for (const t of looseTasks) map.set(t.id, { task: t, projectName: null });
     for (const t of data.doneTasks) map.set(t.id, { task: t, projectName: null });
     return map;
-  }, [data]);
+  }, [projects, looseTasks, data.doneTasks]);
 
   const selected = selectedTaskId ? taskMap.get(selectedTaskId) ?? null : null;
 
   const title = data.current?.name ?? "Wszystko";
   const color = data.current?.color ?? "#64748b";
 
+  // ===== DnD =====
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor)
+  );
+
+  // Znajdz kontener dla taska: "loose" albo "project:xxx"
+  const findContainerForTask = (taskIdRaw: string): string | null => {
+    for (const p of projects) {
+      if (p.tasks.some((t) => t.id === taskIdRaw)) return `project:${p.id}`;
+    }
+    if (looseTasks.some((t) => t.id === taskIdRaw)) return "loose";
+    return null;
+  };
+
+  const projectSortItems = useMemo(
+    () => projects.map((p) => `project:${p.id}`),
+    [projects]
+  );
+  const looseSortItems = useMemo(
+    () => looseTasks.map((t) => `task:${t.id}`),
+    [looseTasks]
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const activeStr = String(active.id);
+    const overStr = String(over.id);
+
+    // --- Projekty ---
+    if (activeStr.startsWith("project:") && overStr.startsWith("project:")) {
+      const fromIdx = projects.findIndex((p) => `project:${p.id}` === activeStr);
+      const toIdx = projects.findIndex((p) => `project:${p.id}` === overStr);
+      if (fromIdx < 0 || toIdx < 0) return;
+      const next = arrayMove(projects, fromIdx, toIdx);
+      setProjects(next);
+      startTransition(async () => {
+        await reorderProjects(next.map((p) => p.id));
+        router.refresh();
+      });
+      return;
+    }
+
+    // --- Taski ---
+    if (activeStr.startsWith("task:")) {
+      const taskId = activeStr.replace("task:", "");
+      const fromContainer = findContainerForTask(taskId);
+      if (!fromContainer) return;
+
+      let toContainer: string | null = null;
+      if (overStr.startsWith("task:")) {
+        const overTaskId = overStr.replace("task:", "");
+        toContainer = findContainerForTask(overTaskId);
+      } else if (overStr.startsWith("project:")) {
+        toContainer = overStr; // drop na projekt header = dodaj do tego projektu
+      }
+      if (!toContainer) return;
+
+      if (fromContainer === toContainer) {
+        // Reorder w ramach kontenera
+        if (toContainer === "loose") {
+          const fromIdx = looseTasks.findIndex((t) => t.id === taskId);
+          const overTaskId = overStr.replace("task:", "");
+          const toIdx = looseTasks.findIndex((t) => t.id === overTaskId);
+          if (fromIdx < 0 || toIdx < 0) return;
+          const next = arrayMove(looseTasks, fromIdx, toIdx);
+          setLooseTasks(next);
+          startTransition(async () => {
+            await reorderTasks(next.map((t) => t.id));
+            router.refresh();
+          });
+        } else {
+          const projectId = toContainer.replace("project:", "");
+          const project = projects.find((p) => p.id === projectId);
+          if (!project) return;
+          const fromIdx = project.tasks.findIndex((t) => t.id === taskId);
+          const overTaskId = overStr.replace("task:", "");
+          const toIdx = project.tasks.findIndex((t) => t.id === overTaskId);
+          if (fromIdx < 0 || toIdx < 0) return;
+          const nextTasks = arrayMove(project.tasks, fromIdx, toIdx);
+          setProjects(
+            projects.map((p) =>
+              p.id === projectId ? { ...p, tasks: nextTasks } : p
+            )
+          );
+          startTransition(async () => {
+            await reorderTasks(nextTasks.map((t) => t.id));
+            router.refresh();
+          });
+        }
+      } else {
+        // Cross-container — przenies task
+        startTransition(async () => {
+          if (toContainer!.startsWith("project:")) {
+            const projectId = toContainer!.replace("project:", "");
+            await moveTaskToProject(taskId, projectId);
+          } else {
+            await releaseTaskFromProject(taskId);
+          }
+          router.refresh();
+        });
+      }
+    }
+  };
+
   return (
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCorners}
+      onDragEnd={handleDragEnd}
+    >
     <div
       style={{
         display: "grid",
@@ -1057,29 +1258,34 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
             />
           ) : null}
         </div>
-        {data.projects.length === 0 ? (
+        {projects.length === 0 ? (
           <div style={{ margin: "6px 12px", color: "#94a3b8", fontSize: 12.5 }}>
             Brak projektów
           </div>
         ) : (
-          data.projects.map((p) => (
-            <ProjectCard
-              key={p.id}
-              project={p}
-              collapsed={collapsed.has(p.id)}
-              onToggle={() => toggleCollapse(p.id)}
-              selectedTaskId={selectedTaskId}
-              onSelectTask={setSelectedTaskId}
-            />
-          ))
+          <SortableContext
+            items={projectSortItems}
+            strategy={verticalListSortingStrategy}
+          >
+            {projects.map((p) => (
+              <ProjectCard
+                key={p.id}
+                project={p}
+                collapsed={collapsed.has(p.id)}
+                onToggle={() => toggleCollapse(p.id)}
+                selectedTaskId={selectedTaskId}
+                onSelectTask={setSelectedTaskId}
+              />
+            ))}
+          </SortableContext>
         )}
 
         {/* ===== LUZNE TASKI ===== */}
         <div className="lsec" style={{ marginTop: 22 }}>
           <h3>Luźne taski</h3>
-          <span className="n">{data.looseTasks.length}</span>
+          <span className="n">{looseTasks.length}</span>
         </div>
-        {data.current || data.looseTasks.length > 0 ? (
+        {data.current || looseTasks.length > 0 ? (
           <div
             style={{
               margin: "0 12px",
@@ -1089,26 +1295,31 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
               padding: "4px 6px",
             }}
           >
-            {data.looseTasks.length === 0 ? (
-              <div
-                style={{
-                  padding: "6px 10px",
-                  color: "#94a3b8",
-                  fontSize: 12.5,
-                }}
-              >
-                Brak luznych taskow
-              </div>
-            ) : (
-              data.looseTasks.map((t) => (
-                <TaskRow
-                  key={t.id}
-                  task={t}
-                  selected={selectedTaskId === t.id}
-                  onSelect={setSelectedTaskId}
-                />
-              ))
-            )}
+            <SortableContext
+              items={looseSortItems}
+              strategy={verticalListSortingStrategy}
+            >
+              {looseTasks.length === 0 ? (
+                <div
+                  style={{
+                    padding: "6px 10px",
+                    color: "#94a3b8",
+                    fontSize: 12.5,
+                  }}
+                >
+                  Brak luznych taskow
+                </div>
+              ) : (
+                looseTasks.map((t) => (
+                  <TaskRow
+                    key={t.id}
+                    task={t}
+                    selected={selectedTaskId === t.id}
+                    onSelect={setSelectedTaskId}
+                  />
+                ))
+              )}
+            </SortableContext>
             {data.current ? (
               <LinearAddTask contextId={data.current.id} label="+ Dodaj zadanie" />
             ) : null}
@@ -1162,9 +1373,10 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
         key={selectedTaskId ?? "none"}
         task={selected?.task ?? null}
         projectName={selected?.projectName ?? null}
-        projects={data.projects.map((p) => ({ id: p.id, name: p.name }))}
+        projects={projects.map((p) => ({ id: p.id, name: p.name }))}
         onDeleted={() => setSelectedTaskId(null)}
       />
     </div>
+    </DndContext>
   );
 }
