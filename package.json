@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "mkdir -p .next && next dev -p 3002 2>&1 | tee .next/dev-server.log",
+    "prebuild": "git fetch --unshallow 2>/dev/null || true",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
