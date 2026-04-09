@@ -1,9 +1,10 @@
-// /c/[id] — dashboard kontekstu.
+// /c/[id] — dashboard kontekstu (Linear v2).
 // Agreguje wszystko „w gore": wlasne + wszyscy potomkowie.
+// Styl scoped pod .linear-app, zeby nie leciec brutalem.
 
 import { notFound } from "next/navigation";
 import { getContextDashboard } from "@/lib/queries/dashboard";
-import { DashboardView } from "@/components/dashboard/dashboard-view";
+import { LinearDashboard } from "@/components/dashboard/linear-dashboard";
 
 export default async function ContextPage({
   params,
@@ -14,5 +15,9 @@ export default async function ContextPage({
   const data = await getContextDashboard(id);
   if (!data) notFound();
 
-  return <DashboardView data={data} ownContextId={id} />;
+  return (
+    <div className="linear-app" style={{ minHeight: "100vh" }}>
+      <LinearDashboard data={data} />
+    </div>
+  );
 }

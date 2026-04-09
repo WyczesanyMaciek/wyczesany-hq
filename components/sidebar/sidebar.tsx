@@ -1,22 +1,15 @@
 "use client";
 
-// Sidebar — stala szerokosc 300px, sticky.
-// Kierunek: Neo-brutalist warm — grube bordery, wyrazny naglowek brandu,
-// pastelowe tla aktywnych kontekstow, sprezyste rozwijanie galezi.
+// Sidebar — Linear v2 look. Szerokosc 230px, sticky, Inter 12.8px,
+// miekkie szare linie, accent indigo #6366f1. Logika (expanded state,
+// active highlight, rekurencja drzewa) zachowana z wersji brutalnej.
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import {
-  ChevronRight,
-  Settings,
-  Terminal,
-  Sparkles,
-  Palette,
-} from "lucide-react";
+import { ChevronRight, Settings, Terminal, Palette } from "lucide-react";
 import type { ContextNode } from "@/lib/queries/contexts";
-import { softOf } from "@/lib/colors";
 import { springSnappy } from "@/lib/motion";
 
 const STORAGE_KEY = "wyczesany-hq:sidebar:expanded";
@@ -54,27 +47,66 @@ export function Sidebar({ tree }: { tree: ContextNode[] }) {
 
   return (
     <aside
-      className="w-[300px] shrink-0 border-r-[3px] border-[var(--ink)] flex flex-col sticky top-0 h-screen"
-      style={{ background: "#F5EFE3" }}
+      className="lside"
+      style={{
+        width: 230,
+        flexShrink: 0,
+        borderRight: "1px solid #eef0f3",
+        background: "#fafbfc",
+        position: "sticky",
+        top: 0,
+        height: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
+        fontSize: "12.8px",
+        color: "#0f172a",
+      }}
     >
-      {/* Brand header — gruby, kontrastowy */}
+      {/* Brand header */}
       <Link
         href="/"
-        className="block px-6 py-6 border-b-[3px] border-[var(--ink)] hover:bg-white/40 transition-colors"
+        style={{
+          display: "block",
+          padding: "14px 16px",
+          borderBottom: "1px solid #eef0f3",
+          textDecoration: "none",
+          color: "inherit",
+        }}
       >
-        <div className="eyebrow mb-1">Dashboard</div>
         <div
-          className="font-black leading-none"
-          style={{ fontSize: "1.75rem", letterSpacing: "-0.03em" }}
+          style={{
+            fontSize: "10px",
+            textTransform: "uppercase",
+            letterSpacing: "0.08em",
+            color: "#94a3b8",
+            fontWeight: 600,
+            marginBottom: 2,
+          }}
         >
+          Dashboard
+        </div>
+        <div style={{ fontSize: "14px", fontWeight: 700, letterSpacing: "-0.01em" }}>
           Wyczesany HQ
         </div>
       </Link>
 
       {/* Drzewko kontekstow */}
-      <nav className="flex-1 overflow-y-auto py-4">
-        <div className="eyebrow px-6 mb-3">Konteksty</div>
-        <ul className="list-none m-0 p-0">
+      <nav style={{ flex: 1, overflowY: "auto", padding: "10px 0" }}>
+        <div
+          style={{
+            fontSize: "10px",
+            textTransform: "uppercase",
+            letterSpacing: "0.08em",
+            color: "#94a3b8",
+            fontWeight: 600,
+            padding: "0 16px",
+            marginBottom: 6,
+          }}
+        >
+          Konteksty
+        </div>
+        <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
           {tree.map((node) => (
             <ContextTreeNode
               key={node.id}
@@ -89,21 +121,27 @@ export function Sidebar({ tree }: { tree: ContextNode[] }) {
         </ul>
       </nav>
 
-      {/* Footer — linki + build info */}
-      <div className="border-t-[3px] border-[var(--ink)] py-2" style={{ background: "#EFE7D5" }}>
-        <FooterLink href="/settings" icon={<Settings size={17} />}>
+      {/* Footer */}
+      <div style={{ borderTop: "1px solid #eef0f3", padding: "6px 0" }}>
+        <FooterLink href="/settings" icon={<Settings size={14} />}>
           Ustawienia
         </FooterLink>
-        <FooterLink href="/dev/logs" icon={<Terminal size={17} />}>
+        <FooterLink href="/dev/logs" icon={<Terminal size={14} />}>
           Logi
         </FooterLink>
-        <FooterLink href="/dev/design-system" icon={<Palette size={17} />}>
-          Design system
+        <FooterLink href="/dev/design-system" icon={<Palette size={14} />}>
+          Design
         </FooterLink>
-        <div className="px-6 pt-2 pb-1 text-[11px] text-[var(--foreground-muted)] font-mono leading-tight">
+        <div
+          style={{
+            padding: "6px 16px 4px",
+            fontSize: "10px",
+            color: "#94a3b8",
+            fontFamily: "ui-monospace, monospace",
+          }}
+        >
           v{process.env.NEXT_PUBLIC_APP_VERSION} ·{" "}
-          {process.env.NEXT_PUBLIC_GIT_HASH} ·{" "}
-          {process.env.NEXT_PUBLIC_BUILD_TIME}
+          {process.env.NEXT_PUBLIC_GIT_HASH}
         </div>
       </div>
     </aside>
@@ -132,22 +170,45 @@ function ContextTreeNode({
   return (
     <li>
       <div
-        className="group relative flex items-center gap-2 pr-3 py-2 cursor-pointer transition-all"
         style={{
-          paddingLeft: `${16 + depth * 16}px`,
-          background: isActive ? softOf(node.color) : undefined,
-          borderLeft: `4px solid ${isActive ? node.color : "transparent"}`,
-          fontWeight: isActive ? 900 : 700,
+          display: "flex",
+          alignItems: "center",
+          gap: 6,
+          paddingLeft: 8 + depth * 14,
+          paddingRight: 10,
+          paddingTop: 5,
+          paddingBottom: 5,
+          cursor: "pointer",
+          background: isActive ? "#eef2ff" : undefined,
+          color: isActive ? "#4338ca" : "#0f172a",
+          fontWeight: isActive ? 600 : 500,
+          transition: "background 120ms",
+        }}
+        onMouseEnter={(e) => {
+          if (!isActive) e.currentTarget.style.background = "#f3f4f6";
+        }}
+        onMouseLeave={(e) => {
+          if (!isActive) e.currentTarget.style.background = "transparent";
         }}
       >
-        {/* Chevron — sprezyste odbicie przy obrocie */}
         <button
           type="button"
           onClick={(e) => {
             e.preventDefault();
             if (hasChildren) onToggle(node.id);
           }}
-          className="w-5 h-5 flex items-center justify-center shrink-0 rounded hover:bg-black/10"
+          style={{
+            width: 14,
+            height: 14,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+            border: "none",
+            background: "transparent",
+            cursor: hasChildren ? "pointer" : "default",
+            color: "#64748b",
+          }}
           aria-label={hasChildren ? (isOpen ? "Zwin" : "Rozwin") : undefined}
           tabIndex={hasChildren ? 0 : -1}
         >
@@ -155,28 +216,55 @@ function ContextTreeNode({
             <motion.div
               animate={{ rotate: isOpen ? 90 : 0 }}
               transition={springSnappy}
-              style={{ transformOrigin: "center" }}
+              style={{ transformOrigin: "center", display: "flex" }}
             >
-              <ChevronRight size={15} strokeWidth={3} />
+              <ChevronRight size={11} strokeWidth={2.5} />
             </motion.div>
           ) : null}
         </button>
 
-        {/* Link do kontekstu */}
         <Link
           href={`/c/${node.id}`}
-          className="flex items-center gap-2.5 flex-1 min-w-0 text-[15px]"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            flex: 1,
+            minWidth: 0,
+            textDecoration: "none",
+            color: "inherit",
+            fontSize: "12.8px",
+          }}
         >
           <span
-            className="inline-block w-3 h-3 rounded-sm shrink-0 border-[1.5px] border-[var(--ink)]"
-            style={{ background: node.color }}
+            style={{
+              display: "inline-block",
+              width: 8,
+              height: 8,
+              borderRadius: 2,
+              flexShrink: 0,
+              background: node.color,
+            }}
           />
-          <span className="truncate">{node.name}</span>
           <span
-            className="ml-auto text-[11px] opacity-55 font-mono shrink-0"
-            style={{ fontWeight: 700 }}
+            style={{
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
           >
-            {node.projectCount}p · {node.taskCount}t
+            {node.name}
+          </span>
+          <span
+            style={{
+              marginLeft: "auto",
+              fontSize: "10px",
+              color: "#94a3b8",
+              fontFamily: "ui-monospace, monospace",
+              flexShrink: 0,
+            }}
+          >
+            {node.projectCount}·{node.taskCount}
           </span>
         </Link>
       </div>
@@ -188,7 +276,12 @@ function ContextTreeNode({
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ ...springSnappy, stiffness: 500, damping: 40 }}
-            className="list-none m-0 p-0 overflow-hidden"
+            style={{
+              listStyle: "none",
+              margin: 0,
+              padding: 0,
+              overflow: "hidden",
+            }}
           >
             {node.children.map((child) => (
               <ContextTreeNode
@@ -222,14 +315,20 @@ function FooterLink({
   return (
     <Link
       href={href}
-      className="flex items-center gap-2.5 px-6 py-2 text-[14px] font-extrabold hover:bg-black/5 transition-colors"
       style={{
-        background: isActive ? "rgba(31,31,46,0.08)" : undefined,
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+        padding: "6px 16px",
+        fontSize: "12.5px",
+        fontWeight: 500,
+        color: isActive ? "#4338ca" : "#475569",
+        background: isActive ? "#eef2ff" : undefined,
+        textDecoration: "none",
       }}
     >
       {icon}
       {children}
-      {isActive ? <Sparkles size={12} className="ml-auto opacity-60" /> : null}
     </Link>
   );
 }

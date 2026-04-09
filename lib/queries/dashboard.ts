@@ -11,17 +11,17 @@ export type OriginContext = {
   color: string;
 };
 
-export type DashboardProject = {
+export type TaskAttachmentDTO = {
   id: string;
+  kind: string;
+  url: string;
   name: string;
-  description: string | null;
-  status: string;
-  deadline: Date | null;
-  createdAt: Date;
-  context: OriginContext;
-  // Liczniki taskow dla progress baru
-  taskTotal: number;
-  taskDone: number;
+};
+
+export type TaskLinkDTO = {
+  id: string;
+  label: string;
+  url: string;
 };
 
 export type DashboardTask = {
@@ -30,8 +30,28 @@ export type DashboardTask = {
   done: boolean;
   deadline: Date | null;
   priority: number;
+  order: number;
+  assigneeId: string | null;
+  notes: string | null;
+  projectId: string | null;
   createdAt: Date;
   context: OriginContext;
+  attachments: TaskAttachmentDTO[];
+  links: TaskLinkDTO[];
+};
+
+export type DashboardProject = {
+  id: string;
+  name: string;
+  description: string | null;
+  status: string;
+  deadline: Date | null;
+  order: number;
+  createdAt: Date;
+  context: OriginContext;
+  tasks: DashboardTask[]; // pelne taski projektu, posortowane po order
+  taskTotal: number;
+  taskDone: number;
 };
 
 export type DashboardItem = {
@@ -79,7 +99,6 @@ function collectDescendantIds(
   rootId: string,
   all: Map<string, { parentId: string | null }>
 ): Set<string> {
-  // Zbuduj odwrocona mape: parent -> children[]
   const childrenByParent = new Map<string, string[]>();
   for (const [id, node] of all.entries()) {
     const p = node.parentId;
@@ -118,6 +137,52 @@ function buildBreadcrumb(
   return path;
 }
 
+// Prisma include dla taska z pelnymi szczegolami (zalaczniki + linki).
+const taskInclude = {
+  attachments: { orderBy: { createdAt: "asc" as const } },
+  links: { orderBy: { createdAt: "asc" as const } },
+};
+
+// Helper: surowy task z Prismy -> DashboardTask
+type RawTask = {
+  id: string;
+  title: string;
+  done: boolean;
+  deadline: Date | null;
+  priority: number;
+  order: number;
+  assigneeId: string | null;
+  notes: string | null;
+  projectId: string | null;
+  createdAt: Date;
+  contextId: string;
+  attachments: Array<{ id: string; kind: string; url: string; name: string }>;
+  links: Array<{ id: string; label: string; url: string }>;
+};
+
+function mapTask(t: RawTask, toOrigin: (cid: string) => OriginContext): DashboardTask {
+  return {
+    id: t.id,
+    title: t.title,
+    done: t.done,
+    deadline: t.deadline,
+    priority: t.priority,
+    order: t.order,
+    assigneeId: t.assigneeId,
+    notes: t.notes,
+    projectId: t.projectId,
+    createdAt: t.createdAt,
+    context: toOrigin(t.contextId),
+    attachments: t.attachments.map((a) => ({
+      id: a.id,
+      kind: a.kind,
+      url: a.url,
+      name: a.name,
+    })),
+    links: t.links.map((l) => ({ id: l.id, label: l.label, url: l.url })),
+  };
+}
+
 /**
  * Dashboard pojedynczego kontekstu — agregacja „w gore":
  * wlasne elementy + elementy wszystkich potomkow.
@@ -136,12 +201,18 @@ export async function getContextDashboard(
   const [projects, tasks, ideas, problems] = await Promise.all([
     prisma.project.findMany({
       where: contextFilter,
-      orderBy: [{ createdAt: "desc" }],
-      include: { tasks: { select: { done: true } } },
+      orderBy: [{ order: "asc" }, { createdAt: "desc" }],
+      include: {
+        tasks: {
+          orderBy: [{ order: "asc" }, { createdAt: "asc" }],
+          include: taskInclude,
+        },
+      },
     }),
     prisma.task.findMany({
       where: { ...contextFilter, projectId: null },
-      orderBy: [{ done: "asc" }, { createdAt: "desc" }],
+      orderBy: [{ done: "asc" }, { order: "asc" }, { createdAt: "desc" }],
+      include: taskInclude,
     }),
     prisma.idea.findMany({
       where: contextFilter,
@@ -173,33 +244,19 @@ export async function getContextDashboard(
       description: p.description,
       status: p.status,
       deadline: p.deadline,
+      order: p.order,
       createdAt: p.createdAt,
       context: toOrigin(p.contextId),
+      tasks: p.tasks.map((t) => mapTask(t as RawTask, toOrigin)),
       taskTotal: p.tasks.length,
       taskDone: p.tasks.filter((t) => t.done).length,
     })),
     looseTasks: tasks
       .filter((t) => !t.done)
-      .map((t) => ({
-        id: t.id,
-        title: t.title,
-        done: t.done,
-        deadline: t.deadline,
-        priority: t.priority,
-        createdAt: t.createdAt,
-        context: toOrigin(t.contextId),
-      })),
+      .map((t) => mapTask(t as RawTask, toOrigin)),
     doneTasks: tasks
       .filter((t) => t.done)
-      .map((t) => ({
-        id: t.id,
-        title: t.title,
-        done: t.done,
-        deadline: t.deadline,
-        priority: t.priority,
-        createdAt: t.createdAt,
-        context: toOrigin(t.contextId),
-      })),
+      .map((t) => mapTask(t as RawTask, toOrigin)),
     ideas: ideas.map((i) => ({
       id: i.id,
       content: i.content,
@@ -217,19 +274,24 @@ export async function getContextDashboard(
 
 /**
  * Dashboard globalny — wszystkie elementy z calej aplikacji.
- * Kazdy element ma badge z nazwa kontekstu.
  */
 export async function getGlobalDashboard(): Promise<DashboardData> {
   const all = await loadAllContexts();
 
   const [projects, tasks, ideas, problems] = await Promise.all([
     prisma.project.findMany({
-      orderBy: [{ createdAt: "desc" }],
-      include: { tasks: { select: { done: true } } },
+      orderBy: [{ order: "asc" }, { createdAt: "desc" }],
+      include: {
+        tasks: {
+          orderBy: [{ order: "asc" }, { createdAt: "asc" }],
+          include: taskInclude,
+        },
+      },
     }),
     prisma.task.findMany({
       where: { projectId: null },
-      orderBy: [{ done: "asc" }, { createdAt: "desc" }],
+      orderBy: [{ done: "asc" }, { order: "asc" }, { createdAt: "desc" }],
+      include: taskInclude,
     }),
     prisma.idea.findMany({ orderBy: [{ createdAt: "desc" }] }),
     prisma.problem.findMany({ orderBy: [{ createdAt: "desc" }] }),
@@ -250,33 +312,19 @@ export async function getGlobalDashboard(): Promise<DashboardData> {
       description: p.description,
       status: p.status,
       deadline: p.deadline,
+      order: p.order,
       createdAt: p.createdAt,
       context: toOrigin(p.contextId),
+      tasks: p.tasks.map((t) => mapTask(t as RawTask, toOrigin)),
       taskTotal: p.tasks.length,
       taskDone: p.tasks.filter((t) => t.done).length,
     })),
     looseTasks: tasks
       .filter((t) => !t.done)
-      .map((t) => ({
-        id: t.id,
-        title: t.title,
-        done: t.done,
-        deadline: t.deadline,
-        priority: t.priority,
-        createdAt: t.createdAt,
-        context: toOrigin(t.contextId),
-      })),
+      .map((t) => mapTask(t as RawTask, toOrigin)),
     doneTasks: tasks
       .filter((t) => t.done)
-      .map((t) => ({
-        id: t.id,
-        title: t.title,
-        done: t.done,
-        deadline: t.deadline,
-        priority: t.priority,
-        createdAt: t.createdAt,
-        context: toOrigin(t.contextId),
-      })),
+      .map((t) => mapTask(t as RawTask, toOrigin)),
     ideas: ideas.map((i) => ({
       id: i.id,
       content: i.content,

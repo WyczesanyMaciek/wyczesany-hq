@@ -229,6 +229,603 @@ h4 { font-size: 1.15rem; letter-spacing: 0.04em; text-transform: uppercase; font
   animation: brutal-rise 520ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
+/* ========== LINEAR v2 — dashboard kontekstu ==========
+   Scope: wszystko wewnatrz .linear-app dostaje tokenowe zmienne,
+   Inter font, male rozmiary, cienkie bordery. Reszta aplikacji
+   (settings, dev) zostaje w neo-brutalist warm. */
+
+.linear-app {
+  --l-bg: #ffffff;
+  --l-bg-soft: #fafbfc;
+  --l-ink: #0f172a;
+  --l-muted: #64748b;
+  --l-line: #e5e7eb;
+  --l-line2: #eef0f3;
+  --l-accent: #6366f1;
+  --l-accent-soft: #eef2ff;
+  --l-accent-ink: #4338ca;
+  --l-hover: #f3f4f6;
+
+  font-family: var(--font-inter), "Inter", system-ui, sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--l-ink);
+  letter-spacing: 0;
+}
+
+.linear-app *,
+.linear-app *::before,
+.linear-app *::after {
+  box-sizing: border-box;
+}
+
+.linear-app h1,
+.linear-app h2,
+.linear-app h3,
+.linear-app h4,
+.linear-app h5,
+.linear-app h6 {
+  font-family: inherit;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* Sticky top bar */
+.linear-app .lbar {
+  display: flex;
+  align-items: center;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--l-line);
+  gap: 10px;
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 5;
+}
+.linear-app .lbar .crumb {
+  font-size: 12.5px;
+  color: var(--l-muted);
+}
+.linear-app .lbar .crumb b {
+  color: var(--l-ink);
+  font-size: 14px;
+  font-weight: 600;
+}
+.linear-app .lbar .pill-ctx {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 600;
+  margin-left: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.linear-app .lbar .spacer {
+  margin-left: auto;
+  display: flex;
+  gap: 6px;
+}
+.linear-app .lbtn {
+  background: var(--l-accent);
+  color: #fff;
+  border: 0;
+  padding: 6px 11px;
+  border-radius: 6px;
+  font: 600 12px var(--font-inter), "Inter", system-ui, sans-serif;
+  cursor: pointer;
+}
+.linear-app .lbtn:hover {
+  background: #4f46e5;
+}
+.linear-app .lbtn.ghost {
+  background: #fff;
+  color: var(--l-ink);
+  border: 1px solid var(--l-line);
+}
+.linear-app .lbtn.ghost:hover {
+  background: var(--l-hover);
+}
+
+/* Section header */
+.linear-app .lsec {
+  margin: 14px 12px 4px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.linear-app .lsec h3 {
+  margin: 0;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--l-muted);
+  font-weight: 700;
+}
+.linear-app .lsec .n {
+  background: #f3f4f6;
+  padding: 1px 7px;
+  border-radius: 10px;
+  font-size: 10.5px;
+  color: var(--l-ink);
+  font-weight: 600;
+}
+.linear-app .lsec .add {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--l-muted);
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  padding: 2px 6px;
+}
+.linear-app .lsec .add:hover {
+  color: var(--l-accent);
+}
+
+/* Project card */
+.linear-app .lprj {
+  margin: 6px 12px;
+  border: 1px solid var(--l-line);
+  border-radius: 8px;
+  background: #fff;
+}
+.linear-app .lprj .head {
+  display: grid;
+  grid-template-columns: 14px 1fr auto auto;
+  gap: 8px;
+  align-items: center;
+  padding: 9px 10px;
+  cursor: pointer;
+}
+.linear-app .lprj .head .grip {
+  color: #cbd5e1;
+  font-size: 12px;
+  line-height: 1;
+  cursor: grab;
+  user-select: none;
+}
+.linear-app .lprj .head .grip:hover {
+  color: #64748b;
+}
+.linear-app .lprj .head b {
+  font-size: 13.5px;
+  font-weight: 600;
+}
+.linear-app .lprj .head .ctx {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 8px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 6px;
+}
+.linear-app .lprj .head .meta {
+  font-size: 11px;
+  color: var(--l-muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.linear-app .lprj .head .progbar {
+  width: 60px;
+  height: 4px;
+  background: #eef0f3;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.linear-app .lprj .head .progbar > i {
+  display: block;
+  height: 100%;
+  background: var(--l-accent);
+}
+.linear-app .lprj .head .chev {
+  color: var(--l-muted);
+  font-size: 11px;
+  width: 14px;
+  text-align: center;
+}
+.linear-app .lprj .body {
+  border-top: 1px solid var(--l-line2);
+  padding: 4px 6px 6px;
+}
+
+/* Task row */
+.linear-app .ltask {
+  display: grid;
+  grid-template-columns: 14px 14px 1fr 80px 22px 24px;
+  gap: 8px;
+  align-items: center;
+  padding: 5px 8px;
+  border-radius: 5px;
+  font-size: 12.8px;
+  cursor: pointer;
+}
+.linear-app .ltask:hover {
+  background: var(--l-hover);
+}
+.linear-app .ltask.selected {
+  background: var(--l-accent-soft);
+}
+.linear-app .ltask .grip {
+  color: #d1d5db;
+  cursor: grab;
+  font-size: 11px;
+  user-select: none;
+  line-height: 1;
+}
+.linear-app .ltask:hover .grip {
+  color: #94a3b8;
+}
+.linear-app .ltask .ck {
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 3px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  flex-shrink: 0;
+}
+.linear-app .ltask.done .ck {
+  background: #22c55e;
+  border-color: #22c55e;
+}
+.linear-app .ltask.done .name {
+  color: var(--l-muted);
+  text-decoration: line-through;
+}
+.linear-app .ltask .name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.linear-app .ltask .due {
+  font-size: 11.5px;
+  color: var(--l-muted);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.linear-app .ltask .due.late {
+  color: #b91c1c;
+  font-weight: 600;
+}
+.linear-app .ltask .prio {
+  display: flex;
+  gap: 2px;
+  justify-content: center;
+}
+.linear-app .ltask .prio i {
+  width: 3px;
+  height: 11px;
+  background: #e5e7eb;
+  border-radius: 1px;
+}
+.linear-app .ltask .prio.hi i:nth-child(-n + 3) {
+  background: #ef4444;
+}
+.linear-app .ltask .prio.md i:nth-child(-n + 2) {
+  background: #f59e0b;
+}
+.linear-app .ltask .prio.lo i:nth-child(1) {
+  background: #64748b;
+}
+.linear-app .ltask .who {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #ddd6fe;
+  color: #5b21b6;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.linear-app .ltask .who.empty {
+  background: #f1f5f9;
+  color: #cbd5e1;
+}
+
+.linear-app .add-row {
+  font-size: 12px;
+  color: var(--l-muted);
+  padding: 5px 10px 5px 32px;
+  cursor: pointer;
+}
+.linear-app .add-row:hover {
+  color: var(--l-accent);
+}
+
+/* Pomysly / Problemy */
+.linear-app .chip-row {
+  margin: 6px 12px;
+  background: #fff;
+  border: 1px solid var(--l-line);
+  border-radius: 8px;
+  padding: 8px 10px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.linear-app .chip-row:hover {
+  background: var(--l-bg-soft);
+}
+.linear-app .chip-row .icn {
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+.linear-app .chip-row .icn.i {
+  background: #fef3c7;
+  color: #92400e;
+}
+.linear-app .chip-row .icn.p {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+.linear-app .chip-row .txt {
+  font-size: 12.8px;
+  flex: 1;
+}
+.linear-app .chip-row .txt .meta {
+  font-size: 11px;
+  color: var(--l-muted);
+  margin-top: 1px;
+}
+.linear-app .chip-row .actions {
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 120ms;
+}
+.linear-app .chip-row:hover .actions {
+  opacity: 1;
+}
+.linear-app .chip-row .actions button {
+  font-size: 10.5px;
+  padding: 2px 6px;
+  border: 1px solid var(--l-line);
+  background: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--l-ink);
+}
+.linear-app .chip-row .actions button:hover {
+  background: var(--l-hover);
+}
+
+/* Right detail panel */
+.linear-app .lright {
+  background: var(--l-bg-soft);
+  border-left: 1px solid var(--l-line);
+  overflow-y: auto;
+  height: 100%;
+}
+.linear-app .lright .head {
+  padding: 12px 16px 10px;
+  border-bottom: 1px solid var(--l-line);
+  position: sticky;
+  top: 0;
+  background: var(--l-bg-soft);
+  z-index: 2;
+}
+.linear-app .lright .topline {
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--l-muted);
+  font-weight: 700;
+  margin-bottom: 4px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.linear-app .lright .topline .path {
+  color: var(--l-accent-ink);
+}
+.linear-app .lright h4 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.linear-app .lright .dactions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.linear-app .lright .dactions button {
+  font: 600 11px var(--font-inter), "Inter", system-ui, sans-serif;
+  padding: 4px 9px;
+  border-radius: 5px;
+  border: 1px solid var(--l-line);
+  background: #fff;
+  cursor: pointer;
+  color: var(--l-ink);
+}
+.linear-app .lright .dactions button.primary {
+  background: var(--l-accent);
+  color: #fff;
+  border-color: var(--l-accent);
+}
+.linear-app .lright .dactions button:hover {
+  background: var(--l-hover);
+}
+.linear-app .lright .dactions button.primary:hover {
+  background: #4f46e5;
+}
+.linear-app .lright .lmeta {
+  padding: 10px 16px 4px;
+}
+.linear-app .lright .lmeta .mrow {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 8px;
+  padding: 4px 0;
+  font-size: 12.5px;
+  align-items: center;
+}
+.linear-app .lright .lmeta label {
+  color: var(--l-muted);
+  font-size: 11.5px;
+}
+.linear-app .lright .lmeta .av {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ddd6fe;
+  color: #5b21b6;
+  font-size: 10px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+.linear-app .lright .lmeta .pill {
+  font-size: 10.5px;
+  padding: 1px 7px;
+  border-radius: 8px;
+  background: #ede9fe;
+  color: #6d28d9;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.linear-app .lright .sect-h {
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--l-muted);
+  font-weight: 700;
+  padding: 14px 16px 4px;
+}
+.linear-app .lright .notes {
+  margin: 0 16px;
+  background: #fff;
+  border: 1px solid var(--l-line);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 12.5px;
+  color: var(--l-ink);
+  min-height: 60px;
+  line-height: 1.5;
+}
+.linear-app .lright .notes[contenteditable]:focus {
+  outline: 2px solid var(--l-accent);
+  outline-offset: -2px;
+}
+.linear-app .lright .files {
+  margin: 6px 16px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.linear-app .lright .files .tile {
+  aspect-ratio: 1;
+  border: 1px solid var(--l-line);
+  border-radius: 6px;
+  background: #fff;
+  font-size: 10px;
+  color: var(--l-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+  text-align: center;
+  padding: 4px;
+}
+.linear-app .lright .files .tile.img {
+  background: linear-gradient(135deg, #ddd6fe, #c4b5fd);
+  color: #4338ca;
+  font-weight: 700;
+}
+.linear-app .lright .files .tile.vid {
+  background: linear-gradient(135deg, #fee2e2, #fecaca);
+  color: #b91c1c;
+  font-weight: 700;
+}
+.linear-app .lright .files .tile.add {
+  border-style: dashed;
+  cursor: pointer;
+}
+.linear-app .lright .llinks {
+  margin: 6px 16px 16px;
+}
+.linear-app .lright .llinks .ln {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border: 1px solid var(--l-line);
+  border-radius: 5px;
+  background: #fff;
+  font-size: 12px;
+  margin-bottom: 4px;
+  cursor: pointer;
+}
+.linear-app .lright .llinks .ln:hover {
+  background: var(--l-hover);
+}
+.linear-app .lright .llinks .ln .ic {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+}
+.linear-app .lright .llinks .ln .url {
+  color: var(--l-muted);
+  font-size: 11px;
+  margin-left: auto;
+}
+.linear-app .lright .llinks .add {
+  font-size: 11.5px;
+  color: var(--l-muted);
+  padding: 5px 8px;
+  cursor: pointer;
+  border: 1px dashed var(--l-line);
+  border-radius: 5px;
+  text-align: center;
+  background: #fff;
+}
+
+/* Empty state right panel */
+.linear-app .lempty {
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--l-muted);
+  font-size: 12.5px;
+}
+
+/* Sidebar Linear-style (nadpisuje brutal) */
+.linear-app .lside {
+  background: var(--l-bg-soft);
+  border-right: 1px solid var(--l-line);
+  padding: 12px 8px;
+  overflow-y: auto;
+  font-family: inherit;
+  font-size: 12.8px;
+}
+
 /* NIGDY dark mode — blok .dark celowo usuniety. */
 
 @layer base {
