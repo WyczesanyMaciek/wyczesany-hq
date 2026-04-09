@@ -21,6 +21,7 @@ import {
 } from "@/app/(app)/c/[id]/actions";
 import { LinearNewProjectButton } from "./linear-new-project";
 import { LinearAddTask } from "./linear-add-task";
+import { TaskCheckbox } from "./task-checkbox";
 
 // YYYY-MM-DD z Date, pod <input type="date">.
 function toDateInput(d: Date | null): string {
@@ -143,14 +144,11 @@ function TaskRow({
       }}
     >
       <span className="grip">⋮⋮</span>
-      <span
-        className="ck"
-        onClick={handleToggle}
-        role="checkbox"
-        aria-checked={task.done}
-        aria-disabled={pending}
-        title={task.done ? "Odznacz" : "Oznacz jako zrobione"}
-        style={{ cursor: "pointer" }}
+      <TaskCheckbox
+        compact
+        done={task.done}
+        onToggle={handleToggle}
+        disabled={pending}
       />
       {editingName ? (
         <input

@@ -436,7 +436,7 @@ h4 { font-size: 1.15rem; letter-spacing: 0.04em; text-transform: uppercase; font
 /* Task row */
 .linear-app .ltask {
   display: grid;
-  grid-template-columns: 14px 14px 1fr 80px 22px 24px;
+  grid-template-columns: 14px 22px 1fr 80px 22px 24px;
   gap: 8px;
   align-items: center;
   padding: 5px 8px;
@@ -459,22 +459,6 @@ h4 { font-size: 1.15rem; letter-spacing: 0.04em; text-transform: uppercase; font
 }
 .linear-app .ltask:hover .grip {
   color: #94a3b8;
-}
-.linear-app .ltask .ck {
-  width: 14px;
-  height: 14px;
-  border: 1.5px solid #cbd5e1;
-  border-radius: 3px;
-  background: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  flex-shrink: 0;
-}
-.linear-app .ltask.done .ck {
-  background: #22c55e;
-  border-color: #22c55e;
 }
 .linear-app .ltask.done .name {
   color: var(--l-muted);

@@ -7,11 +7,12 @@
 import { useOptimistic, useTransition, useState } from "react";
 import Link from "next/link";
 import { motion } from "motion/react";
-import { CalendarDays, Flame, Check } from "lucide-react";
+import { CalendarDays, Flame } from "lucide-react";
 import { softOf } from "@/lib/colors";
 import { springSnappy } from "@/lib/motion";
 import { toggleTask } from "@/app/(app)/c/[id]/actions";
 import type { DashboardTask } from "@/lib/queries/dashboard";
+import { TaskCheckbox } from "./task-checkbox";
 
 function formatDate(d: Date): string {
   return new Date(d).toLocaleDateString("pl-PL", {
@@ -60,7 +61,8 @@ export function TaskRow({
   const [, startTransition] = useTransition();
   const [error, setError] = useState(false);
 
-  const handleToggle = () => {
+  const handleToggle = (e: React.MouseEvent) => {
+    e.stopPropagation();
     startTransition(async () => {
       setOptimisticDone(!optimisticDone);
       const res = await toggleTask(task.id);
@@ -81,29 +83,7 @@ export function TaskRow({
         background: optimisticDone ? "rgba(0,0,0,0.02)" : undefined,
       }}
     >
-      <motion.button
-        type="button"
-        onClick={handleToggle}
-        whileHover={{ scale: 1.08 }}
-        whileTap={{ scale: 0.92 }}
-        transition={springSnappy}
-        className="w-6 h-6 rounded-md border-[2.5px] border-[var(--ink)] shrink-0 flex items-center justify-center"
-        style={{
-          background: optimisticDone ? "var(--ink)" : "#FFFFFF",
-          boxShadow: optimisticDone ? "none" : "2px 2px 0 var(--ink)",
-        }}
-        aria-label={optimisticDone ? "Cofnij zakonczenie" : "Oznacz jako zrobione"}
-      >
-        {optimisticDone && (
-          <motion.div
-            initial={{ scale: 0, rotate: -90 }}
-            animate={{ scale: 1, rotate: 0 }}
-            transition={springSnappy}
-          >
-            <Check className="w-4 h-4 text-[#FBF8F3]" strokeWidth={4} />
-          </motion.div>
-        )}
-      </motion.button>
+      <TaskCheckbox done={optimisticDone} onToggle={handleToggle} />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <span
@@ -140,7 +120,8 @@ export function HistoryTaskRow({
 }) {
   const [, startTransition] = useTransition();
 
-  const handleUndo = () => {
+  const handleUndo = (e: React.MouseEvent) => {
+    e.stopPropagation();
     startTransition(async () => {
       await toggleTask(task.id);
     });
@@ -148,18 +129,7 @@ export function HistoryTaskRow({
 
   return (
     <div className="px-6 py-3 flex items-center gap-3 opacity-60 border-b border-[var(--ink)]/10 last:border-b-0 hover:opacity-90 transition-opacity">
-      <motion.button
-        type="button"
-        onClick={handleUndo}
-        whileHover={{ scale: 1.08 }}
-        whileTap={{ scale: 0.92 }}
-        transition={springSnappy}
-        className="w-6 h-6 rounded-md border-[2.5px] border-[var(--ink)] bg-[var(--ink)] shrink-0 flex items-center justify-center"
-        aria-label="Cofnij zakonczenie"
-        title="Przywroc"
-      >
-        <Check className="w-4 h-4 text-[#FBF8F3]" strokeWidth={4} />
-      </motion.button>
+      <TaskCheckbox done={true} onToggle={handleUndo} />
       <span className="line-through font-bold flex-1 min-w-0 truncate">
         {task.title}
       </span>
