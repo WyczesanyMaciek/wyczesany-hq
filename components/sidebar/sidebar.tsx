@@ -8,7 +8,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ChevronRight, Settings, Terminal, Palette } from "lucide-react";
+import { ChevronRight, Settings, Terminal } from "lucide-react";
 import type { ContextNode } from "@/lib/queries/contexts";
 import { springSnappy } from "@/lib/motion";
 
@@ -133,19 +133,21 @@ export function Sidebar({ tree }: { tree: ContextNode[] }) {
         <FooterLink href="/dev/logs" icon={<Terminal size={14} />}>
           Logi
         </FooterLink>
-        <FooterLink href="/dev/design-system" icon={<Palette size={14} />}>
-          Design
-        </FooterLink>
         <div
+          title={`commit ${process.env.NEXT_PUBLIC_GIT_HASH}`}
           style={{
             padding: "6px 16px 4px",
-            fontSize: "10px",
+            fontSize: "11px",
             color: "#94a3b8",
             fontFamily: "ui-monospace, monospace",
+            fontVariantNumeric: "tabular-nums",
           }}
         >
-          v{process.env.NEXT_PUBLIC_APP_VERSION} ·{" "}
-          {process.env.NEXT_PUBLIC_GIT_HASH}
+          <b style={{ color: "#64748b" }}>
+            #{process.env.NEXT_PUBLIC_BUILD_NUMBER}
+          </b>{" "}
+          · v{process.env.NEXT_PUBLIC_APP_VERSION} ·{" "}
+          {process.env.NEXT_PUBLIC_BUILD_TIME}
         </div>
       </div>
     </aside>
