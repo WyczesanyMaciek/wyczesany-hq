@@ -118,6 +118,107 @@ async function main() {
     },
   });
 
+  console.log("🌱 Seed: luzne taski, pomysly, problemy...");
+
+  // === Luzne taski w roznych miejscach (do pokazania agregacji „w gore") ===
+  await prisma.task.create({
+    data: {
+      title: "Oddzwonic do firmy od klimatyzacji",
+      priority: 3,
+      deadline: new Date("2026-04-12"),
+      contextId: legnicka.id,
+      order: 0,
+    },
+  });
+  await prisma.task.create({
+    data: {
+      title: "Umowic spotkanie z ksiegowa",
+      priority: 2,
+      contextId: salony.id,
+      order: 1,
+    },
+  });
+  await prisma.task.create({
+    data: {
+      title: "Zamowic nowe wizytowki dla Luxfery",
+      priority: 1,
+      contextId: (await prisma.context.findFirst({ where: { name: "Luxfera" } }))!
+        .id,
+      order: 0,
+    },
+  });
+  await prisma.task.create({
+    data: {
+      title: "Uporzadkowac archiwum zdjec z Instagrama",
+      priority: 0,
+      contextId: marka.id,
+      order: 0,
+    },
+  });
+  // Jeden zakonczony task luzny — do sekcji „Historia"
+  await prisma.task.create({
+    data: {
+      title: "Odebrac paczke z poczty",
+      done: true,
+      priority: 1,
+      contextId: legnicka.id,
+      order: 2,
+    },
+  });
+
+  // === Drugi projekt — w Luxferze — zeby Salony pokazywaly 2 projekty ===
+  await prisma.project.create({
+    data: {
+      name: "Letnia promocja",
+      description: "Plakaty + social media + sms do stalych klientow",
+      status: "todo",
+      deadline: new Date("2026-05-15"),
+      contextId: (await prisma.context.findFirst({ where: { name: "Luxfera" } }))!
+        .id,
+      order: 0,
+    },
+  });
+
+  // === Pomysly (do kontekstow, nie projektow) ===
+  await prisma.idea.create({
+    data: {
+      content: "Moze zrobic konkurs dla klientow — sesja zdjeciowa za najlepsza stylizacje?",
+      contextId: salony.id,
+    },
+  });
+  await prisma.idea.create({
+    data: {
+      content: "Zmienic muzyke w Legnickiej na cos spokojniejszego po godzinie 17",
+      contextId: legnicka.id,
+    },
+  });
+  await prisma.idea.create({
+    data: {
+      content: "Live z backstage'u przed otwarciem nowej kolekcji Not Bad Stuff",
+      contextId: nbs.id,
+    },
+  });
+  await prisma.idea.create({
+    data: {
+      content: "Seria szorts'ow na TikToku — ciekawostki z pracy w salonie",
+      contextId: marka.id,
+    },
+  });
+
+  // === Problemy ===
+  await prisma.problem.create({
+    data: {
+      content: "Klimatyzacja w Legnickiej hałasuje — reklamacje klientow",
+      contextId: legnicka.id,
+    },
+  });
+  await prisma.problem.create({
+    data: {
+      content: "Brak kogos do prowadzenia Instagrama Naffy na stale",
+      contextId: marka.id,
+    },
+  });
+
   console.log("✅ Seed zakonczony.");
 }
 
