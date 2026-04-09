@@ -2,8 +2,9 @@ import type { NextConfig } from "next";
 import { execSync } from "node:child_process";
 
 // Wyczesany HQ — build info.
-// Numer buildu (count commitow), hash, czas startu trafiaja do env,
-// dzieki temu sidebar pokazuje wersje/build.
+// Numer buildu (timestamp ostatniego commita), hash, czas startu trafiaja
+// do env, dzieki temu sidebar pokazuje wersje/build.
+
 function readGitHash(): string {
   try {
     return execSync("git rev-parse --short HEAD", { stdio: ["ignore", "pipe", "ignore"] })
@@ -14,16 +15,28 @@ function readGitHash(): string {
   }
 }
 
-// Numer buildu = liczba commitow w historii HEAD. Rosnie o 1 z kazdym
-// commitem, czytelny (cyfra), latwy do porownania ("jestem na #142, a ta
-// to #131 → starsza"). Hash zostaje jako tooltip dla debugowania.
+// Numer buildu = timestamp ostatniego commita w formacie MMDD-HHMM.
+// Przyklad: "0409-2150" = 9 kwietnia, 21:50.
+//
+// Dlaczego timestamp zamiast rev-list count:
+// Vercel klonuje repo z shallow clone (depth ~10), wiec `git rev-list --count
+// HEAD` zwraca tylko 10 zamiast prawdziwej liczby commitow. Proba
+// `git fetch --unshallow` w prebuild scriptcie nie zadzialala (prawdopodobnie
+// brak auth do remote po inicjalnym clone).
+//
+// Commit timestamp jest dostepny zawsze — `git log -1` patrzy tylko na
+// HEAD, nie wymaga historii. Rosnie monotonicznie w czasie. Czytelny
+// (widac kiedy kod poszedl). Latwe porownanie ("moja to #0409-2200, a ta
+// #0409-1830" -> pierwsza jest nowsza).
 function readBuildNumber(): string {
   try {
-    return execSync("git rev-list --count HEAD", { stdio: ["ignore", "pipe", "ignore"] })
+    return execSync("git log -1 --format=%cd --date=format:%m%d-%H%M", {
+      stdio: ["ignore", "pipe", "ignore"],
+    })
       .toString()
       .trim();
   } catch {
-    return "0";
+    return "nodate";
   }
 }
 
