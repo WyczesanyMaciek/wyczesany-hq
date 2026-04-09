@@ -31,6 +31,10 @@ export default function DevLogsPage() {
   }, []);
 
   useEffect(() => {
+    // fetchLogs setuje state w srodku — to jest zamierzone (inicjalny fetch
+    // + polling co 2s). Eslint reguly set-state-in-effect sa zbyt restrykcyjne
+    // dla legit polling use-case.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchLogs();
     const id = setInterval(fetchLogs, 2000);
     return () => clearInterval(id);

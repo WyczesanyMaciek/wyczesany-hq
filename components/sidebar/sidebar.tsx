@@ -22,8 +22,12 @@ export function Sidebar({ tree }: { tree: ContextNode[] }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // Hydracja expanded state z localStorage — legit effect dla
+    // synchronizacji z zewnetrznym storage. Eslint reguly set-state-in-effect
+    // sa zbyt restrykcyjne dla tego use-case'u.
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       if (raw) setExpanded(new Set(JSON.parse(raw) as string[]));
     } catch {
       /* ignoruj */

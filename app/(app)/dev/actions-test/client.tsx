@@ -276,7 +276,7 @@ export function ActionsTestClient({
         <h3>Czyszczenie linkow/zalacznikow</h3>
         {firstTask ? (
           <p style={{ fontSize: 12, color: "#64748b" }}>
-            Kliknij „+link" / „+att" wyzej. Zeby usunac pojedynczy rekord — uruchom
+            Kliknij „+link&quot; / „+att&quot; wyzej. Zeby usunac pojedynczy rekord — uruchom
             removeTaskLink/removeTaskAttachment z konsoli (signature: (id)).
           </p>
         ) : null}
