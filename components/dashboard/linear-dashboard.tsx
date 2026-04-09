@@ -110,15 +110,84 @@ function TaskRow({
   selected: boolean;
   onSelect: (id: string) => void;
 }) {
+  const router = useRouter();
+  const [pending, startTransition] = useTransition();
+  const [editingName, setEditingName] = useState(false);
   const due = formatDue(task.deadline);
+
+  const handleToggle = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const id = task.id;
+    startTransition(async () => {
+      await toggleTask(id);
+      router.refresh();
+    });
+  };
+
+  const handleSaveName = (v: string) => {
+    const title = v.trim();
+    setEditingName(false);
+    if (!title || title === task.title) return;
+    const id = task.id;
+    startTransition(async () => {
+      await updateTaskDetails(id, { title });
+      router.refresh();
+    });
+  };
+
   return (
     <div
       className={`ltask ${task.done ? "done" : ""} ${selected ? "selected" : ""}`}
-      onClick={() => onSelect(task.id)}
+      onClick={() => {
+        if (!editingName) onSelect(task.id);
+      }}
     >
       <span className="grip">⋮⋮</span>
-      <span className="ck" />
-      <span className="name">{task.title}</span>
+      <span
+        className="ck"
+        onClick={handleToggle}
+        role="checkbox"
+        aria-checked={task.done}
+        aria-disabled={pending}
+        title={task.done ? "Odznacz" : "Oznacz jako zrobione"}
+        style={{ cursor: "pointer" }}
+      />
+      {editingName ? (
+        <input
+          autoFocus
+          defaultValue={task.title}
+          disabled={pending}
+          onClick={(e) => e.stopPropagation()}
+          onBlur={(e) => handleSaveName(e.currentTarget.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.currentTarget.blur();
+            } else if (e.key === "Escape") {
+              setEditingName(false);
+            }
+          }}
+          style={{
+            font: "inherit",
+            padding: "2px 4px",
+            border: "1px solid var(--l-accent)",
+            borderRadius: 3,
+            background: "#fff",
+            minWidth: 0,
+            flex: 1,
+          }}
+        />
+      ) : (
+        <span
+          className="name"
+          onDoubleClick={(e) => {
+            e.stopPropagation();
+            setEditingName(true);
+          }}
+          title="Dwuklik zeby edytowac"
+        >
+          {task.title}
+        </span>
+      )}
       <span className={`due ${due?.late ? "late" : ""}`}>{due?.text ?? ""}</span>
       <span className={`prio ${prioClass(task.priority)}`}>
         <i />
