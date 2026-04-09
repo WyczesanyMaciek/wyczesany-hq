@@ -14,6 +14,8 @@ import {
   updateTaskDetails,
   moveTaskToProject,
   releaseTaskFromProject,
+  addTaskLink,
+  removeTaskLink,
 } from "@/app/(app)/c/[id]/actions";
 
 // YYYY-MM-DD z Date, pod <input type="date">.
@@ -214,6 +216,9 @@ function TaskDetailPanel({
     null | "title" | "deadline" | "priority" | "assignee"
   >(null);
   const [showProjectMenu, setShowProjectMenu] = useState(false);
+  const [addingLink, setAddingLink] = useState(false);
+  const [linkLabel, setLinkLabel] = useState("");
+  const [linkUrl, setLinkUrl] = useState("");
   // Reset edit state przy zmianie taska jest zalatwiony przez `key`
   // na TaskDetailPanel w rodzicu (React re-mountuje komponente).
 
@@ -270,6 +275,27 @@ function TaskDetailPanel({
     const id = task.id;
     startTransition(async () => {
       await releaseTaskFromProject(id);
+      router.refresh();
+    });
+  };
+
+  const handleAddLink = () => {
+    const id = task.id;
+    const label = linkLabel.trim();
+    const url = linkUrl.trim();
+    if (!label || !url) return;
+    startTransition(async () => {
+      await addTaskLink(id, { label, url });
+      setLinkLabel("");
+      setLinkUrl("");
+      setAddingLink(false);
+      router.refresh();
+    });
+  };
+
+  const handleRemoveLink = (linkId: string) => {
+    startTransition(async () => {
+      await removeTaskLink(linkId);
       router.refresh();
     });
   };
@@ -592,14 +618,147 @@ function TaskDetailPanel({
 
       <div className="sect-h">Linki</div>
       <div className="llinks">
-        {task.links.map((l) => (
-          <a key={l.id} href={l.url} target="_blank" rel="noreferrer" className="ln">
-            <span className="ic">🔗</span>
-            {l.label}
-            <span className="url">{new URL(l.url).hostname.replace("www.", "")}</span>
-          </a>
-        ))}
-        <div className="add">+ Dodaj link</div>
+        {task.links.map((l) => {
+          let host = "";
+          try {
+            host = new URL(l.url).hostname.replace("www.", "");
+          } catch {
+            host = l.url;
+          }
+          return (
+            <div
+              key={l.id}
+              style={{ display: "flex", alignItems: "center", gap: 4 }}
+            >
+              <a
+                href={l.url}
+                target="_blank"
+                rel="noreferrer"
+                className="ln"
+                style={{ flex: 1 }}
+              >
+                <span className="ic">🔗</span>
+                {l.label}
+                <span className="url">{host}</span>
+              </a>
+              <button
+                onClick={() => handleRemoveLink(l.id)}
+                disabled={pending}
+                title="Usun link"
+                style={{
+                  padding: "2px 6px",
+                  border: "1px solid var(--l-line)",
+                  background: "#fff",
+                  borderRadius: 4,
+                  cursor: "pointer",
+                  color: "var(--l-muted)",
+                  font: "inherit",
+                }}
+              >
+                ×
+              </button>
+            </div>
+          );
+        })}
+        {addingLink ? (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 4,
+              padding: 6,
+              border: "1px solid var(--l-line)",
+              borderRadius: 6,
+              background: "var(--l-bg-soft)",
+            }}
+          >
+            <input
+              autoFocus
+              placeholder="Etykieta (np. Figma)"
+              value={linkLabel}
+              onChange={(e) => setLinkLabel(e.target.value)}
+              disabled={pending}
+              style={{
+                font: "inherit",
+                padding: "4px 6px",
+                border: "1px solid var(--l-line)",
+                borderRadius: 4,
+                background: "#fff",
+              }}
+            />
+            <input
+              placeholder="https://..."
+              value={linkUrl}
+              onChange={(e) => setLinkUrl(e.target.value)}
+              disabled={pending}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleAddLink();
+                else if (e.key === "Escape") {
+                  setAddingLink(false);
+                  setLinkLabel("");
+                  setLinkUrl("");
+                }
+              }}
+              style={{
+                font: "inherit",
+                padding: "4px 6px",
+                border: "1px solid var(--l-line)",
+                borderRadius: 4,
+                background: "#fff",
+              }}
+            />
+            <div style={{ display: "flex", gap: 6 }}>
+              <button
+                onClick={handleAddLink}
+                disabled={pending || !linkLabel.trim() || !linkUrl.trim()}
+                style={{
+                  padding: "4px 10px",
+                  background: "var(--l-accent)",
+                  color: "#fff",
+                  border: 0,
+                  borderRadius: 4,
+                  cursor: "pointer",
+                  font: "inherit",
+                }}
+              >
+                Dodaj
+              </button>
+              <button
+                onClick={() => {
+                  setAddingLink(false);
+                  setLinkLabel("");
+                  setLinkUrl("");
+                }}
+                style={{
+                  padding: "4px 10px",
+                  background: "#fff",
+                  border: "1px solid var(--l-line)",
+                  borderRadius: 4,
+                  cursor: "pointer",
+                  font: "inherit",
+                }}
+              >
+                Anuluj
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={() => setAddingLink(true)}
+            className="add"
+            style={{
+              background: "transparent",
+              border: 0,
+              font: "inherit",
+              cursor: "pointer",
+              textAlign: "left",
+              padding: 0,
+              color: "var(--l-muted)",
+            }}
+          >
+            + Dodaj link
+          </button>
+        )}
       </div>
     </div>
   );
