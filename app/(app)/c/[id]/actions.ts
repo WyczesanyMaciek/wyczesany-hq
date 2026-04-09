@@ -1,7 +1,7 @@
 "use server";
 
 // Server actions dla dashboardu kontekstu.
-// Projekty, luzne taski — tworzenie, toggle, usuwanie.
+// Projekty, luzne taski, pomysly, problemy — tworzenie, toggle, usuwanie.
 
 import { prisma } from "@/lib/db";
 import { revalidatePath } from "next/cache";
@@ -463,4 +463,198 @@ export async function moveProjectToContext(
 
   revalidatePath("/", "layout");
   return { ok: true };
+}
+
+// ---- POMYSLY ----
+
+export async function createIdea(
+  contextId: string,
+  input: { content: string }
+): Promise<Result<{ id: string }>> {
+  const content = str(input.content);
+  if (content.length < 1 || content.length > 500) {
+    return { ok: false, error: "Pomysl musi miec 1-500 znakow." };
+  }
+  const ctx = await prisma.context.findUnique({ where: { id: contextId } });
+  if (!ctx) return { ok: false, error: "Kontekst nie istnieje." };
+
+  const i = await prisma.idea.create({ data: { content, contextId } });
+  revalidatePath("/", "layout");
+  return { ok: true, data: { id: i.id } };
+}
+
+export async function deleteIdea(ideaId: string): Promise<Result> {
+  const i = await prisma.idea.findUnique({ where: { id: ideaId } });
+  if (!i) return { ok: false, error: "Pomysl nie istnieje." };
+  await prisma.idea.delete({ where: { id: ideaId } });
+  revalidatePath("/", "layout");
+  return { ok: true };
+}
+
+/**
+ * Zamien pomysl na luzny task w tym samym kontekscie.
+ * Transakcyjnie: usun pomysl + utworz task.
+ */
+export async function convertIdeaToTask(
+  ideaId: string
+): Promise<Result<{ taskId: string }>> {
+  const idea = await prisma.idea.findUnique({ where: { id: ideaId } });
+  if (!idea) return { ok: false, error: "Pomysl nie istnieje." };
+
+  const title = idea.content.split("\n")[0].slice(0, 200).trim() || "Nowy task";
+
+  const last = await prisma.task.findFirst({
+    where: { contextId: idea.contextId, projectId: null },
+    orderBy: { order: "desc" },
+    select: { order: true },
+  });
+  const nextOrder = (last?.order ?? -1) + 1;
+
+  const [task] = await prisma.$transaction([
+    prisma.task.create({
+      data: {
+        title,
+        contextId: idea.contextId,
+        projectId: null,
+        order: nextOrder,
+      },
+    }),
+    prisma.idea.delete({ where: { id: ideaId } }),
+  ]);
+
+  revalidatePath("/", "layout");
+  return { ok: true, data: { taskId: task.id } };
+}
+
+/**
+ * Rozpisz pomysl na pusty projekt w tym samym kontekscie.
+ * Transakcyjnie: usun pomysl + utworz projekt.
+ */
+export async function convertIdeaToProject(
+  ideaId: string
+): Promise<Result<{ projectId: string }>> {
+  const idea = await prisma.idea.findUnique({ where: { id: ideaId } });
+  if (!idea) return { ok: false, error: "Pomysl nie istnieje." };
+
+  const name = idea.content.split("\n")[0].slice(0, 120).trim() || "Nowy projekt";
+  const description = idea.content.length > name.length ? idea.content : null;
+
+  const last = await prisma.project.findFirst({
+    where: { contextId: idea.contextId },
+    orderBy: { order: "desc" },
+    select: { order: true },
+  });
+  const nextOrder = (last?.order ?? -1) + 1;
+
+  const [project] = await prisma.$transaction([
+    prisma.project.create({
+      data: {
+        name,
+        description,
+        status: "todo",
+        contextId: idea.contextId,
+        order: nextOrder,
+      },
+    }),
+    prisma.idea.delete({ where: { id: ideaId } }),
+  ]);
+
+  revalidatePath("/", "layout");
+  return { ok: true, data: { projectId: project.id } };
+}
+
+// ---- PROBLEMY ----
+
+export async function createProblem(
+  contextId: string,
+  input: { content: string }
+): Promise<Result<{ id: string }>> {
+  const content = str(input.content);
+  if (content.length < 1 || content.length > 500) {
+    return { ok: false, error: "Problem musi miec 1-500 znakow." };
+  }
+  const ctx = await prisma.context.findUnique({ where: { id: contextId } });
+  if (!ctx) return { ok: false, error: "Kontekst nie istnieje." };
+
+  const p = await prisma.problem.create({ data: { content, contextId } });
+  revalidatePath("/", "layout");
+  return { ok: true, data: { id: p.id } };
+}
+
+export async function deleteProblem(problemId: string): Promise<Result> {
+  const p = await prisma.problem.findUnique({ where: { id: problemId } });
+  if (!p) return { ok: false, error: "Problem nie istnieje." };
+  await prisma.problem.delete({ where: { id: problemId } });
+  revalidatePath("/", "layout");
+  return { ok: true };
+}
+
+/**
+ * Zamien problem na luzny task w tym samym kontekscie.
+ */
+export async function convertProblemToTask(
+  problemId: string
+): Promise<Result<{ taskId: string }>> {
+  const problem = await prisma.problem.findUnique({ where: { id: problemId } });
+  if (!problem) return { ok: false, error: "Problem nie istnieje." };
+
+  const title = problem.content.split("\n")[0].slice(0, 200).trim() || "Nowy task";
+
+  const last = await prisma.task.findFirst({
+    where: { contextId: problem.contextId, projectId: null },
+    orderBy: { order: "desc" },
+    select: { order: true },
+  });
+  const nextOrder = (last?.order ?? -1) + 1;
+
+  const [task] = await prisma.$transaction([
+    prisma.task.create({
+      data: {
+        title,
+        contextId: problem.contextId,
+        projectId: null,
+        order: nextOrder,
+      },
+    }),
+    prisma.problem.delete({ where: { id: problemId } }),
+  ]);
+
+  revalidatePath("/", "layout");
+  return { ok: true, data: { taskId: task.id } };
+}
+
+/**
+ * Rozpisz problem na pusty projekt w tym samym kontekscie.
+ */
+export async function convertProblemToProject(
+  problemId: string
+): Promise<Result<{ projectId: string }>> {
+  const problem = await prisma.problem.findUnique({ where: { id: problemId } });
+  if (!problem) return { ok: false, error: "Problem nie istnieje." };
+
+  const name = problem.content.split("\n")[0].slice(0, 120).trim() || "Nowy projekt";
+  const description = problem.content.length > name.length ? problem.content : null;
+
+  const last = await prisma.project.findFirst({
+    where: { contextId: problem.contextId },
+    orderBy: { order: "desc" },
+    select: { order: true },
+  });
+  const nextOrder = (last?.order ?? -1) + 1;
+
+  const [project] = await prisma.$transaction([
+    prisma.project.create({
+      data: {
+        name,
+        description,
+        status: "todo",
+        contextId: problem.contextId,
+        order: nextOrder,
+      },
+    }),
+    prisma.problem.delete({ where: { id: problemId } }),
+  ]);
+
+  revalidatePath("/", "layout");
+  return { ok: true, data: { projectId: project.id } };
 }
