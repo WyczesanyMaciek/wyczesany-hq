@@ -273,69 +273,23 @@ export async function getContextDashboard(
 }
 
 /**
- * Dashboard globalny — wszystkie elementy z calej aplikacji.
+ * Globalne liczniki dla placeholder strony glownej /.
+ * Cztery zapytania count() rownolegle — szybki szkielet bez ladowania
+ * pelnych obiektow projektow/taskow/pomyslow/problemow.
  */
-export async function getGlobalDashboard(): Promise<DashboardData> {
-  const all = await loadAllContexts();
-
+export async function getGlobalStats(): Promise<{
+  projects: number;
+  tasks: number;
+  ideas: number;
+  problems: number;
+}> {
   const [projects, tasks, ideas, problems] = await Promise.all([
-    prisma.project.findMany({
-      orderBy: [{ order: "asc" }, { createdAt: "desc" }],
-      include: {
-        tasks: {
-          orderBy: [{ order: "asc" }, { createdAt: "asc" }],
-          include: taskInclude,
-        },
-      },
+    prisma.project.count({
+      where: { status: { notIn: ["done", "on_hold"] } },
     }),
-    prisma.task.findMany({
-      where: { projectId: null },
-      orderBy: [{ done: "asc" }, { order: "asc" }, { createdAt: "desc" }],
-      include: taskInclude,
-    }),
-    prisma.idea.findMany({ orderBy: [{ createdAt: "desc" }] }),
-    prisma.problem.findMany({ orderBy: [{ createdAt: "desc" }] }),
+    prisma.task.count({ where: { done: false } }),
+    prisma.idea.count(),
+    prisma.problem.count(),
   ]);
-
-  const toOrigin = (cid: string): OriginContext => {
-    const c = all.get(cid);
-    return c
-      ? { id: c.id, name: c.name, color: c.color }
-      : { id: cid, name: "?", color: "#64748B" };
-  };
-
-  return {
-    current: null,
-    projects: projects.map((p) => ({
-      id: p.id,
-      name: p.name,
-      description: p.description,
-      status: p.status,
-      deadline: p.deadline,
-      order: p.order,
-      createdAt: p.createdAt,
-      context: toOrigin(p.contextId),
-      tasks: p.tasks.map((t) => mapTask(t as RawTask, toOrigin)),
-      taskTotal: p.tasks.length,
-      taskDone: p.tasks.filter((t) => t.done).length,
-    })),
-    looseTasks: tasks
-      .filter((t) => !t.done)
-      .map((t) => mapTask(t as RawTask, toOrigin)),
-    doneTasks: tasks
-      .filter((t) => t.done)
-      .map((t) => mapTask(t as RawTask, toOrigin)),
-    ideas: ideas.map((i) => ({
-      id: i.id,
-      content: i.content,
-      createdAt: i.createdAt,
-      context: toOrigin(i.contextId),
-    })),
-    problems: problems.map((pr) => ({
-      id: pr.id,
-      content: pr.content,
-      createdAt: pr.createdAt,
-      context: toOrigin(pr.contextId),
-    })),
-  };
+  return { projects, tasks, ideas, problems };
 }

@@ -1,15 +1,11 @@
 "use client";
 
-// LinearDashboard — widok dashboardu w stylu Linear v2.
+// LinearDashboard — widok dashboardu kontekstu w stylu Linear v2.
 // Dwie kolumny: srodek (sekcje: projekty, luzne taski, pomysly, problemy)
 // + prawy panel szczegolow klikanego taska (320px).
 //
 // Orchestrator: trzyma state (selectedTaskId, collapsed, optimistic projects/tasks),
 // renderuje DndContext + sekcje + TaskDetailPanel.
-//
-// Propy:
-// - readOnly: wylacza edycje, DnD, guziki dodawania, chowa TaskDetailPanel.
-// - isGlobal: naglowek bez breadcrumbu kontekstu, badge'y kontekstu zawsze widoczne.
 //
 // UWAGA: DnD (DndContext, sensors, handleDragEnd) jest INLINE w tym pliku,
 // nie wydzielone do `shared/dnd/`. Powod: dodatkowa warstwa komponentu
@@ -45,15 +41,7 @@ import { TasksSection } from "./sections/tasks-section";
 import { IdeasSection } from "./sections/ideas-section";
 import { ProblemsSection } from "./sections/problems-section";
 
-export function LinearDashboard({
-  data,
-  readOnly = false,
-  isGlobal = false,
-}: {
-  data: DashboardData;
-  readOnly?: boolean;
-  isGlobal?: boolean;
-}) {
+export function LinearDashboard({ data }: { data: DashboardData }) {
   const router = useRouter();
   const [, startTransition] = useTransition();
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
@@ -92,17 +80,7 @@ export function LinearDashboard({
 
   const selected = selectedTaskId ? taskMap.get(selectedTaskId) ?? null : null;
 
-  // W read-only klik w task → navigate do kontekstu taska zamiast panelu
-  const handleSelectTask = (id: string) => {
-    if (!readOnly) {
-      setSelectedTaskId(id);
-      return;
-    }
-    const t = taskMap.get(id)?.task;
-    if (t) router.push(`/c/${t.context.id}`);
-  };
-
-  const title = isGlobal ? "Wszystko" : data.current?.name ?? "Wszystko";
+  const title = data.current?.name ?? "Wszystko";
   const color = data.current?.color ?? "#64748b";
 
   // ===== DnD =====
@@ -121,7 +99,6 @@ export function LinearDashboard({
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
-    if (readOnly) return;
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
@@ -214,7 +191,7 @@ export function LinearDashboard({
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: readOnly ? "1fr" : "1fr 320px",
+          gridTemplateColumns: "1fr 320px",
           minHeight: "100vh",
         }}
       >
@@ -223,23 +200,17 @@ export function LinearDashboard({
           {/* Top bar */}
           <div className="lbar">
             <span className="crumb">
-              {isGlobal ? (
-                <b>{title}</b>
-              ) : (
-                <>
-                  Konteksty / <b>{title}</b>
-                  <span
-                    className="pill-ctx"
-                    style={{ background: `${color}22`, color }}
-                  >
-                    ● {title}
-                  </span>
-                </>
-              )}
+              Konteksty / <b>{title}</b>
+              <span
+                className="pill-ctx"
+                style={{ background: `${color}22`, color }}
+              >
+                ● {title}
+              </span>
             </span>
             <div className="spacer">
               <button className="lbtn ghost">Filtry</button>
-              {!readOnly && data.current ? (
+              {data.current ? (
                 <LinearNewProjectButton
                   contextId={data.current.id}
                   variant="ghost"
@@ -251,51 +222,37 @@ export function LinearDashboard({
           <ProjectsSection
             projects={projects}
             selectedTaskId={selectedTaskId}
-            onSelectTask={handleSelectTask}
+            onSelectTask={setSelectedTaskId}
             collapsed={collapsed}
             onToggleCollapse={toggleCollapse}
             contextId={currentId}
-            readOnly={readOnly}
-            isGlobal={isGlobal}
             currentContextId={currentId}
           />
 
           <TasksSection
             looseTasks={looseTasks}
             selectedTaskId={selectedTaskId}
-            onSelectTask={handleSelectTask}
+            onSelectTask={setSelectedTaskId}
             contextId={currentId}
-            readOnly={readOnly}
-            isGlobal={isGlobal}
             currentContextId={currentId}
           />
 
-          <IdeasSection
-            ideas={data.ideas}
-            contextId={currentId}
-            readOnly={readOnly}
-          />
+          <IdeasSection ideas={data.ideas} contextId={currentId} />
 
-          <ProblemsSection
-            problems={data.problems}
-            contextId={currentId}
-            readOnly={readOnly}
-          />
+          <ProblemsSection problems={data.problems} contextId={currentId} />
 
           {/* odstep na dole */}
           <div style={{ height: 40 }} />
         </main>
 
         {/* ============ PRAWY PANEL ============ */}
-        {!readOnly && (
-          <TaskDetailPanel
-            key={selectedTaskId ?? "none"}
-            task={selected?.task ?? null}
-            projectName={selected?.projectName ?? null}
-            projects={projects.map((p) => ({ id: p.id, name: p.name }))}
-            onDeleted={() => setSelectedTaskId(null)}
-          />
-        )}
+        <TaskDetailPanel
+          key={selectedTaskId ?? "none"}
+          task={selected?.task ?? null}
+          projectName={selected?.projectName ?? null}
+          projects={projects.map((p) => ({ id: p.id, name: p.name }))}
+          onDeleted={() => setSelectedTaskId(null)}
+        />
       </div>
     </DndContext>
   );
