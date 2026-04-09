@@ -3,9 +3,17 @@
 // DndProvider — opakowanie <DndContext> z ustawionymi sensorami i collision detection.
 // Reusable: dashboard kontekstu, strona projektu (Etap 6).
 //
-// Sensors: Pointer z activationConstraint distance 8 (zeby klik nie kolidowal z drag)
-// + Keyboard dla accessibility.
-// Collision detection: closestCorners — najlepszy dla cross-container DnD.
+// UWAGA (fix regresji po refaktorze commit 0161694):
+// Ten plik nie jest aktualnie uzywany przez `linear-dashboard.tsx`. Dodatkowa
+// warstwa komponentu DndProvider + custom hook useDndHandlers powodowala
+// regresje — DndContext w osobnym komponencie widzial niestabilne props
+// (nowe sensors array per render parent), co resetowalo wewnetrzny state
+// TaskRow/ProjectCard (useTransition pending, useSortable transform), przez co:
+//   a) klik checkboxa nie dawal wizualnej reakcji (pending state znikal),
+//   b) drop taska po DnD "wracal" bo useSortable traci optimistic transform.
+// Orchestrator uzywa teraz DndContext bezposrednio (inline sensors i handleDragEnd).
+// Ten plik + use-dnd-handlers.ts zostaja jako kandydaty do posprzatania
+// w Etapie 7 (polishing) po ustaleniu jak przekazac DnD do strony projektu.
 
 import {
   DndContext,
