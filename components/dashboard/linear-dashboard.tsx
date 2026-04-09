@@ -474,9 +474,29 @@ function TaskDetailPanel({
       </div>
 
       <div className="sect-h">Notatki</div>
-      <div className="notes">
-        {task.notes ?? <span style={{ color: "#94a3b8" }}>Brak notatek</span>}
-      </div>
+      <textarea
+        className="notes"
+        defaultValue={task.notes ?? ""}
+        disabled={pending}
+        placeholder="Brak notatek — kliknij zeby dopisac"
+        onBlur={(e) => {
+          const v = e.currentTarget.value;
+          const current = task.notes ?? "";
+          if (v !== current) {
+            saveField({ notes: v.trim() ? v : null });
+          }
+        }}
+        style={{
+          width: "100%",
+          minHeight: 80,
+          font: "inherit",
+          padding: "8px 10px",
+          border: "1px solid var(--l-line)",
+          borderRadius: 6,
+          background: "#fff",
+          resize: "vertical",
+        }}
+      />
 
       <div className="sect-h">Pliki i zdjęcia</div>
       <div className="files">
