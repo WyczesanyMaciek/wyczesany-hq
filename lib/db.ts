@@ -1,15 +1,21 @@
 // Wyczesany HQ — singleton PrismaClient.
-// Uzywa adaptera better-sqlite3 (SQLite lokalnie).
-// Migracja na Postgres = zmiana adaptera + provider w schema.prisma.
+// Uzywa adaptera pg (Postgres — Neon lokalnie w dev i docelowo na Vercel).
+// Migracja z SQLite na Postgres: zmiana providera w schema.prisma
+// + zmiana adaptera tu + DATABASE_URL w .env.local / Vercel env vars.
 
 import { PrismaClient } from "./generated/prisma/client";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import { PrismaPg } from "@prisma/adapter-pg";
 
-const databaseUrl = process.env.DATABASE_URL ?? "file:./dev.db";
-// Adapter oczekuje sciezki bez prefiksu "file:"
-const dbPath = databaseUrl.replace(/^file:/, "");
+const databaseUrl = process.env.DATABASE_URL;
+if (!databaseUrl) {
+  throw new Error(
+    "DATABASE_URL is not set. Put connection string in .env.local (Neon) albo w env vars na Vercel."
+  );
+}
 
-const adapter = new PrismaBetterSqlite3({ url: dbPath });
+// Connection pool do Postgresa. Pooler Neon jest bezpieczny z serverless,
+// wystarczy zwykly Pool z pg — Prisma adapter obsluzy lifecycle.
+const adapter = new PrismaPg({ connectionString: databaseUrl });
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
