@@ -130,9 +130,14 @@ export function Sidebar({ tree }: { tree: ContextNode[] }) {
         <FooterLink href="/settings" icon={<Settings size={14} />}>
           Ustawienia
         </FooterLink>
-        <FooterLink href="/dev/logs" icon={<Terminal size={14} />}>
-          Logi
-        </FooterLink>
+        {/* Logi dev servera — widoczne tylko w dev mode.
+            Na produkcji (Vercel) plik .next/dev-server.log nie istnieje,
+            wiec narzedzie nie ma sensu — link chowamy zeby nie mylic. */}
+        {process.env.NODE_ENV === "development" && (
+          <FooterLink href="/dev/logs" icon={<Terminal size={14} />}>
+            Logi
+          </FooterLink>
+        )}
         <div
           title={`commit ${process.env.NEXT_PUBLIC_GIT_HASH}`}
           style={{
