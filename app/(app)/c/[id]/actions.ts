@@ -111,19 +111,55 @@ export async function createLooseTask(
     priority?: number;
   }
 ): Promise<Result<{ id: string }>> {
+  return createTask({
+    contextId,
+    title: input.title,
+    deadline: input.deadline,
+    priority: input.priority,
+  });
+}
+
+/**
+ * Uniwersalne tworzenie taska. Podaj albo `contextId` (luzny task)
+ * albo `projectId` (task w projekcie — kontekst bierzemy z projektu).
+ */
+export async function createTask(input: {
+  contextId?: string;
+  projectId?: string;
+  title: string;
+  deadline?: string | null;
+  priority?: number;
+}): Promise<Result<{ id: string }>> {
   const title = str(input.title);
   if (title.length < 1 || title.length > 200) {
     return { ok: false, error: "Tytul zadania musi miec 1-200 znakow." };
   }
-  const ctx = await prisma.context.findUnique({ where: { id: contextId } });
-  if (!ctx) return { ok: false, error: "Kontekst nie istnieje." };
+
+  let contextId = input.contextId ?? null;
+  const projectId = input.projectId ?? null;
+
+  if (projectId) {
+    const project = await prisma.project.findUnique({
+      where: { id: projectId },
+      select: { id: true, contextId: true },
+    });
+    if (!project) return { ok: false, error: "Projekt nie istnieje." };
+    contextId = project.contextId;
+  } else if (contextId) {
+    const ctx = await prisma.context.findUnique({ where: { id: contextId } });
+    if (!ctx) return { ok: false, error: "Kontekst nie istnieje." };
+  } else {
+    return { ok: false, error: "Podaj contextId albo projectId." };
+  }
 
   const deadline = parseDateOrNull(input.deadline);
   const priority = parsePriority(input.priority);
 
-  // nextOrder: max+1 w ramach kontekstu dla luznych (projectId = null)
+  // nextOrder: max+1 w ramach docelowego kontenera.
   const last = await prisma.task.findFirst({
-    where: { contextId, projectId: null },
+    where: projectId
+      ? { projectId }
+      : { contextId: contextId!, projectId: null },
     orderBy: { order: "desc" },
     select: { order: true },
   });
@@ -134,8 +170,8 @@ export async function createLooseTask(
       title,
       deadline,
       priority,
-      contextId,
-      projectId: null,
+      contextId: contextId!,
+      projectId,
       order: nextOrder,
     },
   });

@@ -20,6 +20,7 @@ import {
   removeTaskAttachment,
 } from "@/app/(app)/c/[id]/actions";
 import { LinearNewProjectButton } from "./linear-new-project";
+import { LinearAddTask } from "./linear-add-task";
 
 // YYYY-MM-DD z Date, pod <input type="date">.
 function toDateInput(d: Date | null): string {
@@ -180,7 +181,9 @@ function ProjectCard({
       {!collapsed ? (
         <div className="body">
           {project.tasks.length === 0 ? (
-            <div className="add-row">Brak zadań</div>
+            <div className="add-row" style={{ color: "var(--l-muted)" }}>
+              Brak zadan
+            </div>
           ) : (
             project.tasks.map((t) => (
               <TaskRow
@@ -191,7 +194,7 @@ function ProjectCard({
               />
             ))
           )}
-          <div className="add-row">+ Dodaj zadanie</div>
+          <LinearAddTask projectId={project.id} />
         </div>
       ) : null}
     </div>
@@ -971,7 +974,6 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
                 variant="ghost"
               />
             ) : null}
-            <button className="lbtn">+ Nowy task</button>
           </div>
         </div>
 
@@ -1007,13 +1009,8 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
         <div className="lsec" style={{ marginTop: 22 }}>
           <h3>Luźne taski</h3>
           <span className="n">{data.looseTasks.length}</span>
-          <button className="add">+ dodaj task</button>
         </div>
-        {data.looseTasks.length === 0 ? (
-          <div style={{ margin: "6px 12px", color: "#94a3b8", fontSize: 12.5 }}>
-            Brak luźnych tasków
-          </div>
-        ) : (
+        {data.current || data.looseTasks.length > 0 ? (
           <div
             style={{
               margin: "0 12px",
@@ -1023,17 +1020,31 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
               padding: "4px 6px",
             }}
           >
-            {data.looseTasks.map((t) => (
-              <TaskRow
-                key={t.id}
-                task={t}
-                selected={selectedTaskId === t.id}
-                onSelect={setSelectedTaskId}
-              />
-            ))}
-            <div className="add-row">+ Dodaj zadanie</div>
+            {data.looseTasks.length === 0 ? (
+              <div
+                style={{
+                  padding: "6px 10px",
+                  color: "#94a3b8",
+                  fontSize: 12.5,
+                }}
+              >
+                Brak luznych taskow
+              </div>
+            ) : (
+              data.looseTasks.map((t) => (
+                <TaskRow
+                  key={t.id}
+                  task={t}
+                  selected={selectedTaskId === t.id}
+                  onSelect={setSelectedTaskId}
+                />
+              ))
+            )}
+            {data.current ? (
+              <LinearAddTask contextId={data.current.id} label="+ Dodaj zadanie" />
+            ) : null}
           </div>
-        )}
+        ) : null}
 
         {/* ===== POMYSLY ===== */}
         <div className="lsec" style={{ marginTop: 22 }}>
