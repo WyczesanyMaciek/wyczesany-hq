@@ -1,0 +1,56 @@
+9aa8725 feat: / uzywa LinearDashboard readOnly+isGlobal + update PROGRESS.md
+4b65267 refactor: LinearDashboard — propy readOnly + isGlobal (pod globalny dashboard)
+9e9be42 feat: DnD — sortowanie projektow i taskow z cross-container (dnd-kit)
+6b2fb79 chore: add @dnd-kit/core + sortable + utilities
+72f0b19 feat: Etap 5 — ChipActions menu (wyrzuc / do taska / do projektu)
+3bc5f92 feat: Etap 5 — LinearAddItem generyczny (idea|problem) podpiety w dashboardzie
+e9c399f feat: TaskCheckbox — kremowy z zielonym znaczkiem, hit target 44x44 (brutal) i 32x32 (linear v2)
+0b1c66b feat: Etap 5 — server actions dla pomyslow i problemow + konwersje
+0074ea4 docs: PROGRESS.md — Etap 3+4 done, plan Etapu 5
+2194376 feat: Etap 4 — TaskRow: toggle done przez checkbox + inline edit tytulu
+7fc29c7 feat: Etap 4 — inline dodawanie taska (luzny + w projekcie)
+6302440 feat: Etap 4 — modal nowego projektu w stylu Linear v2
+de63184 feat: Etap 4 — prawy panel: dodawanie i usuwanie zalacznikow
+9de0ca4 feat: Etap 4 — prawy panel: dodawanie i usuwanie linkow
+3ed3c6f feat: Etap 4 — prawy panel: move to project / release from project
+1d7c3cc feat: Etap 4 — prawy panel: edytowalne notatki
+86dfa00 feat: Etap 4 — prawy panel: inline edit pol (tytul, deadline, priorytet, assignee)
+29d8985 feat: Etap 4 — prawy panel: toggle done + delete task
+40c8d4b Etap 3: server actions (reorder, move, details, links, attachments) + /dev/actions-test
+01afbf2 Etap 2: redesign Linear v2 + panel szczegolow taska (bez DnD)
+19807ba Etap 1: schema — order, assignee, notes, attachments, links
+c479049 chore: trigger vercel rebuild (repo is public now)
+c5375b5 fix: prisma generate w postinstall (Vercel build)
+d2d0b2e chore: migracja SQLite → Postgres (Neon)
+af94bb4 feat: Etap 4 — projekty i taski (CRUD, optimistic, brutal UI)
+ae0a1e7 feat: Etap 2.5 — redesign w stylu neo-brutalist warm
+bba605b feat: Etap 3 — dashboard kontekstu + dashboard globalny
+546dd09 fix: port 3002 w skrypcie dev zamiast w launch.json args
+ff40624 docs: PROGRESS.md — Etap 2 done, plan Etapu 3
+cf3954e feat: /dev/logs + /api/logs (tail dev-server.log)
+42e1e1b feat: /settings/contexts — CRUD kontekstow
+f0e610f feat: placeholder strony kontekstu /c/[id]
+b94662b feat: sidebar — drzewko kontekstow (rozwijanie, aktywny, liczby, footer)
+cccc1c1 feat: app layout z sidebarem (placeholder) + route group (app)
+d029887 feat: query drzewka kontekstow z agregacja liczb
+0140219 chore: build info (git hash + build time) w next.config.ts
+1403b58 chore: launch.json dla Claude Preview (dev + prisma studio)
+ebe3cce docs: PROGRESS.md — Etap 1 done, plan Etapu 2
+f955a8e docs: MODEL.md — opis modelu danych
+6013f48 feat: seed startowej hierarchii kontekstow + testowy projekt
+f6dae89 feat: schema Prismy (Context, Project, Task, Idea, Problem, Note, Link)
+b291fe8 chore: shadcn/ui init + przywrocenie naszego motywu
+d3fc345 feat: initial commit
+9a09fe6 style: bazowy motyw Wyczesany HQ (Nunito, kremowe tlo, wysoki kontrast)
+f918407 docs: restore CLAUDE.md and pierwszy-prompt.md
+f448802 Initial commit from Create Next App
+
+=== git status ===
+On branch claude/continue-project-QZ07s
+Your branch is up to date with 'origin/claude/continue-project-QZ07s'.
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	_claude_briefing/
+
+nothing added to commit but untracked files present (use "git add" to track)
