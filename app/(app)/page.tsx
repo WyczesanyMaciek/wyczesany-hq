@@ -1,9 +1,14 @@
-// / — dashboard globalny. Wszystko ze wszystkich kontekstow.
+// / — globalny dashboard. Wszystko ze wszystkich kontekstow w stylu Linear v2,
+// ale read-only: klik w task/projekt prowadzi do kontekstu, nic nie da sie dodac/edytowac tutaj.
 
 import { getGlobalDashboard } from "@/lib/queries/dashboard";
-import { DashboardView } from "@/components/dashboard/dashboard-view";
+import { LinearDashboard } from "@/components/dashboard/linear-dashboard";
 
 export default async function Home() {
   const data = await getGlobalDashboard();
-  return <DashboardView data={data} ownContextId={null} />;
+  return (
+    <div className="linear-app" style={{ minHeight: "100vh" }}>
+      <LinearDashboard data={data} readOnly isGlobal />
+    </div>
+  );
 }

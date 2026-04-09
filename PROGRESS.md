@@ -85,18 +85,56 @@
   - Podłączone w topbarze, sekcji projektów, sekcji luźnych tasków
     i w bodzie każdego projektu
 
-## 🔜 Etap 5 — Pomysły i problemy (NEXT)
+## ✅ Etap 5 — Pomysły i problemy (DONE)
 
-- Server actions: `createIdea`, `deleteIdea`, `createProblem`, `deleteProblem`
-- Server actions: `convertIdeaToTask`, `convertIdeaToProject`
-  (+ analogicznie dla Problem)
-- Inline dodawanie pomysłów i problemów w dashboardzie
-- Menu akcji per chip: **Wyrzuć / Zrób luźny task / Rozpisz na projekt**
+- **Server actions** (`/c/[id]/actions.ts`): `createIdea`, `deleteIdea`,
+  `convertIdeaToTask`, `convertIdeaToProject`, + identyczne dla `Problem`
+- **`LinearAddItem`** (`components/dashboard/linear-add-item.tsx`) —
+  generyczny inline input z propem `kind: "idea" | "problem"`, wzorowany
+  na `LinearAddTask`. Enter zapisuje, Escape zwija.
+- **`ChipActions`** (`components/dashboard/chip-actions.tsx`) — menu na hover
+  chipu z trzema akcjami: **Wyrzuć** / **→ Task** / **→ Projekt**
+- Konwersja transakcyjna (`prisma.$transaction`): pomysł/problem znika,
+  nowy task/projekt powstaje w tym samym kontekście z content jako tytułem
+
+## ✅ Faza 2 — Fixes + DnD + globalny dashboard (DONE)
+
+### TaskCheckbox (`components/dashboard/task-checkbox.tsx`)
+- Wspólny komponent dla `task-row.tsx` (brutal) i `linear-dashboard.tsx` (Linear v2)
+- Kremowe tło `#FBF8F3` + zielony znaczek ✓ (`#16A34A`) zamiast pełnego tła
+- Hit target: 44×44 (brutal, via `p-3 -m-3`), ~32×32 (Linear v2 compact) —
+  łatwo kliknąć mimo dysleksji i astygmatyzmu
+
+### Drag & Drop (`@dnd-kit/core` + `sortable` + `utilities`)
+- **Grip-only**: drag uruchamia się tylko z uchwytu `<GripVertical>`,
+  reszta row normalnie klikalna (panel szczegółów)
+- `PointerSensor` `activationConstraint: { distance: 8 }` — drag startuje
+  dopiero po 8px przesunięciu
+- Sortowanie projektów w ramach kontekstu → `reorderProjects`
+- Sortowanie tasków w ramach kontenera (projekt albo luźne) → `reorderTasks`
+- Cross-container dla tasków: drag z projektu A do B → `moveTaskToProject`,
+  drag z projektu do luźnych → `releaseTaskFromProject`
+- Optimistic UI: lokalny `useState` mirror + `router.refresh()` po akcji
+
+### Globalny dashboard `/` w stylu Linear v2
+- `LinearDashboard` z propami `readOnly` i `isGlobal`
+- `/` renderuje ten sam komponent bez prawego panelu, bez DnD, bez edycji
+- Badge'y kontekstu pochodzenia przy każdym projekcie i tasku
+- Klik w task/projekt na `/` → navigate do `/c/{context.id}`
+- Stare `DashboardView` i `task-row.tsx` zostają jako nieużywany kod —
+  do sprzątnięcia w Etapie 7 (polishing)
+
+## 🔜 Etap 6 — Strona projektu (NEXT)
+
+- Nowa route `/c/[id]/p/[projectId]`
+- Pełny widok projektu: taski, notatki, linki, historia rozmów (placeholder do E10)
+- Query `getProjectView(projectId)`
+- Klik w nazwę projektu na dashboardzie → strona projektu
 
 ## Backlog
 
-- Etap 6 — Strona projektu (`/c/[id]/p/[projectId]`, zakładki)
-- Etap 7 — Polishing (animacje, skróty, DnD, global search)
+- Etap 7 — Polishing (animacje, skróty, global search, override koloru dziecka,
+  sprzątanie `dashboard-view.tsx` + `task-row.tsx`, drop-zone dla pustych kontenerów DnD)
 - Etap 8 — Multi-user + Auth.js + panel admina
 - Etap 9 — MCP server (tools: list_contexts, add_task, get_dev_logs, ...)
 - Etap 10 — Wbudowany czat z Claude
