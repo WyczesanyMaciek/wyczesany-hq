@@ -16,6 +16,8 @@ import {
   releaseTaskFromProject,
   addTaskLink,
   removeTaskLink,
+  addTaskAttachment,
+  removeTaskAttachment,
 } from "@/app/(app)/c/[id]/actions";
 
 // YYYY-MM-DD z Date, pod <input type="date">.
@@ -219,6 +221,10 @@ function TaskDetailPanel({
   const [addingLink, setAddingLink] = useState(false);
   const [linkLabel, setLinkLabel] = useState("");
   const [linkUrl, setLinkUrl] = useState("");
+  const [addingAttachment, setAddingAttachment] = useState(false);
+  const [attKind, setAttKind] = useState<"image" | "video" | "file">("image");
+  const [attName, setAttName] = useState("");
+  const [attUrl, setAttUrl] = useState("");
   // Reset edit state przy zmianie taska jest zalatwiony przez `key`
   // na TaskDetailPanel w rodzicu (React re-mountuje komponente).
 
@@ -296,6 +302,29 @@ function TaskDetailPanel({
   const handleRemoveLink = (linkId: string) => {
     startTransition(async () => {
       await removeTaskLink(linkId);
+      router.refresh();
+    });
+  };
+
+  const handleAddAttachment = () => {
+    const id = task.id;
+    const name = attName.trim();
+    const url = attUrl.trim();
+    if (!name || !url) return;
+    startTransition(async () => {
+      await addTaskAttachment(id, { kind: attKind, name, url });
+      setAttName("");
+      setAttUrl("");
+      setAttKind("image");
+      setAddingAttachment(false);
+      router.refresh();
+    });
+  };
+
+  const handleRemoveAttachment = (attId: string) => {
+    if (!confirm("Usunac zalacznik?")) return;
+    startTransition(async () => {
+      await removeTaskAttachment(attId);
       router.refresh();
     });
   };
@@ -607,14 +636,127 @@ function TaskDetailPanel({
       <div className="sect-h">Pliki i zdjęcia</div>
       <div className="files">
         {task.attachments.map((a) => (
-          <div key={a.id} className={`tile ${a.kind === "video" ? "vid" : "img"}`}>
-            {a.kind === "video" ? "▶" : "IMG"}
+          <div
+            key={a.id}
+            className={`tile ${a.kind === "video" ? "vid" : "img"}`}
+            onClick={() => handleRemoveAttachment(a.id)}
+            title="Kliknij zeby usunac"
+            style={{ cursor: "pointer", position: "relative" }}
+          >
+            {a.kind === "video" ? "▶" : a.kind === "file" ? "📄" : "IMG"}
             <br />
             {a.name}
           </div>
         ))}
-        <div className="tile add">+ dodaj</div>
+        <div
+          className="tile add"
+          onClick={() => setAddingAttachment(true)}
+          style={{ cursor: "pointer" }}
+        >
+          + dodaj
+        </div>
       </div>
+      {addingAttachment ? (
+        <div
+          style={{
+            marginTop: 8,
+            padding: 8,
+            display: "flex",
+            flexDirection: "column",
+            gap: 6,
+            border: "1px solid var(--l-line)",
+            borderRadius: 6,
+            background: "var(--l-bg-soft)",
+          }}
+        >
+          <select
+            value={attKind}
+            onChange={(e) =>
+              setAttKind(e.target.value as "image" | "video" | "file")
+            }
+            disabled={pending}
+            style={{
+              font: "inherit",
+              padding: "4px 6px",
+              border: "1px solid var(--l-line)",
+              borderRadius: 4,
+              background: "#fff",
+            }}
+          >
+            <option value="image">Zdjecie</option>
+            <option value="video">Wideo</option>
+            <option value="file">Plik</option>
+          </select>
+          <input
+            placeholder="Nazwa"
+            value={attName}
+            onChange={(e) => setAttName(e.target.value)}
+            disabled={pending}
+            style={{
+              font: "inherit",
+              padding: "4px 6px",
+              border: "1px solid var(--l-line)",
+              borderRadius: 4,
+              background: "#fff",
+            }}
+          />
+          <input
+            placeholder="URL"
+            value={attUrl}
+            onChange={(e) => setAttUrl(e.target.value)}
+            disabled={pending}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleAddAttachment();
+              else if (e.key === "Escape") {
+                setAddingAttachment(false);
+                setAttName("");
+                setAttUrl("");
+              }
+            }}
+            style={{
+              font: "inherit",
+              padding: "4px 6px",
+              border: "1px solid var(--l-line)",
+              borderRadius: 4,
+              background: "#fff",
+            }}
+          />
+          <div style={{ display: "flex", gap: 6 }}>
+            <button
+              onClick={handleAddAttachment}
+              disabled={pending || !attName.trim() || !attUrl.trim()}
+              style={{
+                padding: "4px 10px",
+                background: "var(--l-accent)",
+                color: "#fff",
+                border: 0,
+                borderRadius: 4,
+                cursor: "pointer",
+                font: "inherit",
+              }}
+            >
+              Dodaj
+            </button>
+            <button
+              onClick={() => {
+                setAddingAttachment(false);
+                setAttName("");
+                setAttUrl("");
+              }}
+              style={{
+                padding: "4px 10px",
+                background: "#fff",
+                border: "1px solid var(--l-line)",
+                borderRadius: 4,
+                cursor: "pointer",
+                font: "inherit",
+              }}
+            >
+              Anuluj
+            </button>
+          </div>
+        </div>
+      ) : null}
 
       <div className="sect-h">Linki</div>
       <div className="llinks">
