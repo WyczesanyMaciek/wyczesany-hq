@@ -127,17 +127,21 @@ function TaskRow({
   task,
   selected,
   onSelect,
+  readOnly = false,
+  showContextBadge = false,
 }: {
   task: DashboardTask;
   selected: boolean;
   onSelect: (id: string) => void;
+  readOnly?: boolean;
+  showContextBadge?: boolean;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [editingName, setEditingName] = useState(false);
   const due = formatDue(task.deadline);
 
-  // DnD — sortowalny w ramach kontenera (projekt albo luzne)
+  // DnD — sortowalny w ramach kontenera (projekt albo luzne), disabled w read-only
   const {
     attributes,
     listeners,
@@ -145,7 +149,7 @@ function TaskRow({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: `task:${task.id}` });
+  } = useSortable({ id: `task:${task.id}`, disabled: readOnly });
   const dndStyle: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -154,6 +158,7 @@ function TaskRow({
 
   const handleToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (readOnly) return;
     const id = task.id;
     startTransition(async () => {
       await toggleTask(id);
@@ -182,20 +187,24 @@ function TaskRow({
         if (!editingName) onSelect(task.id);
       }}
     >
-      <span
-        className="grip"
-        {...listeners}
-        onClick={(e) => e.stopPropagation()}
-        style={{ cursor: "grab", display: "flex", alignItems: "center" }}
-        aria-label="Przeciagnij"
-      >
-        <GripVertical size={12} />
-      </span>
+      {readOnly ? (
+        <span className="grip" style={{ opacity: 0 }} aria-hidden="true" />
+      ) : (
+        <span
+          className="grip"
+          {...listeners}
+          onClick={(e) => e.stopPropagation()}
+          style={{ cursor: "grab", display: "flex", alignItems: "center" }}
+          aria-label="Przeciagnij"
+        >
+          <GripVertical size={12} />
+        </span>
+      )}
       <TaskCheckbox
         compact
         done={task.done}
         onToggle={handleToggle}
-        disabled={pending}
+        disabled={pending || readOnly}
       />
       {editingName ? (
         <input
@@ -225,12 +234,25 @@ function TaskRow({
         <span
           className="name"
           onDoubleClick={(e) => {
+            if (readOnly) return;
             e.stopPropagation();
             setEditingName(true);
           }}
-          title="Dwuklik zeby edytowac"
+          title={readOnly ? task.title : "Dwuklik zeby edytowac"}
         >
           {task.title}
+          {showContextBadge && (
+            <span
+              className="ctx"
+              style={{
+                background: `${task.context.color}22`,
+                color: task.context.color,
+                marginLeft: 6,
+              }}
+            >
+              {task.context.name}
+            </span>
+          )}
         </span>
       )}
       <span className={`due ${due?.late ? "late" : ""}`}>{due?.text ?? ""}</span>
@@ -250,12 +272,16 @@ function ProjectCard({
   onToggle,
   selectedTaskId,
   onSelectTask,
+  readOnly = false,
+  showContextBadge = false,
 }: {
   project: DashboardData["projects"][number];
   collapsed: boolean;
   onToggle: () => void;
   selectedTaskId: string | null;
   onSelectTask: (id: string) => void;
+  readOnly?: boolean;
+  showContextBadge?: boolean;
 }) {
   const percent =
     project.taskTotal > 0
@@ -263,7 +289,7 @@ function ProjectCard({
       : 0;
   const due = formatDue(project.deadline);
 
-  // DnD — projekt sortowalny w ramach kontekstu
+  // DnD — projekt sortowalny w ramach kontekstu, disabled w read-only
   const {
     attributes,
     listeners,
@@ -271,7 +297,7 @@ function ProjectCard({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: `project:${project.id}` });
+  } = useSortable({ id: `project:${project.id}`, disabled: readOnly });
   const dndStyle: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -294,23 +320,32 @@ function ProjectCard({
           onToggle();
         }}
       >
-        <span
-          className="grip"
-          {...listeners}
-          onClick={(e) => e.stopPropagation()}
-          style={{ cursor: "grab", display: "flex", alignItems: "center" }}
-          aria-label="Przeciagnij projekt"
-        >
-          <GripVertical size={12} />
-        </span>
+        {readOnly ? (
+          <span className="grip" style={{ opacity: 0 }} aria-hidden="true" />
+        ) : (
+          <span
+            className="grip"
+            {...listeners}
+            onClick={(e) => e.stopPropagation()}
+            style={{ cursor: "grab", display: "flex", alignItems: "center" }}
+            aria-label="Przeciagnij projekt"
+          >
+            <GripVertical size={12} />
+          </span>
+        )}
         <div>
           <b>{project.name}</b>{" "}
-          <span
-            className="ctx"
-            style={{ background: `${project.context.color}22`, color: project.context.color }}
-          >
-            {project.context.name}
-          </span>
+          {showContextBadge && (
+            <span
+              className="ctx"
+              style={{
+                background: `${project.context.color}22`,
+                color: project.context.color,
+              }}
+            >
+              {project.context.name}
+            </span>
+          )}
         </div>
         <div className="meta">
           <div className="progbar">
@@ -1062,11 +1097,20 @@ function TaskDetailPanel({
 // Root
 // ============================================================
 
-export function LinearDashboard({ data }: { data: DashboardData }) {
+export function LinearDashboard({
+  data,
+  readOnly = false,
+  isGlobal = false,
+}: {
+  data: DashboardData;
+  readOnly?: boolean;
+  isGlobal?: boolean;
+}) {
   const router = useRouter();
   const [, startTransition] = useTransition();
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+  const currentId = data.current?.id ?? null;
 
   // Optimistic state dla DnD — synchronizowany z `data` na zmiany servera
   const [projects, setProjects] = useState(data.projects);
@@ -1100,7 +1144,17 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
 
   const selected = selectedTaskId ? taskMap.get(selectedTaskId) ?? null : null;
 
-  const title = data.current?.name ?? "Wszystko";
+  // W read-only klik w task → navigate do kontekstu taska zamiast panelu
+  const handleSelectTask = (id: string) => {
+    if (!readOnly) {
+      setSelectedTaskId(id);
+      return;
+    }
+    const t = taskMap.get(id)?.task;
+    if (t) router.push(`/c/${t.context.id}`);
+  };
+
+  const title = isGlobal ? "Wszystko" : data.current?.name ?? "Wszystko";
   const color = data.current?.color ?? "#64748b";
 
   // ===== DnD =====
@@ -1128,6 +1182,7 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
   );
 
   const handleDragEnd = (event: DragEndEvent) => {
+    if (readOnly) return;
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
@@ -1219,7 +1274,7 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "1fr 320px",
+        gridTemplateColumns: readOnly ? "1fr" : "1fr 320px",
         minHeight: "100vh",
       }}
     >
@@ -1228,17 +1283,23 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
         {/* Top bar */}
         <div className="lbar">
           <span className="crumb">
-            Konteksty / <b>{title}</b>
-            <span
-              className="pill-ctx"
-              style={{ background: `${color}22`, color }}
-            >
-              ● {title}
-            </span>
+            {isGlobal ? (
+              <b>{title}</b>
+            ) : (
+              <>
+                Konteksty / <b>{title}</b>
+                <span
+                  className="pill-ctx"
+                  style={{ background: `${color}22`, color }}
+                >
+                  ● {title}
+                </span>
+              </>
+            )}
           </span>
           <div className="spacer">
             <button className="lbtn ghost">Filtry</button>
-            {data.current ? (
+            {!readOnly && data.current ? (
               <LinearNewProjectButton
                 contextId={data.current.id}
                 variant="ghost"
@@ -1250,8 +1311,8 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
         {/* ===== PROJEKTY ===== */}
         <div className="lsec">
           <h3>Projekty</h3>
-          <span className="n">{data.projects.length}</span>
-          {data.current ? (
+          <span className="n">{projects.length}</span>
+          {!readOnly && data.current ? (
             <LinearNewProjectButton
               contextId={data.current.id}
               variant="addline"
@@ -1274,7 +1335,9 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
                 collapsed={collapsed.has(p.id)}
                 onToggle={() => toggleCollapse(p.id)}
                 selectedTaskId={selectedTaskId}
-                onSelectTask={setSelectedTaskId}
+                onSelectTask={handleSelectTask}
+                readOnly={readOnly}
+                showContextBadge={isGlobal || p.context.id !== currentId}
               />
             ))}
           </SortableContext>
@@ -1315,12 +1378,14 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
                     key={t.id}
                     task={t}
                     selected={selectedTaskId === t.id}
-                    onSelect={setSelectedTaskId}
+                    onSelect={handleSelectTask}
+                    readOnly={readOnly}
+                    showContextBadge={isGlobal || t.context.id !== currentId}
                   />
                 ))
               )}
             </SortableContext>
-            {data.current ? (
+            {!readOnly && data.current ? (
               <LinearAddTask contextId={data.current.id} label="+ Dodaj zadanie" />
             ) : null}
           </div>
@@ -1330,7 +1395,7 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
         <div className="lsec" style={{ marginTop: 22 }}>
           <h3>Pomysły</h3>
           <span className="n">{data.ideas.length}</span>
-          {data.current ? (
+          {!readOnly && data.current ? (
             <LinearAddItem kind="idea" contextId={data.current.id} />
           ) : null}
         </div>
@@ -1341,7 +1406,7 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
               {i.content}
               <div className="meta">{i.context.name}</div>
             </div>
-            <ChipActions kind="idea" id={i.id} />
+            {!readOnly && <ChipActions kind="idea" id={i.id} />}
           </div>
         ))}
 
@@ -1349,7 +1414,7 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
         <div className="lsec" style={{ marginTop: 22 }}>
           <h3>Problemy</h3>
           <span className="n">{data.problems.length}</span>
-          {data.current ? (
+          {!readOnly && data.current ? (
             <LinearAddItem kind="problem" contextId={data.current.id} />
           ) : null}
         </div>
@@ -1360,7 +1425,7 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
               {p.content}
               <div className="meta">{p.context.name}</div>
             </div>
-            <ChipActions kind="problem" id={p.id} />
+            {!readOnly && <ChipActions kind="problem" id={p.id} />}
           </div>
         ))}
 
@@ -1369,13 +1434,15 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
       </main>
 
       {/* ============ PRAWY PANEL ============ */}
-      <TaskDetailPanel
-        key={selectedTaskId ?? "none"}
-        task={selected?.task ?? null}
-        projectName={selected?.projectName ?? null}
-        projects={projects.map((p) => ({ id: p.id, name: p.name }))}
-        onDeleted={() => setSelectedTaskId(null)}
-      />
+      {!readOnly && (
+        <TaskDetailPanel
+          key={selectedTaskId ?? "none"}
+          task={selected?.task ?? null}
+          projectName={selected?.projectName ?? null}
+          projects={projects.map((p) => ({ id: p.id, name: p.name }))}
+          onDeleted={() => setSelectedTaskId(null)}
+        />
+      )}
     </div>
     </DndContext>
   );
