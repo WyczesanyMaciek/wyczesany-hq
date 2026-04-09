@@ -22,6 +22,7 @@ import {
 import { LinearNewProjectButton } from "./linear-new-project";
 import { LinearAddTask } from "./linear-add-task";
 import { TaskCheckbox } from "./task-checkbox";
+import { LinearAddItem } from "./linear-add-item";
 
 // YYYY-MM-DD z Date, pod <input type="date">.
 function toDateInput(d: Date | null): string {
@@ -1117,7 +1118,9 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
         <div className="lsec" style={{ marginTop: 22 }}>
           <h3>Pomysły</h3>
           <span className="n">{data.ideas.length}</span>
-          <button className="add">+ dodaj pomysł</button>
+          {data.current ? (
+            <LinearAddItem kind="idea" contextId={data.current.id} />
+          ) : null}
         </div>
         {data.ideas.map((i) => (
           <div key={i.id} className="chip-row">
@@ -1133,7 +1136,9 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
         <div className="lsec" style={{ marginTop: 22 }}>
           <h3>Problemy</h3>
           <span className="n">{data.problems.length}</span>
-          <button className="add">+ dodaj problem</button>
+          {data.current ? (
+            <LinearAddItem kind="problem" contextId={data.current.id} />
+          ) : null}
         </div>
         {data.problems.map((p) => (
           <div key={p.id} className="chip-row" style={{ marginBottom: 12 }}>
