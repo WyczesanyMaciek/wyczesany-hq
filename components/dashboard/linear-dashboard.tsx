@@ -1,12 +1,14 @@
 "use client";
 
-// LinearDashboard — nowy widok dashboardu w stylu Linear v2.
+// LinearDashboard — widok dashboardu kontekstu w stylu Linear v2.
 // Dwie kolumny: srodek (projekty / luzne taski / pomysly / problemy)
 // + prawy panel szczegolow klikanego taska (320px).
-// Zero DnD i zero edycji CRUD w tym etapie — to jest Etap 2.
+// Interakcje CRUD podlaczone do server actions z /c/[id]/actions.ts.
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import type { DashboardData, DashboardTask } from "@/lib/queries/dashboard";
+import { toggleTask, deleteTask } from "@/app/(app)/c/[id]/actions";
 
 // ============================================================
 // Helpery formatujace
@@ -183,10 +185,15 @@ function ProjectCard({
 function TaskDetailPanel({
   task,
   projectName,
+  onDeleted,
 }: {
   task: DashboardTask | null;
   projectName: string | null;
+  onDeleted: () => void;
 }) {
+  const router = useRouter();
+  const [pending, startTransition] = useTransition();
+
   if (!task) {
     return (
       <div className="lright">
@@ -196,6 +203,24 @@ function TaskDetailPanel({
   }
 
   const due = formatDue(task.deadline);
+
+  const handleToggle = () => {
+    const id = task.id;
+    startTransition(async () => {
+      await toggleTask(id);
+      router.refresh();
+    });
+  };
+
+  const handleDelete = () => {
+    const id = task.id;
+    if (!confirm("Usunac ten task? Akcji nie da sie cofnac.")) return;
+    startTransition(async () => {
+      await deleteTask(id);
+      onDeleted();
+      router.refresh();
+    });
+  };
 
   return (
     <div className="lright">
@@ -209,9 +234,21 @@ function TaskDetailPanel({
         </div>
         <h4>{task.title}</h4>
         <div className="dactions">
-          <button className="primary">✓ {task.done ? "Zrobione" : "Oznacz jako zrobione"}</button>
+          <button
+            className="primary"
+            onClick={handleToggle}
+            disabled={pending}
+          >
+            ✓ {task.done ? "Zrobione" : "Oznacz jako zrobione"}
+          </button>
           {task.projectId ? <button>↶ Zwolnij z projektu</button> : <button>→ Do projektu</button>}
-          <button>⋯</button>
+          <button
+            onClick={handleDelete}
+            disabled={pending}
+            title="Usun task"
+          >
+            🗑 Usuń
+          </button>
         </div>
       </div>
 
@@ -460,6 +497,7 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
       <TaskDetailPanel
         task={selected?.task ?? null}
         projectName={selected?.projectName ?? null}
+        onDeleted={() => setSelectedTaskId(null)}
       />
     </div>
   );
