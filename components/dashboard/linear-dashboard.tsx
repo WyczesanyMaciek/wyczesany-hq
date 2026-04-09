@@ -12,6 +12,8 @@ import {
   toggleTask,
   deleteTask,
   updateTaskDetails,
+  moveTaskToProject,
+  releaseTaskFromProject,
 } from "@/app/(app)/c/[id]/actions";
 
 // YYYY-MM-DD z Date, pod <input type="date">.
@@ -198,10 +200,12 @@ function ProjectCard({
 function TaskDetailPanel({
   task,
   projectName,
+  projects,
   onDeleted,
 }: {
   task: DashboardTask | null;
   projectName: string | null;
+  projects: Array<{ id: string; name: string }>;
   onDeleted: () => void;
 }) {
   const router = useRouter();
@@ -209,6 +213,7 @@ function TaskDetailPanel({
   const [editing, setEditing] = useState<
     null | "title" | "deadline" | "priority" | "assignee"
   >(null);
+  const [showProjectMenu, setShowProjectMenu] = useState(false);
   // Reset edit state przy zmianie taska jest zalatwiony przez `key`
   // na TaskDetailPanel w rodzicu (React re-mountuje komponente).
 
@@ -248,6 +253,23 @@ function TaskDetailPanel({
     startTransition(async () => {
       await updateTaskDetails(id, patch);
       setEditing(null);
+      router.refresh();
+    });
+  };
+
+  const handleMoveToProject = (projectId: string) => {
+    const id = task.id;
+    startTransition(async () => {
+      await moveTaskToProject(id, projectId);
+      setShowProjectMenu(false);
+      router.refresh();
+    });
+  };
+
+  const handleRelease = () => {
+    const id = task.id;
+    startTransition(async () => {
+      await releaseTaskFromProject(id);
       router.refresh();
     });
   };
@@ -308,7 +330,65 @@ function TaskDetailPanel({
           >
             ✓ {task.done ? "Zrobione" : "Oznacz jako zrobione"}
           </button>
-          {task.projectId ? <button>↶ Zwolnij z projektu</button> : <button>→ Do projektu</button>}
+          {task.projectId ? (
+            <button onClick={handleRelease} disabled={pending}>
+              ↶ Zwolnij z projektu
+            </button>
+          ) : (
+            <div style={{ position: "relative", display: "inline-block" }}>
+              <button
+                onClick={() => setShowProjectMenu((v) => !v)}
+                disabled={pending || projects.length === 0}
+                title={projects.length === 0 ? "Brak projektow" : "Wybierz projekt"}
+              >
+                → Do projektu
+              </button>
+              {showProjectMenu && projects.length > 0 ? (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "100%",
+                    left: 0,
+                    marginTop: 4,
+                    background: "#fff",
+                    border: "1px solid var(--l-line)",
+                    borderRadius: 6,
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+                    minWidth: 180,
+                    maxHeight: 240,
+                    overflow: "auto",
+                    zIndex: 10,
+                  }}
+                >
+                  {projects.map((p) => (
+                    <button
+                      key={p.id}
+                      onClick={() => handleMoveToProject(p.id)}
+                      disabled={pending}
+                      style={{
+                        display: "block",
+                        width: "100%",
+                        padding: "6px 10px",
+                        textAlign: "left",
+                        background: "transparent",
+                        border: 0,
+                        font: "inherit",
+                        cursor: "pointer",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = "var(--l-hover)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = "transparent";
+                      }}
+                    >
+                      {p.name}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+          )}
           <button
             onClick={handleDelete}
             disabled={pending}
@@ -684,6 +764,7 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
         key={selectedTaskId ?? "none"}
         task={selected?.task ?? null}
         projectName={selected?.projectName ?? null}
+        projects={data.projects.map((p) => ({ id: p.id, name: p.name }))}
         onDeleted={() => setSelectedTaskId(null)}
       />
     </div>
