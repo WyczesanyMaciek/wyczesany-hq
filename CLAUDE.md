@@ -254,3 +254,47 @@ Trzymamy się tej kolejności. Nie przeskakuj etapów.
 - `CLAUDE.md` (ten plik) — przeczytaj przy każdej sesji
 - `MODEL.md` — szczegółowy opis modelu danych (do stworzenia w Etapie 1)
 - `PROGRESS.md` — co zrobione, co następne (do aktualizowania po każdym etapie)
+
+## Second Brain — zewnętrzna pamięć (WAŻNE)
+
+Poza tym repo istnieje vault Obsidian, który jest moją (Maćka) pamięcią długoterminową. Claude Code MA dostęp do tego folderu i POWINIEN go aktywnie używać.
+
+### Ścieżka
+
+/Users/maciejczasnowski/Library/Mobile Documents/com~apple~CloudDocs/Obsidian/Wyczesany-Mózg
+
+### Co tam jest
+- `wiki/projects/Tasker.md` — pełen kontekst tego projektu (stack, etapy, decyzje, dług techniczny)
+- `wiki/projects/` — wszystkie projekty Maćka (NBS, Second Brain, inne)
+- `wiki/entities/` — firmy, osoby, narzędzia
+- `wiki/concepts/` — koncepcje, frameworki
+- `index.md` — katalog wszystkich stron wiki
+- `log.md` — chronologiczny dziennik operacji (append-only)
+- `dashboard.md` — status, ostatnie zmiany, priorytety
+
+### Kiedy czytać
+- Na początku sesji: przeczytaj `wiki/projects/Tasker.md` — masz pełen kontekst projektu z perspektywy product ownera
+- Gdy Maciek wspomina inny projekt, osobę, firmę: sprawdź `index.md` i przeczytaj odpowiednią stronę wiki
+- Gdy potrzebujesz kontekstu biznesowego: wiki wie więcej niż to repo
+
+### Kiedy pisać (KLUCZOWE)
+Po każdej istotnej zmianie w projekcie aktualizuj vault:
+
+1. **`wiki/projects/Tasker.md`** — zaktualizuj status etapów, decyzje, dług techniczny, timeline, następne kroki
+2. **`log.md`** — dodaj wpis na GÓRZE (pod nagłówkiem, przed innymi wpisami) w formacie:
+   ## [YYYY-MM-DD] code | Krótki opis
+   - Projekt: Tasker
+   - Zmiany: [co się zmieniło]
+   - Decyzje: [decyzje techniczne]
+   - Następne: [co dalej]
+3. **`dashboard.md`** — zaktualizuj sekcję "Ostatnie operacje" (nowy wpis na górze listy)
+4. **Nowe strony wiki** — jeśli pojawi się nowy koncept, narzędzie, osoba lub firma warta zapamiętania, stwórz stronę w wiki/ z frontmatter YAML (type, created, updated, tags, status)
+
+### Konwencje
+- Pisz po polsku (terminy techniczne mogą być po angielsku)
+- Używaj [[wikilinks]] do łączenia stron
+- NIE modyfikuj plików w raw/ — read-only
+- Lepiej zapisać za dużo niż za mało
+
+### Zasada
+Traktuj vault jak shared state między wszystkimi instancjami Claude. Ty (Code w VS Code) jesteś developerem. Cowork jest architektem wiedzy. Vault jest waszym wspólnym repozytorium kontekstu. Pisz tak, żeby następna instancja mogła kontynuować bez pytania "o co chodzi".
