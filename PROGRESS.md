@@ -163,17 +163,38 @@
 - Puste projekty: `EmptyDropZone` z `useDroppable`, visual feedback (dashed border)
 - Pusta sekcja luźnych tasków: `LooseDropZone` analogicznie
 
-## 🔜 Etap 8 — Multi-user + Auth.js + panel admina (NEXT)
+## ✅ Etap 8 — Multi-user + Auth.js + panel admina (DONE)
 
-- Auth.js magic link (logowanie po mailu, bez haseł)
-- Whitelist emaili w ustawieniach (admin dodaje/usuwa)
-- Role: admin / member
-- Tabela UserContextAccess (dostęp do kontekstów, dziedziczenie w dół)
-- Panel admina: zarządzanie userami i uprawnieniami
-- Avatary współpracowników w UI kontekstu
+- **Auth.js v5** z Resend (magic link, bez haseł)
+- Schema: User, Account, Session, VerificationToken, UserContextAccess
+- Whitelist: pierwszy user auto-admin, reszta musi być dodana przez admina
+- Middleware chroni routes (redirect na `/login`)
+- Strony: `/login`, `/login/verify`, `/login/error`
+- Panel admina `/settings/users`:
+  - Dodawanie emaili (whitelist)
+  - Zmiana ról (admin/member)
+  - Grant/revoke dostępu do kontekstów per user
+- UserMenu w sidebarze (avatar + wyloguj)
+- Sesja z `auth()` w layout, przekazywana do Sidebar
+
+## ✅ Etap 9 — MCP server (DONE)
+
+- Endpoint: `/api/mcp` (Streamable HTTP, stateless, serverless-friendly)
+- SDK: `@modelcontextprotocol/sdk` + `WebStandardStreamableHTTPServerTransport`
+- 10 tools:
+  1. `list_contexts` — drzewko kontekstów z licznikami
+  2. `get_context_dashboard(contextId)` — dashboard z agregacją w górę
+  3. `get_global_dashboard` — globalne liczniki
+  4. `add_task(contextId|projectId, title, priority?, deadline?)` — nowy task
+  5. `add_idea(contextId, content)` — nowy pomysł
+  6. `add_problem(contextId, content)` — nowy problem
+  7. `add_note(contextId, content, projectId?)` — nowa notatka
+  8. `toggle_task(taskId)` — toggle done/undone
+  9. `list_tasks(contextId?, projectId?, done?)` — listuj z filtrami
+  10. `create_project(contextId, name, description?)` — nowy projekt
+- Middleware wyjątek: `/api/mcp` publiczny (bez auth na razie)
 
 ## Backlog
 
-- Etap 9 — MCP server (tools: list_contexts, add_task, get_dev_logs, ...)
 - Etap 10 — Wbudowany czat z Claude
 - Etap 11 — Migracja produkcyjna + custom domain
