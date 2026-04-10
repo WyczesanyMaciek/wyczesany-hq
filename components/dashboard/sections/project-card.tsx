@@ -9,6 +9,7 @@
 
 import { useMemo } from "react";
 import Link from "next/link";
+import { useDroppable } from "@dnd-kit/core";
 import { useSortable, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical } from "lucide-react";
@@ -126,9 +127,7 @@ export function ProjectCard({
             strategy={verticalListSortingStrategy}
           >
             {project.tasks.length === 0 ? (
-              <div className="add-row" style={{ color: "var(--l-muted)" }}>
-                Brak zadan
-              </div>
+              <EmptyDropZone projectId={project.id} readOnly={readOnly} />
             ) : (
               project.tasks.map((t) => (
                 <TaskRow
@@ -144,6 +143,32 @@ export function ProjectCard({
           {!readOnly && <LinearAddTask projectId={project.id} />}
         </div>
       ) : null}
+    </div>
+  );
+}
+
+// Drop target dla pustego projektu — pozwala wrzucic task do projektu bez taskow.
+function EmptyDropZone({ projectId, readOnly }: { projectId: string; readOnly: boolean }) {
+  const { setNodeRef, isOver } = useDroppable({
+    id: `project:${projectId}`,
+    disabled: readOnly,
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      className="add-row"
+      style={{
+        color: "var(--l-muted)",
+        padding: "8px 10px",
+        borderRadius: 4,
+        border: isOver ? "1px dashed var(--l-accent, #5B3DF5)" : "1px dashed transparent",
+        background: isOver ? "rgba(99,102,241,0.05)" : "transparent",
+        transition: "all 150ms",
+        minHeight: 32,
+      }}
+    >
+      {isOver ? "Upusc tutaj" : "Brak zadan"}
     </div>
   );
 }

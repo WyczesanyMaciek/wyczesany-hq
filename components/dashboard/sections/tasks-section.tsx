@@ -6,6 +6,7 @@
 // Dane przez propy. Na dashboardzie kontekstu + globalnym.
 
 import { useMemo } from "react";
+import { useDroppable } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import type { DashboardTask } from "@/lib/queries/dashboard";
 import { LinearAddTask } from "../linear-add-task";
@@ -57,15 +58,7 @@ export function TasksSection({
           strategy={verticalListSortingStrategy}
         >
           {looseTasks.length === 0 ? (
-            <div
-              style={{
-                padding: "6px 10px",
-                color: "#94a3b8",
-                fontSize: 12.5,
-              }}
-            >
-              Brak luznych taskow
-            </div>
+            <LooseDropZone readOnly={readOnly} />
           ) : (
             looseTasks.map((t) => (
               <TaskRow
@@ -84,5 +77,31 @@ export function TasksSection({
         ) : null}
       </div>
     </>
+  );
+}
+
+// Drop target dla pustej sekcji luznych taskow.
+function LooseDropZone({ readOnly }: { readOnly: boolean }) {
+  const { setNodeRef, isOver } = useDroppable({
+    id: "loose",
+    disabled: readOnly,
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{
+        padding: "8px 10px",
+        color: "#94a3b8",
+        fontSize: 12.5,
+        borderRadius: 4,
+        border: isOver ? "1px dashed var(--l-accent, #5B3DF5)" : "1px dashed transparent",
+        background: isOver ? "rgba(99,102,241,0.05)" : "transparent",
+        transition: "all 150ms",
+        minHeight: 32,
+      }}
+    >
+      {isOver ? "Upusc tutaj" : "Brak luznych taskow"}
+    </div>
   );
 }
