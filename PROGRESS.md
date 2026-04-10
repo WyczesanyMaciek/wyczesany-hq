@@ -124,18 +124,56 @@
 - Stare `DashboardView` i `task-row.tsx` zostają jako nieużywany kod —
   do sprzątnięcia w Etapie 7 (polishing)
 
-## 🔜 Etap 6 — Strona projektu (NEXT)
+## ✅ Etap 6 — Strona projektu (DONE)
 
-- Nowa route `/c/[id]/p/[projectId]`
-- Pełny widok projektu: taski, notatki, linki, historia rozmów (placeholder do E10)
-- Query `getProjectView(projectId)`
-- Klik w nazwę projektu na dashboardzie → strona projektu
+- Route `/c/[id]/p/[projectId]` — server + client component
+- `getProjectDetail(projectId)` — query z taskami, notatkami, linkami, breadcrumb
+- `ProjectView` — pełny widok: header z meta, taski z DnD, notatki, linki,
+  placeholder historia rozmów (Etap 10), prawy panel (reuse TaskDetailPanel)
+- Server actions: `updateProjectDetails`, `createProjectNote`, `updateProjectNote`,
+  `deleteProjectNote`, `createProjectLink`, `deleteProjectLink`
+- Nawigacja: klik w nazwę projektu → strona projektu (chevron = collapse)
+
+## ✅ Etap 7 — Polishing (DONE)
+
+### Sprzątanie
+- Usunięto dead code: `shared/dnd/dnd-provider.tsx`, `shared/dnd/use-dnd-handlers.ts`
+- Brutal CSS classes zostają (używane w settings + design-system)
+
+### Animacje Framer Motion
+- Staggered fade-in na kartach projektów (`listContainer` + `listItem`)
+- Staggered fade-in na chipach pomysłów i problemów
+- Slide-in z prawej na panelu szczegółów taska (`springSoft`)
+- Sidebar: chevron rotation + AnimatePresence na dzieci (było wcześniej)
+
+### Skróty klawiszowe
+- `Escape` — zamknij prawy panel (odznacz task)
+- `/` — otwórz global search
+- Hook `useHotkeys` (`lib/use-hotkeys.ts`) — ignoruje input/textarea/select
+
+### Global search
+- `searchAll()` query (`lib/queries/search.ts`) — szuka w kontekstach, projektach,
+  taskach, pomysłach, problemach (case-insensitive, max 20 wyników)
+- `SearchDialog` z animacją (motion), nawigacja ↑↓ Enter Esc
+- Przycisk "Szukaj..." w sidebarze z podpowiedzią skrótu `/`
+- `AppShell` wrapper z React context na openSearch callback
+- Server action `searchAction` do wywołania z klienta
+
+### DnD drop-zone
+- Puste projekty: `EmptyDropZone` z `useDroppable`, visual feedback (dashed border)
+- Pusta sekcja luźnych tasków: `LooseDropZone` analogicznie
+
+## 🔜 Etap 8 — Multi-user + Auth.js + panel admina (NEXT)
+
+- Auth.js magic link (logowanie po mailu, bez haseł)
+- Whitelist emaili w ustawieniach (admin dodaje/usuwa)
+- Role: admin / member
+- Tabela UserContextAccess (dostęp do kontekstów, dziedziczenie w dół)
+- Panel admina: zarządzanie userami i uprawnieniami
+- Avatary współpracowników w UI kontekstu
 
 ## Backlog
 
-- Etap 7 — Polishing (animacje, skróty, global search, override koloru dziecka,
-  sprzątanie `dashboard-view.tsx` + `task-row.tsx`, drop-zone dla pustych kontenerów DnD)
-- Etap 8 — Multi-user + Auth.js + panel admina
 - Etap 9 — MCP server (tools: list_contexts, add_task, get_dev_logs, ...)
 - Etap 10 — Wbudowany czat z Claude
-- Faza porządków — decyzja estetyki (Linear v2 vs brutal) i refactor
+- Etap 11 — Migracja produkcyjna + custom domain
