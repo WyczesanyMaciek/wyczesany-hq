@@ -403,12 +403,17 @@ h4 { font-size: 1.07rem; }   /* 16px */
   color: var(--l-accent);
 }
 
-/* Project card */
+/* Project card — DS v1 */
 .linear-app .lprj {
   margin: 6px 12px;
-  border: 1.5px solid var(--l-line);
-  border-radius: 8px;
-  background: #fff;
+  border: 1.5px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  background: var(--bg-surface);
+  transition: all var(--transition-base);
+}
+.linear-app .lprj:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
 }
 .linear-app .lprj .head {
   display: grid;
@@ -472,32 +477,40 @@ h4 { font-size: 1.07rem; }   /* 16px */
   padding: 4px 6px 6px;
 }
 
-/* Task row */
+/* Task row — DS v1: border transparent -> border+shadow on hover */
 .linear-app .ltask {
   display: grid;
   grid-template-columns: 14px 22px 1fr 80px 22px 24px;
   gap: 8px;
   align-items: center;
-  padding: 5px 8px;
-  border-radius: 5px;
-  font-size: 12.8px;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
   cursor: pointer;
+  border: 1.5px solid transparent;
+  margin-bottom: 2px;
+  transition: all var(--transition-fast);
+  background: var(--bg-surface);
 }
 .linear-app .ltask:hover {
-  background: var(--l-hover);
+  border-color: var(--border-default);
+  box-shadow: var(--shadow-sm);
 }
 .linear-app .ltask.selected {
+  border-color: var(--l-accent);
   background: var(--l-accent-soft);
 }
 .linear-app .ltask .grip {
-  color: #d1d5db;
+  color: var(--border-strong);
   cursor: grab;
   font-size: 11px;
   user-select: none;
   line-height: 1;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
 }
 .linear-app .ltask:hover .grip {
-  color: #94a3b8;
+  opacity: 1;
 }
 .linear-app .ltask.done .name {
   color: var(--l-muted);
@@ -520,23 +533,27 @@ h4 { font-size: 1.07rem; }   /* 16px */
 }
 .linear-app .ltask .prio {
   display: flex;
-  gap: 2px;
+  align-items: center;
   justify-content: center;
 }
 .linear-app .ltask .prio i {
-  width: 3px;
-  height: 11px;
-  background: #e5e7eb;
-  border-radius: 1px;
+  display: none;
 }
-.linear-app .ltask .prio.hi i:nth-child(-n + 3) {
-  background: #ef4444;
+.linear-app .ltask .prio::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: transparent;
 }
-.linear-app .ltask .prio.md i:nth-child(-n + 2) {
-  background: #f59e0b;
+.linear-app .ltask .prio.hi::before {
+  background: var(--status-danger);
 }
-.linear-app .ltask .prio.lo i:nth-child(1) {
-  background: #64748b;
+.linear-app .ltask .prio.md::before {
+  background: var(--status-warning);
+}
+.linear-app .ltask .prio.lo::before {
+  background: #74B9FF;
 }
 .linear-app .ltask .who {
   width: 22px;
@@ -565,19 +582,21 @@ h4 { font-size: 1.07rem; }   /* 16px */
   color: var(--l-accent);
 }
 
-/* Pomysly / Problemy */
+/* Pomysly / Problemy — DS v1 */
 .linear-app .chip-row {
   margin: 6px 12px;
-  background: #fff;
-  border: 1.5px solid var(--l-line);
-  border-radius: 8px;
-  padding: 8px 10px;
+  background: var(--bg-surface);
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
   display: flex;
   align-items: flex-start;
   gap: 10px;
+  transition: all var(--transition-fast);
 }
 .linear-app .chip-row:hover {
-  background: var(--l-bg-soft);
+  border-color: var(--border-default);
+  box-shadow: var(--shadow-sm);
 }
 .linear-app .chip-row .icn {
   width: 22px;
@@ -628,10 +647,10 @@ h4 { font-size: 1.07rem; }   /* 16px */
   background: var(--l-hover);
 }
 
-/* Right detail panel */
+/* Right detail panel — DS v1 */
 .linear-app .lright {
-  background: var(--l-bg-soft);
-  border-left: 1px solid var(--l-line);
+  background: var(--bg-sidebar);
+  border-left: 1.5px solid var(--border-default);
   overflow-y: auto;
   height: 100%;
 }

@@ -234,13 +234,14 @@ function ContextTreeNode({
           paddingTop: 5,
           paddingBottom: 5,
           cursor: "pointer",
-          background: isActive ? "#eef2ff" : undefined,
-          color: isActive ? "#4338ca" : "#0f172a",
-          fontWeight: isActive ? 600 : 500,
-          transition: "background 120ms",
+          background: isActive ? "var(--ds-accent-light)" : undefined,
+          color: isActive ? "var(--ds-accent)" : "var(--text-primary)",
+          fontWeight: isActive ? 700 : 600,
+          transition: "background var(--transition-fast)",
+          borderRadius: "var(--radius-sm)",
         }}
         onMouseEnter={(e) => {
-          if (!isActive) e.currentTarget.style.background = "#f3f4f6";
+          if (!isActive) e.currentTarget.style.background = "var(--bg-sidebar-hover)";
         }}
         onMouseLeave={(e) => {
           if (!isActive) e.currentTarget.style.background = "transparent";
@@ -377,8 +378,9 @@ function FooterLink({
         padding: "6px 16px",
         fontSize: "12.5px",
         fontWeight: 500,
-        color: isActive ? "#4338ca" : "#475569",
-        background: isActive ? "#eef2ff" : undefined,
+        color: isActive ? "var(--ds-accent)" : "var(--text-secondary)",
+        background: isActive ? "var(--ds-accent-light)" : undefined,
+        borderRadius: "var(--radius-sm)",
         textDecoration: "none",
       }}
     >
