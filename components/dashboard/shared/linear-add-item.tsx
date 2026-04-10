@@ -66,7 +66,8 @@ export function LinearAddItem({
           border: 0,
           font: "inherit",
           cursor: "pointer",
-          color: "var(--l-muted)",
+          color: "var(--accent)",
+          fontWeight: 600,
           padding: 0,
         }}
       >

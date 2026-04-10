@@ -185,22 +185,22 @@ export const TaskRow = memo(function TaskRow({
           display: "inline-flex",
           alignItems: "center",
           gap: 4,
-          padding: "2px 8px",
-          fontSize: 11,
-          fontWeight: 700,
+          padding: "2px 10px",
+          fontSize: 12,
+          fontWeight: 600,
           borderRadius: 9999,
           whiteSpace: "nowrap",
           justifySelf: "end",
-          background: task.done ? "#E6F9F3" : "#F0EDE6",
-          color: task.done ? "#00856B" : "#6B6B7B",
+          background: task.done ? "var(--status-success-light)" : "var(--bg-muted)",
+          color: task.done ? "var(--status-success)" : "var(--text-secondary)",
         }}
       >
         <span
           style={{
-            width: 5,
-            height: 5,
+            width: 6,
+            height: 6,
             borderRadius: "50%",
-            background: task.done ? "#00B894" : "#9B9BAB",
+            background: task.done ? "var(--status-success)" : "var(--text-tertiary)",
           }}
         />
         {task.done ? "Zrobione" : "Do zrobienia"}

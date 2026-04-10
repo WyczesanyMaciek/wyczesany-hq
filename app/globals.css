@@ -402,8 +402,8 @@ h4 { font-size: 1.07rem; }   /* 16px */
   margin: 0;
   font-size: 12px;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-tertiary);
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
   font-weight: 700;
 }
 .linear-app .lsec .n {
@@ -416,12 +416,14 @@ h4 { font-size: 1.07rem; }   /* 16px */
 }
 .linear-app .lsec .add {
   margin-left: auto;
-  font-size: 11px;
-  color: var(--l-muted);
+  font-size: 13px;
+  color: var(--accent);
+  font-weight: 600;
   cursor: pointer;
   background: transparent;
   border: 0;
   padding: 2px 6px;
+  font-family: inherit;
 }
 .linear-app .lsec .add:hover {
   color: var(--l-accent);
@@ -754,7 +756,7 @@ h4 { font-size: 1.07rem; }   /* 16px */
   font-size: 13px;
 }
 .linear-app .lright .lmeta label {
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
   font-size: 13px;
   font-weight: 600;
 }
