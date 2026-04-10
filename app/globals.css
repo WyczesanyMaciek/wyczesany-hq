@@ -16,8 +16,8 @@
   --bg-surface-hover: #F7F5F0;
   --bg-surface-active: #F0EDE6;
   --bg-elevated: #FFFFFF;
-  --bg-sidebar: #F5F2EC;
-  --bg-sidebar-hover: #EBE8E1;
+  --bg-sidebar: #EBE6DD;
+  --bg-sidebar-hover: #E3DED4;
   --bg-muted: #F0EDE6;
   --background-soft: #F5EFE3;
 
@@ -133,7 +133,7 @@
   --chart-4: #E17055;
   --chart-5: #74B9FF;
   --radius: 0.625rem;
-  --sidebar: #F5F2EC;
+  --sidebar: #EBE6DD;
   --sidebar-foreground: #1F1F2E;
   --sidebar-primary: #6C5CE7;
   --sidebar-primary-foreground: #FFFFFF;

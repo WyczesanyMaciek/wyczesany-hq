@@ -67,7 +67,7 @@ export function Sidebar({
         width: 240,
         flexShrink: 0,
         borderRight: "1.5px solid var(--border-default)",
-        background: "red",
+        background: "var(--bg-sidebar)",
         position: "sticky",
         top: 0,
         height: "100vh",
