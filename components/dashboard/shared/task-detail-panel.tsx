@@ -167,12 +167,17 @@ export function TaskDetailPanel({
 
   return (
     <div className="lright">
+      {/* Tabs — DS v1 */}
+      <div className="panel-tabs">
+        <button className="active">Szczegóły</button>
+        <button>Aktywność</button>
+      </div>
       <MotionWrap>
       <div className="head">
         <div className="topline">
-          ZADANIE ·{" "}
           <span className="path">
-            {projectName ? `${projectName} / ` : ""}
+            {projectName ? `${projectName}` : ""}
+            {projectName ? " → " : ""}
             {task.context.name}
           </span>
         </div>

@@ -11,7 +11,7 @@ import { memo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical } from "lucide-react";
+// GripVertical usuniety — DS v1 nie uzywa gripa w task row
 import type { DashboardTask } from "@/lib/queries/dashboard";
 import { toggleTask, updateTaskDetails } from "@/app/(app)/c/[id]/actions";
 import { TaskCheckbox } from "./task-checkbox";
@@ -81,25 +81,16 @@ export const TaskRow = memo(function TaskRow({
         if (!editingName) onSelect(task.id);
       }}
     >
-      {readOnly ? (
-        <span className="grip" style={{ opacity: 0 }} aria-hidden="true" />
-      ) : (
-        <span
-          className="grip"
-          {...listeners}
-          onClick={(e) => e.stopPropagation()}
-          style={{ cursor: "grab", display: "flex", alignItems: "center" }}
-          aria-label="Przeciagnij"
-        >
-          <GripVertical size={12} />
-        </span>
-      )}
+      {/* Kolumna 1: checkbox 18px */}
       <TaskCheckbox
         compact
         done={task.done}
         onToggle={handleToggle}
         disabled={pending || readOnly}
       />
+      {/* Kolumna 2: priority dot 8px */}
+      <span className={`prio ${prioClass(task.priority)}`} />
+      {/* Kolumna 3: tytuł — flex-1, ellipsis */}
       {editingName ? (
         <input
           autoFocus
@@ -116,12 +107,13 @@ export const TaskRow = memo(function TaskRow({
           }}
           style={{
             font: "inherit",
-            padding: "2px 4px",
-            border: "1px solid var(--l-accent)",
-            borderRadius: 3,
-            background: "#fff",
+            fontSize: 14,
+            fontWeight: 600,
+            padding: "2px 6px",
+            border: "1.5px solid var(--ds-accent)",
+            borderRadius: "var(--radius-sm)",
+            background: "var(--bg-surface)",
             minWidth: 0,
-            flex: 1,
           }}
         />
       ) : (
@@ -142,6 +134,10 @@ export const TaskRow = memo(function TaskRow({
                 background: `${task.context.color}22`,
                 color: task.context.color,
                 marginLeft: 6,
+                fontSize: 11,
+                padding: "1px 6px",
+                borderRadius: "var(--radius-full, 9999px)",
+                fontWeight: 700,
               }}
             >
               {task.context.name}
@@ -149,13 +145,12 @@ export const TaskRow = memo(function TaskRow({
           )}
         </span>
       )}
+      {/* Kolumna 4: deadline 80px */}
       <span className={`due ${due?.late ? "late" : ""}`}>{due?.text ?? ""}</span>
-      <span className={`prio ${prioClass(task.priority)}`}>
-        <i />
-        <i />
-        <i />
-      </span>
-      <span className="who">{task.assigneeId ?? ""}</span>
+      {/* Kolumna 5: placeholder — 60px (przyszły status badge) */}
+      <span />
+      {/* Kolumna 6: avatar 28px */}
+      <span className="who">{task.assigneeId ? (task.assigneeId[0] ?? "").toUpperCase() : ""}</span>
     </div>
   );
 });

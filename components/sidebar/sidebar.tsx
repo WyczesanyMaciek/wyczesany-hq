@@ -194,7 +194,7 @@ export function Sidebar({
           }}
         >
           <b style={{ color: "#64748b" }}>
-            Build{process.env.NEXT_PUBLIC_BUILD_NUMBER}
+            Build {process.env.NEXT_PUBLIC_BUILD_NUMBER}
           </b>{" "}
           · {process.env.NEXT_PUBLIC_BUILD_TIME}
         </div>
