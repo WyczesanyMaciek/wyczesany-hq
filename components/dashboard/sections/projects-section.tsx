@@ -8,8 +8,10 @@
 // globalnym czy stronie projektu.
 
 import { useMemo } from "react";
+import { motion } from "motion/react";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import type { DashboardProject } from "@/lib/queries/dashboard";
+import { listContainer, listItem } from "@/lib/motion";
 import { LinearNewProjectButton } from "../linear-new-project";
 import { ProjectCard } from "./project-card";
 
@@ -59,18 +61,25 @@ export function ProjectsSection({
           items={projectSortItems}
           strategy={verticalListSortingStrategy}
         >
-          {projects.map((p) => (
-            <ProjectCard
-              key={p.id}
-              project={p}
-              collapsed={collapsed.has(p.id)}
-              onToggle={() => onToggleCollapse(p.id)}
-              selectedTaskId={selectedTaskId}
-              onSelectTask={onSelectTask}
-              readOnly={readOnly}
-              showContextBadge={isGlobal || p.context.id !== currentContextId}
-            />
-          ))}
+          <motion.div
+            variants={listContainer}
+            initial="hidden"
+            animate="show"
+          >
+            {projects.map((p) => (
+              <motion.div key={p.id} variants={listItem}>
+                <ProjectCard
+                  project={p}
+                  collapsed={collapsed.has(p.id)}
+                  onToggle={() => onToggleCollapse(p.id)}
+                  selectedTaskId={selectedTaskId}
+                  onSelectTask={onSelectTask}
+                  readOnly={readOnly}
+                  showContextBadge={isGlobal || p.context.id !== currentContextId}
+                />
+              </motion.div>
+            ))}
+          </motion.div>
         </SortableContext>
       )}
     </>

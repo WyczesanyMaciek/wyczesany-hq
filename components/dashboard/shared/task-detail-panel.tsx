@@ -10,7 +10,9 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { motion } from "motion/react";
 import type { DashboardTask } from "@/lib/queries/dashboard";
+import { springSoft } from "@/lib/motion";
 import {
   toggleTask,
   deleteTask,
@@ -58,6 +60,17 @@ export function TaskDetailPanel({
       </div>
     );
   }
+
+  // Wrapper z animacja slide-in z prawej
+  const MotionWrap = ({ children }: { children: React.ReactNode }) => (
+    <motion.div
+      initial={{ opacity: 0, x: 16 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={springSoft}
+    >
+      {children}
+    </motion.div>
+  );
 
   const due = formatDue(task.deadline);
 
@@ -154,6 +167,7 @@ export function TaskDetailPanel({
 
   return (
     <div className="lright">
+      <MotionWrap>
       <div className="head">
         <div className="topline">
           ZADANIE ·{" "}
@@ -725,6 +739,7 @@ export function TaskDetailPanel({
           </button>
         )}
       </div>
+      </MotionWrap>
     </div>
   );
 }

@@ -6,7 +6,9 @@
 // Dane przez propy. Dziala na dashboardzie kontekstu (contextId != null)
 // i globalnym (contextId = null, bez guzika dodawania i akcji).
 
+import { motion } from "motion/react";
 import type { DashboardItem } from "@/lib/queries/dashboard";
+import { listContainer, listItem } from "@/lib/motion";
 import { LinearAddItem } from "../shared/linear-add-item";
 import { ChipActions } from "../shared/chip-actions";
 
@@ -29,16 +31,20 @@ export function IdeasSection({
           <LinearAddItem kind="idea" contextId={contextId} />
         ) : null}
       </div>
-      {ideas.map((i) => (
-        <div key={i.id} className="chip-row">
-          <span className="icn i">💡</span>
-          <div className="txt">
-            {i.content}
-            <div className="meta">{i.context.name}</div>
-          </div>
-          {!readOnly && <ChipActions kind="idea" id={i.id} />}
-        </div>
-      ))}
+      <motion.div variants={listContainer} initial="hidden" animate="show">
+        {ideas.map((i) => (
+          <motion.div key={i.id} variants={listItem}>
+            <div className="chip-row">
+              <span className="icn i">💡</span>
+              <div className="txt">
+                {i.content}
+                <div className="meta">{i.context.name}</div>
+              </div>
+              {!readOnly && <ChipActions kind="idea" id={i.id} />}
+            </div>
+          </motion.div>
+        ))}
+      </motion.div>
     </>
   );
 }
