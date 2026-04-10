@@ -1,12 +1,15 @@
 // Middleware — ochrona routes. Niezalogowani -> /login.
-// Publiczne sciezki: /login, /api/auth, statyczne assety.
+// UWAGA: nie importujemy auth() tutaj bo Prisma adapter uzywa Node.js modules
+// (node:path, node:url) ktore nie dzialaja w Edge Runtime.
+// Zamiast tego sprawdzamy obecnosc cookie sesji Auth.js.
+// Pelna walidacja sesji odbywa sie w server components przez auth().
 
-import { auth } from "@/auth";
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 const publicPaths = ["/login", "/api/auth", "/api/mcp"];
 
-export default auth((req) => {
+export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   // Publiczne sciezki — przepusc
@@ -14,15 +17,19 @@ export default auth((req) => {
     return NextResponse.next();
   }
 
-  // Niezalogowany — redirect do /login
-  if (!req.auth) {
+  // Sprawdz cookie sesji Auth.js (bez pelnej walidacji — ta jest w server components)
+  const sessionCookie =
+    req.cookies.get("authjs.session-token") ??
+    req.cookies.get("__Secure-authjs.session-token");
+
+  if (!sessionCookie) {
     const url = req.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
   }
 
   return NextResponse.next();
-});
+}
 
 export const config = {
   matcher: [
