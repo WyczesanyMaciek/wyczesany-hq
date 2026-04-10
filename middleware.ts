@@ -1,33 +1,11 @@
-// Middleware — ochrona routes. Niezalogowani -> /login.
-// UWAGA: nie importujemy auth() tutaj bo Prisma adapter uzywa Node.js modules
-// (node:path, node:url) ktore nie dzialaja w Edge Runtime.
-// Zamiast tego sprawdzamy obecnosc cookie sesji Auth.js.
-// Pelna walidacja sesji odbywa sie w server components przez auth().
+// Middleware — na razie przepuszcza wszystko (auth wylaczony).
+// Auth.js jest skonfigurowany i gotowy do wlaczenia po ustawieniu
+// env vars (AUTH_SECRET, AUTH_RESEND_KEY) na Vercel.
+// Zeby wlaczyc auth: odkomentuj blok ponizej.
 
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
 
-const publicPaths = ["/login", "/api/auth", "/api/mcp"];
-
-export function middleware(req: NextRequest) {
-  const { pathname } = req.nextUrl;
-
-  // Publiczne sciezki — przepusc
-  if (publicPaths.some((p) => pathname.startsWith(p))) {
-    return NextResponse.next();
-  }
-
-  // Sprawdz cookie sesji Auth.js (bez pelnej walidacji — ta jest w server components)
-  const sessionCookie =
-    req.cookies.get("authjs.session-token") ??
-    req.cookies.get("__Secure-authjs.session-token");
-
-  if (!sessionCookie) {
-    const url = req.nextUrl.clone();
-    url.pathname = "/login";
-    return NextResponse.redirect(url);
-  }
-
+export function middleware() {
   return NextResponse.next();
 }
 
