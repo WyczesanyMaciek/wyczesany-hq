@@ -272,6 +272,108 @@ export async function getContextDashboard(
   };
 }
 
+// =====================================================
+// Typy dla strony projektu (Etap 6)
+// =====================================================
+
+export type ProjectNoteDTO = {
+  id: string;
+  content: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type ProjectLinkDTO = {
+  id: string;
+  url: string;
+  label: string;
+  type: string;
+  createdAt: Date;
+};
+
+export type ProjectDetail = {
+  id: string;
+  name: string;
+  description: string | null;
+  status: string;
+  deadline: Date | null;
+  createdAt: Date;
+  context: OriginContext;
+  breadcrumb: Array<{ id: string; name: string; color: string }>;
+  tasks: DashboardTask[];
+  taskTotal: number;
+  taskDone: number;
+  notes: ProjectNoteDTO[];
+  links: ProjectLinkDTO[];
+};
+
+/**
+ * Pelne dane projektu: metadane + taski + notatki + linki + breadcrumb kontekstu.
+ * Uzywane na stronie /c/[id]/p/[projectId].
+ */
+export async function getProjectDetail(
+  projectId: string
+): Promise<ProjectDetail | null> {
+  const all = await loadAllContexts();
+
+  const project = await prisma.project.findUnique({
+    where: { id: projectId },
+    include: {
+      tasks: {
+        orderBy: [{ done: "asc" }, { order: "asc" }, { createdAt: "asc" }],
+        include: taskInclude,
+      },
+      notes: {
+        orderBy: [{ createdAt: "desc" }],
+      },
+      links: {
+        orderBy: [{ createdAt: "desc" }],
+      },
+    },
+  });
+
+  if (!project) return null;
+
+  const ctx = all.get(project.contextId);
+  const origin: OriginContext = ctx
+    ? { id: ctx.id, name: ctx.name, color: ctx.color }
+    : { id: project.contextId, name: "?", color: "#64748B" };
+
+  const toOrigin = (cid: string): OriginContext => {
+    const c = all.get(cid);
+    return c
+      ? { id: c.id, name: c.name, color: c.color }
+      : { id: cid, name: "?", color: "#64748B" };
+  };
+
+  return {
+    id: project.id,
+    name: project.name,
+    description: project.description,
+    status: project.status,
+    deadline: project.deadline,
+    createdAt: project.createdAt,
+    context: origin,
+    breadcrumb: buildBreadcrumb(project.contextId, all),
+    tasks: project.tasks.map((t) => mapTask(t as RawTask, toOrigin)),
+    taskTotal: project.tasks.length,
+    taskDone: project.tasks.filter((t) => t.done).length,
+    notes: project.notes.map((n) => ({
+      id: n.id,
+      content: n.content,
+      createdAt: n.createdAt,
+      updatedAt: n.updatedAt,
+    })),
+    links: project.links.map((l) => ({
+      id: l.id,
+      url: l.url,
+      label: l.label,
+      type: l.type,
+      createdAt: l.createdAt,
+    })),
+  };
+}
+
 /**
  * Globalne liczniki dla placeholder strony glownej /.
  * Cztery zapytania count() rownolegle — szybki szkielet bez ladowania

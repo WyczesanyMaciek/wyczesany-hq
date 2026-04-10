@@ -658,3 +658,140 @@ export async function convertProblemToProject(
   revalidatePath("/", "layout");
   return { ok: true, data: { projectId: project.id } };
 }
+
+// ---- PROJEKT: aktualizacja szczegolow ----
+
+/**
+ * Aktualizacja szczegolow projektu — nazwa, opis, status, deadline.
+ */
+export async function updateProjectDetails(
+  projectId: string,
+  input: {
+    name?: string;
+    description?: string | null;
+    status?: string;
+    deadline?: string | null;
+  }
+): Promise<Result> {
+  const p = await prisma.project.findUnique({ where: { id: projectId } });
+  if (!p) return { ok: false, error: "Projekt nie istnieje." };
+
+  const data: {
+    name?: string;
+    description?: string | null;
+    status?: string;
+    deadline?: Date | null;
+  } = {};
+
+  if (input.name !== undefined) {
+    const name = str(input.name);
+    if (name.length < 1 || name.length > 120) {
+      return { ok: false, error: "Nazwa 1-120 znakow." };
+    }
+    data.name = name;
+  }
+  if (input.description !== undefined) {
+    data.description = input.description === null ? null : str(input.description) || null;
+  }
+  if (input.status !== undefined) {
+    const status = str(input.status);
+    if (!["todo", "in_progress", "done", "on_hold"].includes(status)) {
+      return { ok: false, error: "Nieprawidlowy status." };
+    }
+    data.status = status;
+  }
+  if (input.deadline !== undefined) {
+    data.deadline = input.deadline === null ? null : parseDateOrNull(input.deadline);
+  }
+
+  await prisma.project.update({ where: { id: projectId }, data });
+  revalidatePath("/", "layout");
+  return { ok: true };
+}
+
+// ---- NOTATKI PROJEKTU ----
+
+export async function createProjectNote(
+  projectId: string,
+  input: { content: string }
+): Promise<Result<{ id: string }>> {
+  const content = str(input.content);
+  if (content.length < 1 || content.length > 10000) {
+    return { ok: false, error: "Notatka musi miec 1-10000 znakow." };
+  }
+  const p = await prisma.project.findUnique({
+    where: { id: projectId },
+    select: { id: true, contextId: true },
+  });
+  if (!p) return { ok: false, error: "Projekt nie istnieje." };
+
+  const n = await prisma.note.create({
+    data: { content, contextId: p.contextId, projectId },
+  });
+  revalidatePath("/", "layout");
+  return { ok: true, data: { id: n.id } };
+}
+
+export async function updateProjectNote(
+  noteId: string,
+  input: { content: string }
+): Promise<Result> {
+  const content = str(input.content);
+  if (content.length < 1 || content.length > 10000) {
+    return { ok: false, error: "Notatka musi miec 1-10000 znakow." };
+  }
+  const n = await prisma.note.findUnique({ where: { id: noteId } });
+  if (!n) return { ok: false, error: "Notatka nie istnieje." };
+
+  await prisma.note.update({ where: { id: noteId }, data: { content } });
+  revalidatePath("/", "layout");
+  return { ok: true };
+}
+
+export async function deleteProjectNote(noteId: string): Promise<Result> {
+  const n = await prisma.note.findUnique({ where: { id: noteId } });
+  if (!n) return { ok: false, error: "Notatka nie istnieje." };
+  await prisma.note.delete({ where: { id: noteId } });
+  revalidatePath("/", "layout");
+  return { ok: true };
+}
+
+// ---- LINKI PROJEKTU ----
+
+export async function createProjectLink(
+  projectId: string,
+  input: { label: string; url: string; type?: string }
+): Promise<Result<{ id: string }>> {
+  const label = str(input.label);
+  const url = str(input.url);
+  if (label.length < 1 || label.length > 120) {
+    return { ok: false, error: "Label 1-120 znakow." };
+  }
+  if (url.length < 1 || url.length > 2000) {
+    return { ok: false, error: "URL 1-2000 znakow." };
+  }
+  const p = await prisma.project.findUnique({
+    where: { id: projectId },
+    select: { id: true, contextId: true },
+  });
+  if (!p) return { ok: false, error: "Projekt nie istnieje." };
+
+  const type = str(input.type) || "other";
+  if (!["figma", "dropbox", "pdf", "other"].includes(type)) {
+    return { ok: false, error: "Nieprawidlowy typ linku." };
+  }
+
+  const l = await prisma.link.create({
+    data: { label, url, type, contextId: p.contextId, projectId },
+  });
+  revalidatePath("/", "layout");
+  return { ok: true, data: { id: l.id } };
+}
+
+export async function deleteProjectLink(linkId: string): Promise<Result> {
+  const l = await prisma.link.findUnique({ where: { id: linkId } });
+  if (!l) return { ok: false, error: "Link nie istnieje." };
+  await prisma.link.delete({ where: { id: linkId } });
+  revalidatePath("/", "layout");
+  return { ok: true };
+}

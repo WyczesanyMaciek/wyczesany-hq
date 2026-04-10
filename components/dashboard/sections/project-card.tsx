@@ -8,6 +8,7 @@
 // DnD: useSortable z prefiksem `project:${id}`. W trybie readOnly DnD wylaczony.
 
 import { useMemo } from "react";
+import Link from "next/link";
 import { useSortable, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical } from "lucide-react";
@@ -84,7 +85,19 @@ export function ProjectCard({
           </span>
         )}
         <div>
-          <b>{project.name}</b>{" "}
+          <Link
+            href={`/c/${project.context.id}/p/${project.id}`}
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              fontWeight: 700,
+              color: "inherit",
+              textDecoration: "none",
+            }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.textDecoration = "underline"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.textDecoration = "none"; }}
+          >
+            {project.name}
+          </Link>{" "}
           {showContextBadge && (
             <span
               className="ctx"
