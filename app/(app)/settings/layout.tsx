@@ -3,7 +3,7 @@
 // Integracje itd.
 
 import Link from "next/link";
-import { SlidersHorizontal, Layers } from "lucide-react";
+import { SlidersHorizontal, Layers, Users } from "lucide-react";
 
 export default function SettingsLayout({
   children,
@@ -23,6 +23,9 @@ export default function SettingsLayout({
         <nav className="flex flex-col gap-1">
           <SettingsLink href="/settings/contexts" icon={<Layers size={16} />}>
             Konteksty
+          </SettingsLink>
+          <SettingsLink href="/settings/users" icon={<Users size={16} />}>
+            Uzytkownicy
           </SettingsLink>
         </nav>
       </div>

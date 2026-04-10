@@ -13,6 +13,77 @@ datasource db {
 }
 
 // =====================================================
+// User — uzytkownicy systemu (Auth.js).
+// Na start Maciek jako admin, docelowo ~5 osob z biura.
+// =====================================================
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  role          String    @default("member") // "admin" | "member"
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  contextAccess UserContextAccess[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// =====================================================
+// UserContextAccess — kto widzi ktore konteksty.
+// Dostep do kontekstu = automatycznie dostep do dzieci.
+// Admin widzi wszystko (nie potrzebuje wpisow).
+// =====================================================
+model UserContextAccess {
+  id        String   @id @default(cuid())
+  userId    String
+  contextId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  context Context @relation(fields: [contextId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, contextId])
+}
+
+// =====================================================
 // Context — kregoslup aplikacji.
 // Hierarchia o dowolnej glebokosci (parent/children).
 // =====================================================
@@ -36,6 +107,9 @@ model Context {
   problems Problem[]
   notes    Note[]
   links    Link[]
+
+  // Dostep userow
+  userAccess UserContextAccess[]
 }
 
 // =====================================================

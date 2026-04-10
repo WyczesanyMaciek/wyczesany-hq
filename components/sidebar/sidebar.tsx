@@ -12,10 +12,19 @@ import { ChevronRight, Search, Settings, Terminal } from "lucide-react";
 import type { ContextNode } from "@/lib/queries/contexts";
 import { springSnappy } from "@/lib/motion";
 import { useOpenSearch } from "@/components/app-shell";
+import { UserMenu } from "./user-menu";
 
 const STORAGE_KEY = "wyczesany-hq:sidebar:expanded";
 
-export function Sidebar({ tree }: { tree: ContextNode[] }) {
+export function Sidebar({
+  tree,
+  user,
+  signOutAction,
+}: {
+  tree: ContextNode[];
+  user?: { name?: string | null; email?: string | null; image?: string | null } | null;
+  signOutAction?: () => Promise<void>;
+}) {
   const pathname = usePathname();
   const onSearch = useOpenSearch();
   const activeId = pathname.startsWith("/c/") ? pathname.split("/")[2] : null;
@@ -159,6 +168,13 @@ export function Sidebar({ tree }: { tree: ContextNode[] }) {
           ))}
         </ul>
       </nav>
+
+      {/* User menu */}
+      {user && signOutAction && (
+        <div style={{ borderTop: "1px solid #eef0f3" }}>
+          <UserMenu user={user} signOutAction={signOutAction} />
+        </div>
+      )}
 
       {/* Footer */}
       <div style={{ borderTop: "1px solid #eef0f3", padding: "6px 0" }}>
