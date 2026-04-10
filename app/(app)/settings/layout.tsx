@@ -17,10 +17,10 @@ export default function SettingsLayout({
         style={{
           width: 200,
           flexShrink: 0,
-          borderRight: "1px solid #eef0f3",
-          background: "#fafbfc",
+          borderRight: "1.5px solid var(--border-default)",
+          background: "var(--bg-sidebar)",
           padding: "20px 12px",
-          fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
+          fontFamily: "var(--font-nunito), Nunito, -apple-system, sans-serif",
           fontSize: "12.8px",
         }}
       >

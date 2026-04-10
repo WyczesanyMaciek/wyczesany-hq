@@ -64,18 +64,18 @@ export function Sidebar({
     <aside
       className="lside"
       style={{
-        width: 230,
+        width: 240,
         flexShrink: 0,
-        borderRight: "1px solid #eef0f3",
-        background: "#fafbfc",
+        borderRight: "1.5px solid var(--border-default)",
+        background: "var(--bg-sidebar)",
         position: "sticky",
         top: 0,
         height: "100vh",
         display: "flex",
         flexDirection: "column",
-        fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
-        fontSize: "12.8px",
-        color: "#0f172a",
+        fontFamily: "var(--font-nunito), Nunito, -apple-system, sans-serif",
+        fontSize: "13px",
+        color: "var(--text-primary)",
       }}
     >
       {/* Brand header */}
@@ -84,7 +84,7 @@ export function Sidebar({
         style={{
           display: "block",
           padding: "14px 16px",
-          borderBottom: "1px solid #eef0f3",
+          borderBottom: "1.5px solid var(--border-default)",
           textDecoration: "none",
           color: "inherit",
         }}
@@ -94,7 +94,7 @@ export function Sidebar({
             fontSize: "10px",
             textTransform: "uppercase",
             letterSpacing: "0.08em",
-            color: "#94a3b8",
+            color: "var(--text-tertiary)",
             fontWeight: 600,
             marginBottom: 2,
           }}
@@ -122,7 +122,7 @@ export function Sidebar({
             cursor: "pointer",
             font: "inherit",
             fontSize: "12px",
-            color: "#94a3b8",
+            color: "var(--text-tertiary)",
             width: "calc(100% - 24px)",
           }}
         >
@@ -134,7 +134,7 @@ export function Sidebar({
             border: "1px solid #e2e8f0",
             borderRadius: 3,
             background: "#f8fafc",
-            color: "#94a3b8",
+            color: "var(--text-tertiary)",
           }}>/</kbd>
         </button>
       )}
@@ -146,7 +146,7 @@ export function Sidebar({
             fontSize: "10px",
             textTransform: "uppercase",
             letterSpacing: "0.08em",
-            color: "#94a3b8",
+            color: "var(--text-tertiary)",
             fontWeight: 600,
             padding: "0 16px",
             marginBottom: 6,
@@ -171,13 +171,13 @@ export function Sidebar({
 
       {/* User menu */}
       {user && signOutAction && (
-        <div style={{ borderTop: "1px solid #eef0f3" }}>
+        <div style={{ borderTop: "1.5px solid var(--border-default)" }}>
           <UserMenu user={user} signOutAction={signOutAction} />
         </div>
       )}
 
       {/* Footer */}
-      <div style={{ borderTop: "1px solid #eef0f3", padding: "6px 0" }}>
+      <div style={{ borderTop: "1.5px solid var(--border-default)", padding: "6px 0" }}>
         <FooterLink href="/settings" icon={<Settings size={14} />}>
           Ustawienia
         </FooterLink>
@@ -188,7 +188,7 @@ export function Sidebar({
           style={{
             padding: "6px 16px 4px",
             fontSize: "11px",
-            color: "#94a3b8",
+            color: "var(--text-tertiary)",
             fontFamily: "ui-monospace, monospace",
             fontVariantNumeric: "tabular-nums",
           }}
@@ -314,7 +314,7 @@ function ContextTreeNode({
             style={{
               marginLeft: "auto",
               fontSize: "10px",
-              color: "#94a3b8",
+              color: "var(--text-tertiary)",
               fontFamily: "ui-monospace, monospace",
               flexShrink: 0,
             }}
