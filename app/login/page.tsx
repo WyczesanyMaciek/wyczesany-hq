@@ -10,8 +10,8 @@ export default function LoginPage() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "#fafbfc",
-        fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
+        background: "var(--bg-base, #FBF8F3)",
+        fontFamily: "var(--font-nunito), Nunito, -apple-system, sans-serif",
       }}
     >
       <div
@@ -20,9 +20,9 @@ export default function LoginPage() {
           maxWidth: 380,
           padding: 32,
           background: "#fff",
-          border: "1px solid #e2e8f0",
+          border: "1.5px solid var(--border-default)",
           borderRadius: 12,
-          boxShadow: "0 8px 32px rgba(0,0,0,0.08)",
+          boxShadow: "var(--shadow-lg)",
         }}
       >
         <h1 style={{ fontSize: 20, fontWeight: 700, color: "#0f172a", margin: "0 0 4px" }}>
@@ -54,7 +54,7 @@ export default function LoginPage() {
               width: "100%",
               padding: "10px 12px",
               fontSize: 14,
-              border: "1px solid #e2e8f0",
+              border: "1.5px solid var(--border-default)",
               borderRadius: 6,
               background: "#fff",
               font: "inherit",
@@ -71,7 +71,7 @@ export default function LoginPage() {
               fontSize: 14,
               fontWeight: 600,
               color: "#fff",
-              background: "#5B3DF5",
+              background: "var(--ds-accent)",
               border: "none",
               borderRadius: 6,
               cursor: "pointer",

@@ -10,8 +10,8 @@ export default function LoginErrorPage() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "#fafbfc",
-        fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
+        background: "var(--bg-base, #FBF8F3)",
+        fontFamily: "var(--font-nunito), Nunito, -apple-system, sans-serif",
       }}
     >
       <div
@@ -22,7 +22,7 @@ export default function LoginErrorPage() {
           background: "#fff",
           border: "1px solid #fecaca",
           borderRadius: 12,
-          boxShadow: "0 8px 32px rgba(0,0,0,0.08)",
+          boxShadow: "var(--shadow-lg)",
           textAlign: "center",
         }}
       >
@@ -40,8 +40,8 @@ export default function LoginErrorPage() {
             padding: "8px 20px",
             fontSize: 13,
             fontWeight: 600,
-            color: "#5B3DF5",
-            border: "1px solid #5B3DF5",
+            color: "var(--ds-accent)",
+            border: "1.5px solid var(--ds-accent)",
             borderRadius: 6,
             textDecoration: "none",
           }}

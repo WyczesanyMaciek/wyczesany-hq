@@ -8,8 +8,8 @@ export default function VerifyPage() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "#fafbfc",
-        fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
+        background: "var(--bg-base, #FBF8F3)",
+        fontFamily: "var(--font-nunito), Nunito, -apple-system, sans-serif",
       }}
     >
       <div
@@ -18,9 +18,9 @@ export default function VerifyPage() {
           maxWidth: 380,
           padding: 32,
           background: "#fff",
-          border: "1px solid #e2e8f0",
+          border: "1.5px solid var(--border-default)",
           borderRadius: 12,
-          boxShadow: "0 8px 32px rgba(0,0,0,0.08)",
+          boxShadow: "var(--shadow-lg)",
           textAlign: "center",
         }}
       >
