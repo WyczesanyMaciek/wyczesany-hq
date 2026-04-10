@@ -3,7 +3,7 @@
 // Server actions dla CRUD kontekstow.
 // Wszystkie walidacje po stronie serwera — klient tylko wysyla wartosci.
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { prisma } from "@/lib/db";
 import { PALETTE_HEX_SET } from "@/lib/colors";
 
@@ -51,7 +51,8 @@ export async function createContext(input: ContextFormInput) {
     },
   });
 
-  revalidatePath("/", "layout");
+  revalidateTag("sidebar", "max");
+  revalidatePath("/", "page");
   return { ok: true as const };
 }
 
@@ -99,7 +100,8 @@ export async function updateContext(id: string, input: ContextFormInput) {
     },
   });
 
-  revalidatePath("/", "layout");
+  revalidateTag("sidebar", "max");
+  revalidatePath("/", "page");
   return { ok: true as const };
 }
 
@@ -150,6 +152,7 @@ export async function deleteContext(id: string) {
   }
 
   await prisma.context.delete({ where: { id } });
-  revalidatePath("/", "layout");
+  revalidateTag("sidebar", "max");
+  revalidatePath("/", "page");
   return { ok: true as const };
 }

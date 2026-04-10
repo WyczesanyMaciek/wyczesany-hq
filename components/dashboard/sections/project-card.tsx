@@ -7,7 +7,7 @@
 //
 // DnD: useSortable z prefiksem `project:${id}`. W trybie readOnly DnD wylaczony.
 
-import { useMemo } from "react";
+import { memo, useMemo } from "react";
 import Link from "next/link";
 import { useDroppable } from "@dnd-kit/core";
 import { useSortable, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
@@ -18,7 +18,7 @@ import { LinearAddTask } from "../linear-add-task";
 import { TaskRow } from "../shared/task-row";
 import { formatDue } from "../shared/format";
 
-export function ProjectCard({
+export const ProjectCard = memo(function ProjectCard({
   project,
   collapsed,
   onToggle,
@@ -145,7 +145,7 @@ export function ProjectCard({
       ) : null}
     </div>
   );
-}
+});
 
 // Drop target dla pustego projektu — pozwala wrzucic task do projektu bez taskow.
 function EmptyDropZone({ projectId, readOnly }: { projectId: string; readOnly: boolean }) {

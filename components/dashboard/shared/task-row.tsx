@@ -7,7 +7,7 @@
 // DnD: uzywa useSortable z @dnd-kit. Musi byc renderowany w <SortableContext>.
 // W trybie readOnly DnD jest wylaczony, grip ukryty.
 
-import { useState, useTransition } from "react";
+import { memo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -17,7 +17,7 @@ import { toggleTask, updateTaskDetails } from "@/app/(app)/c/[id]/actions";
 import { TaskCheckbox } from "./task-checkbox";
 import { formatDue, prioClass } from "./format";
 
-export function TaskRow({
+export const TaskRow = memo(function TaskRow({
   task,
   selected,
   onSelect,
@@ -158,4 +158,4 @@ export function TaskRow({
       <span className="who">{task.assigneeId ?? ""}</span>
     </div>
   );
-}
+});

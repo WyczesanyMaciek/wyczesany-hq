@@ -4,7 +4,12 @@
 // Projekty, luzne taski, pomysly, problemy — tworzenie, toggle, usuwanie.
 
 import { prisma } from "@/lib/db";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+
+// Helper: przeladuj sidebar (liczniki kontekstow) gdy zmieni sie liczba projektow/taskow
+function refreshSidebar() {
+  revalidateTag("sidebar", "max");
+}
 
 // ---- pomocnicze ----
 
@@ -76,7 +81,8 @@ export async function createProject(
     },
   });
 
-  revalidatePath("/", "layout");
+  refreshSidebar();
+  revalidatePath("/", "page");
   return { ok: true, data: { id: p.id } };
 }
 
@@ -97,7 +103,8 @@ export async function deleteProject(
     prisma.project.delete({ where: { id: projectId } }),
   ]);
 
-  revalidatePath("/", "layout");
+  refreshSidebar();
+  revalidatePath("/", "page");
   return { ok: true };
 }
 
@@ -176,7 +183,8 @@ export async function createTask(input: {
     },
   });
 
-  revalidatePath("/", "layout");
+  refreshSidebar();
+  revalidatePath("/", "page");
   return { ok: true, data: { id: t.id } };
 }
 
@@ -193,7 +201,8 @@ export async function toggleTask(taskId: string): Promise<Result<{ done: boolean
     select: { done: true },
   });
 
-  revalidatePath("/", "layout");
+  refreshSidebar();
+  revalidatePath("/", "page");
   return { ok: true, data: { done: updated.done } };
 }
 
@@ -201,7 +210,8 @@ export async function deleteTask(taskId: string): Promise<Result> {
   const t = await prisma.task.findUnique({ where: { id: taskId } });
   if (!t) return { ok: false, error: "Task nie istnieje." };
   await prisma.task.delete({ where: { id: taskId } });
-  revalidatePath("/", "layout");
+  refreshSidebar();
+  revalidatePath("/", "page");
   return { ok: true };
 }
 
@@ -223,7 +233,7 @@ export async function reorderTasks(orderedIds: string[]): Promise<Result> {
       prisma.task.update({ where: { id }, data: { order: idx } })
     )
   );
-  revalidatePath("/", "layout");
+  revalidatePath("/", "page");
   return { ok: true };
 }
 
@@ -258,7 +268,7 @@ export async function moveTaskToProject(
     },
   });
 
-  revalidatePath("/", "layout");
+  revalidatePath("/", "page");
   return { ok: true };
 }
 
@@ -284,7 +294,7 @@ export async function releaseTaskFromProject(
     data: { projectId: null, order: nextOrder },
   });
 
-  revalidatePath("/", "layout");
+  revalidatePath("/", "page");
   return { ok: true };
 }
 
@@ -334,7 +344,7 @@ export async function updateTaskDetails(
   }
 
   await prisma.task.update({ where: { id: taskId }, data });
-  revalidatePath("/", "layout");
+  revalidatePath("/", "page");
   return { ok: true };
 }
 
@@ -358,7 +368,7 @@ export async function addTaskLink(
   const l = await prisma.taskLink.create({
     data: { taskId, label, url },
   });
-  revalidatePath("/", "layout");
+  revalidatePath("/", "page");
   return { ok: true, data: { id: l.id } };
 }
 
@@ -366,7 +376,7 @@ export async function removeTaskLink(linkId: string): Promise<Result> {
   const l = await prisma.taskLink.findUnique({ where: { id: linkId } });
   if (!l) return { ok: false, error: "Link nie istnieje." };
   await prisma.taskLink.delete({ where: { id: linkId } });
-  revalidatePath("/", "layout");
+  revalidatePath("/", "page");
   return { ok: true };
 }
 
@@ -394,7 +404,7 @@ export async function addTaskAttachment(
   const a = await prisma.taskAttachment.create({
     data: { taskId, kind, name, url },
   });
-  revalidatePath("/", "layout");
+  revalidatePath("/", "page");
   return { ok: true, data: { id: a.id } };
 }
 
@@ -406,7 +416,7 @@ export async function removeTaskAttachment(
   });
   if (!a) return { ok: false, error: "Zalacznik nie istnieje." };
   await prisma.taskAttachment.delete({ where: { id: attachmentId } });
-  revalidatePath("/", "layout");
+  revalidatePath("/", "page");
   return { ok: true };
 }
 
@@ -424,7 +434,7 @@ export async function reorderProjects(orderedIds: string[]): Promise<Result> {
       prisma.project.update({ where: { id }, data: { order: idx } })
     )
   );
-  revalidatePath("/", "layout");
+  revalidatePath("/", "page");
   return { ok: true };
 }
 
@@ -461,7 +471,7 @@ export async function moveProjectToContext(
     }),
   ]);
 
-  revalidatePath("/", "layout");
+  revalidatePath("/", "page");
   return { ok: true };
 }
 
@@ -479,7 +489,7 @@ export async function createIdea(
   if (!ctx) return { ok: false, error: "Kontekst nie istnieje." };
 
   const i = await prisma.idea.create({ data: { content, contextId } });
-  revalidatePath("/", "layout");
+  revalidatePath("/", "page");
   return { ok: true, data: { id: i.id } };
 }
 
@@ -487,7 +497,7 @@ export async function deleteIdea(ideaId: string): Promise<Result> {
   const i = await prisma.idea.findUnique({ where: { id: ideaId } });
   if (!i) return { ok: false, error: "Pomysl nie istnieje." };
   await prisma.idea.delete({ where: { id: ideaId } });
-  revalidatePath("/", "layout");
+  revalidatePath("/", "page");
   return { ok: true };
 }
 
@@ -522,7 +532,7 @@ export async function convertIdeaToTask(
     prisma.idea.delete({ where: { id: ideaId } }),
   ]);
 
-  revalidatePath("/", "layout");
+  revalidatePath("/", "page");
   return { ok: true, data: { taskId: task.id } };
 }
 
@@ -559,7 +569,7 @@ export async function convertIdeaToProject(
     prisma.idea.delete({ where: { id: ideaId } }),
   ]);
 
-  revalidatePath("/", "layout");
+  revalidatePath("/", "page");
   return { ok: true, data: { projectId: project.id } };
 }
 
@@ -577,7 +587,7 @@ export async function createProblem(
   if (!ctx) return { ok: false, error: "Kontekst nie istnieje." };
 
   const p = await prisma.problem.create({ data: { content, contextId } });
-  revalidatePath("/", "layout");
+  revalidatePath("/", "page");
   return { ok: true, data: { id: p.id } };
 }
 
@@ -585,7 +595,7 @@ export async function deleteProblem(problemId: string): Promise<Result> {
   const p = await prisma.problem.findUnique({ where: { id: problemId } });
   if (!p) return { ok: false, error: "Problem nie istnieje." };
   await prisma.problem.delete({ where: { id: problemId } });
-  revalidatePath("/", "layout");
+  revalidatePath("/", "page");
   return { ok: true };
 }
 
@@ -619,7 +629,7 @@ export async function convertProblemToTask(
     prisma.problem.delete({ where: { id: problemId } }),
   ]);
 
-  revalidatePath("/", "layout");
+  revalidatePath("/", "page");
   return { ok: true, data: { taskId: task.id } };
 }
 
@@ -655,7 +665,7 @@ export async function convertProblemToProject(
     prisma.problem.delete({ where: { id: problemId } }),
   ]);
 
-  revalidatePath("/", "layout");
+  revalidatePath("/", "page");
   return { ok: true, data: { projectId: project.id } };
 }
 
@@ -705,7 +715,7 @@ export async function updateProjectDetails(
   }
 
   await prisma.project.update({ where: { id: projectId }, data });
-  revalidatePath("/", "layout");
+  revalidatePath("/", "page");
   return { ok: true };
 }
 
@@ -728,7 +738,7 @@ export async function createProjectNote(
   const n = await prisma.note.create({
     data: { content, contextId: p.contextId, projectId },
   });
-  revalidatePath("/", "layout");
+  revalidatePath("/", "page");
   return { ok: true, data: { id: n.id } };
 }
 
@@ -744,7 +754,7 @@ export async function updateProjectNote(
   if (!n) return { ok: false, error: "Notatka nie istnieje." };
 
   await prisma.note.update({ where: { id: noteId }, data: { content } });
-  revalidatePath("/", "layout");
+  revalidatePath("/", "page");
   return { ok: true };
 }
 
@@ -752,7 +762,7 @@ export async function deleteProjectNote(noteId: string): Promise<Result> {
   const n = await prisma.note.findUnique({ where: { id: noteId } });
   if (!n) return { ok: false, error: "Notatka nie istnieje." };
   await prisma.note.delete({ where: { id: noteId } });
-  revalidatePath("/", "layout");
+  revalidatePath("/", "page");
   return { ok: true };
 }
 
@@ -784,7 +794,7 @@ export async function createProjectLink(
   const l = await prisma.link.create({
     data: { label, url, type, contextId: p.contextId, projectId },
   });
-  revalidatePath("/", "layout");
+  revalidatePath("/", "page");
   return { ok: true, data: { id: l.id } };
 }
 
@@ -792,6 +802,6 @@ export async function deleteProjectLink(linkId: string): Promise<Result> {
   const l = await prisma.link.findUnique({ where: { id: linkId } });
   if (!l) return { ok: false, error: "Link nie istnieje." };
   await prisma.link.delete({ where: { id: linkId } });
-  revalidatePath("/", "layout");
+  revalidatePath("/", "page");
   return { ok: true };
 }
