@@ -8,14 +8,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ChevronRight, Settings, Terminal } from "lucide-react";
+import { ChevronRight, Search, Settings, Terminal } from "lucide-react";
 import type { ContextNode } from "@/lib/queries/contexts";
 import { springSnappy } from "@/lib/motion";
+import { useOpenSearch } from "@/components/app-shell";
 
 const STORAGE_KEY = "wyczesany-hq:sidebar:expanded";
 
 export function Sidebar({ tree }: { tree: ContextNode[] }) {
   const pathname = usePathname();
+  const onSearch = useOpenSearch();
   const activeId = pathname.startsWith("/c/") ? pathname.split("/")[2] : null;
 
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
@@ -94,6 +96,39 @@ export function Sidebar({ tree }: { tree: ContextNode[] }) {
           Wyczesany HQ
         </div>
       </Link>
+
+      {/* Search button */}
+      {onSearch && (
+        <button
+          onClick={onSearch}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            margin: "8px 12px 4px",
+            padding: "6px 10px",
+            border: "1px solid #eef0f3",
+            borderRadius: 6,
+            background: "#fff",
+            cursor: "pointer",
+            font: "inherit",
+            fontSize: "12px",
+            color: "#94a3b8",
+            width: "calc(100% - 24px)",
+          }}
+        >
+          <Search size={13} />
+          <span style={{ flex: 1, textAlign: "left" }}>Szukaj...</span>
+          <kbd style={{
+            fontSize: 10,
+            padding: "1px 4px",
+            border: "1px solid #e2e8f0",
+            borderRadius: 3,
+            background: "#f8fafc",
+            color: "#94a3b8",
+          }}>/</kbd>
+        </button>
+      )}
 
       {/* Drzewko kontekstow */}
       <nav style={{ flex: 1, overflowY: "auto", padding: "10px 0" }}>

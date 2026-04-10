@@ -3,6 +3,7 @@
 // bez zmiany URLi.
 
 import { Sidebar } from "@/components/sidebar/sidebar";
+import { AppShell } from "@/components/app-shell";
 import { getContextTree } from "@/lib/queries/contexts";
 
 export default async function AppLayout({
@@ -13,9 +14,11 @@ export default async function AppLayout({
   const tree = await getContextTree();
 
   return (
-    <div className="flex min-h-screen">
-      <Sidebar tree={tree} />
-      <div className="flex-1 min-w-0">{children}</div>
-    </div>
+    <AppShell>
+      <div className="flex min-h-screen">
+        <Sidebar tree={tree} />
+        <div className="flex-1 min-w-0">{children}</div>
+      </div>
+    </AppShell>
   );
 }
