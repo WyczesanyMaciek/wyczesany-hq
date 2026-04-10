@@ -1,21 +1,17 @@
 "use client";
 
-// TaskRow — pojedynczy wiersz taska w liscie Linear v2.
-// Reusable: dashboard kontekstu, globalny dashboard, strona projektu (Etap 6).
-// Przyjmuje dane + callbacki przez propy — nie zaklada kontekstu wywolania.
-//
-// DnD: uzywa useSortable z @dnd-kit. Musi byc renderowany w <SortableContext>.
-// W trybie readOnly DnD jest wylaczony, grip ukryty.
+// TaskRow — DS v1 Component Map.
+// CSS Grid: 18px 8px 1fr 80px 60px 28px
+// Hover: translateY(-1px) + border + shadow
+// 6 kolumn: checkbox, priority dot, title (ellipsis), status badge, date, avatar
 
 import { memo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-// GripVertical usuniety — DS v1 nie uzywa gripa w task row
 import type { DashboardTask } from "@/lib/queries/dashboard";
 import { toggleTask, updateTaskDetails } from "@/app/(app)/c/[id]/actions";
-import { TaskCheckbox } from "./task-checkbox";
-import { formatDue, prioClass } from "./format";
+import { formatDue } from "./format";
 
 export const TaskRow = memo(function TaskRow({
   task,
@@ -35,10 +31,8 @@ export const TaskRow = memo(function TaskRow({
   const [editingName, setEditingName] = useState(false);
   const due = formatDue(task.deadline);
 
-  // DnD — sortowalny w ramach kontenera (projekt albo luzne), disabled w read-only
   const {
     attributes,
-    listeners,
     setNodeRef,
     transform,
     transition,
@@ -74,23 +68,82 @@ export const TaskRow = memo(function TaskRow({
   return (
     <div
       ref={setNodeRef}
-      style={dndStyle}
+      style={{
+        ...dndStyle,
+        display: "grid",
+        gridTemplateColumns: "18px 8px 1fr 80px 60px 28px",
+        gap: 10,
+        alignItems: "center",
+        padding: "10px 16px",
+        border: selected ? "1.5px solid #6C5CE7" : "1.5px solid transparent",
+        borderRadius: 10,
+        transition: "all 120ms ease",
+        cursor: "pointer",
+        background: selected ? "#EDE9FC" : "#FFFFFF",
+        marginBottom: 2,
+      }}
       {...attributes}
-      className={`ltask ${task.done ? "done" : ""} ${selected ? "selected" : ""}`}
+      onMouseEnter={(e) => {
+        if (!selected) {
+          e.currentTarget.style.borderColor = "#E5E2DB";
+          e.currentTarget.style.boxShadow = "0 1px 2px rgba(31,31,46,0.04)";
+          e.currentTarget.style.transform = "translateY(-1px)";
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (!selected) {
+          e.currentTarget.style.borderColor = "transparent";
+          e.currentTarget.style.boxShadow = "none";
+          e.currentTarget.style.transform = "none";
+        }
+      }}
       onClick={() => {
         if (!editingName) onSelect(task.id);
       }}
     >
-      {/* Kolumna 1: checkbox 18px */}
-      <TaskCheckbox
-        compact
-        done={task.done}
-        onToggle={handleToggle}
-        disabled={pending || readOnly}
+      {/* Kolumna 1: Checkbox 18px */}
+      <div
+        onClick={handleToggle}
+        style={{
+          width: 18,
+          height: 18,
+          border: `2px solid ${task.done ? "#00B894" : "#D1CEC6"}`,
+          borderRadius: 4,
+          background: task.done ? "#00B894" : "transparent",
+          cursor: readOnly ? "default" : "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          transition: "all 120ms ease",
+          flexShrink: 0,
+        }}
+      >
+        {task.done && (
+          <svg width="10" height="10" viewBox="0 0 10 10">
+            <path d="M2 5l2 2 4-4" stroke="white" strokeWidth="2" fill="none" />
+          </svg>
+        )}
+      </div>
+
+      {/* Kolumna 2: Priority dot 8px */}
+      <div
+        style={{
+          width: 8,
+          height: 8,
+          borderRadius: "50%",
+          background:
+            task.priority >= 3
+              ? "#E17055"
+              : task.priority === 2
+                ? "#FDCB6E"
+                : task.priority === 1
+                  ? "#74B9FF"
+                  : "#E5E2DB",
+          flexShrink: 0,
+        }}
       />
-      {/* Kolumna 2: priority dot 8px */}
-      <span className={`prio ${prioClass(task.priority)}`} />
-      {/* Kolumna 3: tytuł — flex-1, ellipsis */}
+
+      {/* Kolumna 3: Title 1fr — ELLIPSIS */}
       {editingName ? (
         <input
           autoFocus
@@ -99,44 +152,50 @@ export const TaskRow = memo(function TaskRow({
           onClick={(e) => e.stopPropagation()}
           onBlur={(e) => handleSaveName(e.currentTarget.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.currentTarget.blur();
-            } else if (e.key === "Escape") {
-              setEditingName(false);
-            }
+            if (e.key === "Enter") e.currentTarget.blur();
+            else if (e.key === "Escape") setEditingName(false);
           }}
           style={{
-            font: "inherit",
             fontSize: 14,
             fontWeight: 600,
             padding: "2px 6px",
-            border: "1.5px solid var(--ds-accent)",
-            borderRadius: "var(--radius-sm)",
-            background: "var(--bg-surface)",
+            border: "1.5px solid #6C5CE7",
+            borderRadius: 6,
+            background: "#FFFFFF",
             minWidth: 0,
+            fontFamily: "inherit",
+            outline: "none",
           }}
         />
       ) : (
         <span
-          className="name"
           onDoubleClick={(e) => {
             if (readOnly) return;
             e.stopPropagation();
             setEditingName(true);
           }}
           title={readOnly ? task.title : "Dwuklik zeby edytowac"}
+          style={{
+            fontSize: 14,
+            fontWeight: 600,
+            color: task.done ? "#9B9BAB" : "#1F1F2E",
+            textDecoration: task.done ? "line-through" : "none",
+            minWidth: 0,
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}
         >
           {task.title}
           {showContextBadge && (
             <span
-              className="ctx"
               style={{
                 background: `${task.context.color}22`,
                 color: task.context.color,
                 marginLeft: 6,
                 fontSize: 11,
                 padding: "1px 6px",
-                borderRadius: "var(--radius-full, 9999px)",
+                borderRadius: 9999,
                 fontWeight: 700,
               }}
             >
@@ -145,12 +204,65 @@ export const TaskRow = memo(function TaskRow({
           )}
         </span>
       )}
-      {/* Kolumna 4: deadline 80px */}
-      <span className={`due ${due?.late ? "late" : ""}`}>{due?.text ?? ""}</span>
-      {/* Kolumna 5: placeholder — 60px (przyszły status badge) */}
-      <span />
-      {/* Kolumna 6: avatar 28px */}
-      <span className="who">{task.assigneeId ? (task.assigneeId[0] ?? "").toUpperCase() : ""}</span>
+
+      {/* Kolumna 4: Status badge 80px */}
+      <span
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 4,
+          padding: "2px 8px",
+          fontSize: 11,
+          fontWeight: 700,
+          borderRadius: 9999,
+          whiteSpace: "nowrap",
+          justifySelf: "end",
+          background: task.done ? "#E6F9F3" : "#F0EDE6",
+          color: task.done ? "#00856B" : "#6B6B7B",
+        }}
+      >
+        <span
+          style={{
+            width: 5,
+            height: 5,
+            borderRadius: "50%",
+            background: task.done ? "#00B894" : "#9B9BAB",
+          }}
+        />
+        {task.done ? "Zrobione" : "Do zrobienia"}
+      </span>
+
+      {/* Kolumna 5: Date 60px */}
+      <span
+        style={{
+          fontSize: 12,
+          textAlign: "right",
+          whiteSpace: "nowrap",
+          color: due?.late ? "#E17055" : "#9B9BAB",
+          fontWeight: due?.late ? 700 : 400,
+        }}
+      >
+        {due?.text ?? "—"}
+      </span>
+
+      {/* Kolumna 6: Avatar 28px */}
+      <div
+        style={{
+          width: 28,
+          height: 28,
+          borderRadius: 9999,
+          background: "#EDE9FC",
+          color: "#6C5CE7",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: 11,
+          fontWeight: 800,
+          justifySelf: "end",
+        }}
+      >
+        {task.assigneeId ? task.assigneeId.slice(0, 2).toUpperCase() : ""}
+      </div>
     </div>
   );
 });
