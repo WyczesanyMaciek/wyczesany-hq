@@ -198,16 +198,16 @@ export function TaskDetailPanel({
                 setEditing(null);
               }
             }}
-            className="edit-title"
             style={{
               width: "100%",
               font: "inherit",
-              fontSize: 15,
-              fontWeight: 600,
-              padding: "4px 6px",
-              border: "1px solid var(--l-accent)",
-              borderRadius: 4,
-              background: "#fff",
+              fontSize: 18,
+              fontWeight: 800,
+              padding: "4px 8px",
+              border: "1.5px solid var(--ds-accent)",
+              borderRadius: "var(--radius-sm)",
+              background: "var(--bg-surface)",
+              outline: "none",
             }}
           />
         ) : (
@@ -219,6 +219,42 @@ export function TaskDetailPanel({
             {task.title}
           </h4>
         )}
+        {/* Chipy statusu pod tytulem — DS v1 */}
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 10 }}>
+          <span style={{
+            display: "inline-flex", alignItems: "center", gap: 4,
+            padding: "2px 8px", fontSize: 11, fontWeight: 700,
+            borderRadius: "9999px",
+            background: task.done ? "var(--status-success-light)" : "var(--bg-muted)",
+            color: task.done ? "#00856B" : "var(--text-secondary)",
+          }}>
+            <span style={{ width: 5, height: 5, borderRadius: "50%", background: task.done ? "var(--status-success)" : "var(--text-tertiary)" }} />
+            {task.done ? "Zrobione" : "Do zrobienia"}
+          </span>
+          {task.priority > 0 && (
+            <span style={{
+              display: "inline-flex", alignItems: "center", gap: 4,
+              padding: "2px 8px", fontSize: 11, fontWeight: 700,
+              borderRadius: "9999px",
+              background: task.priority >= 3 ? "var(--status-danger-light)" : task.priority === 2 ? "var(--status-warning-light)" : "var(--status-info-light)",
+              color: task.priority >= 3 ? "#C0533A" : task.priority === 2 ? "#B8860B" : "#3A8FD6",
+            }}>
+              <span style={{ width: 5, height: 5, borderRadius: "50%", background: task.priority >= 3 ? "var(--status-danger)" : task.priority === 2 ? "var(--status-warning)" : "var(--status-info, #74B9FF)" }} />
+              {prioLabel(task.priority)}
+            </span>
+          )}
+          {task.assigneeId && (
+            <span style={{
+              display: "inline-flex", alignItems: "center", gap: 4,
+              padding: "2px 8px", fontSize: 11, fontWeight: 700,
+              borderRadius: "9999px",
+              background: "var(--ds-accent-light)",
+              color: "var(--ds-accent)",
+            }}>
+              {task.assigneeId}
+            </span>
+          )}
+        </div>
         <div className="dactions">
           <button
             className="primary"
@@ -450,54 +486,65 @@ export function TaskDetailPanel({
         </div>
       </div>
 
-      <div className="sect-h">Notatki</div>
-      <textarea
-        className="notes"
-        defaultValue={task.notes ?? ""}
-        disabled={pending}
-        placeholder="Brak notatek — kliknij zeby dopisac"
-        onBlur={(e) => {
-          const v = e.currentTarget.value;
-          const current = task.notes ?? "";
-          if (v !== current) {
-            saveField({ notes: v.trim() ? v : null });
-          }
-        }}
-        style={{
-          width: "100%",
-          minHeight: 80,
-          font: "inherit",
-          padding: "8px 10px",
-          border: "1px solid var(--l-line)",
-          borderRadius: 6,
-          background: "#fff",
-          resize: "vertical",
-        }}
-      />
-
-      <div className="sect-h">Pliki i zdjęcia</div>
-      <div className="files">
-        {task.attachments.map((a) => (
-          <div
-            key={a.id}
-            className={`tile ${a.kind === "video" ? "vid" : "img"}`}
-            onClick={() => handleRemoveAttachment(a.id)}
-            title="Kliknij zeby usunac"
-            style={{ cursor: "pointer", position: "relative" }}
+      {/* Notatki — ukryte jesli puste, z przyciskiem dodaj */}
+      {task.notes ? (
+        <>
+          <div className="sect-h">Notatki</div>
+          <textarea
+            className="notes"
+            defaultValue={task.notes}
+            disabled={pending}
+            onBlur={(e) => {
+              const v = e.currentTarget.value;
+              if (v !== (task.notes ?? "")) {
+                saveField({ notes: v.trim() ? v : null });
+              }
+            }}
+          />
+        </>
+      ) : (
+        <div className="sect-h">
+          <span>Notatki</span>
+          <button
+            onClick={() => saveField({ notes: " " })}
+            style={{
+              fontSize: 12, color: "var(--ds-accent)", fontWeight: 600,
+              cursor: "pointer", background: "none", border: "none", fontFamily: "inherit",
+            }}
           >
-            {a.kind === "video" ? "▶" : a.kind === "file" ? "📄" : "IMG"}
-            <br />
-            {a.name}
-          </div>
-        ))}
-        <div
-          className="tile add"
-          onClick={() => setAddingAttachment(true)}
-          style={{ cursor: "pointer" }}
-        >
-          + dodaj
+            + Dodaj
+          </button>
         </div>
-      </div>
+      )}
+
+      {/* Pliki — ukryte jesli puste */}
+      {task.attachments.length > 0 ? (
+        <>
+          <div className="sect-h">Pliki i zdjęcia</div>
+          <div className="files">
+            {task.attachments.map((a) => (
+              <div
+                key={a.id}
+                className={`tile ${a.kind === "video" ? "vid" : "img"}`}
+                onClick={() => handleRemoveAttachment(a.id)}
+                title="Kliknij zeby usunac"
+                style={{ cursor: "pointer", position: "relative" }}
+              >
+                {a.kind === "video" ? "▶" : a.kind === "file" ? "📄" : "IMG"}
+                <br />
+                {a.name}
+              </div>
+            ))}
+            <div
+              className="tile add"
+              onClick={() => setAddingAttachment(true)}
+              style={{ cursor: "pointer" }}
+            >
+              + dodaj
+            </div>
+          </div>
+        </>
+      ) : null}
       {addingAttachment ? (
         <div
           style={{
@@ -600,8 +647,24 @@ export function TaskDetailPanel({
         </div>
       ) : null}
 
-      <div className="sect-h">Linki</div>
-      <div className="llinks">
+      {/* Linki — ukryte jesli puste */}
+      {task.links.length > 0 ? (
+        <div className="sect-h">Linki</div>
+      ) : (
+        <div className="sect-h">
+          <span>Linki</span>
+          <button
+            onClick={() => setAddingLink(true)}
+            style={{
+              fontSize: 12, color: "var(--ds-accent)", fontWeight: 600,
+              cursor: "pointer", background: "none", border: "none", fontFamily: "inherit",
+            }}
+          >
+            + Dodaj
+          </button>
+        </div>
+      )}
+      <div className="llinks" style={{ display: task.links.length > 0 || addingLink ? undefined : "none" }}>
         {task.links.map((l) => {
           let host = "";
           try {
