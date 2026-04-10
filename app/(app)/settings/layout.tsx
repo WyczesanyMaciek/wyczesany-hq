@@ -1,6 +1,9 @@
+"use client";
+
 // /settings — layout z lewym menu w stylu Linear v2.
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { SlidersHorizontal, Layers, Users } from "lucide-react";
 
 export default function SettingsLayout({
@@ -58,6 +61,9 @@ function SettingsLink({
   icon: React.ReactNode;
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+  const active = pathname === href || pathname.startsWith(href + "/");
+
   return (
     <Link
       href={href}
@@ -68,16 +74,10 @@ function SettingsLink({
         padding: "6px 10px",
         borderRadius: 6,
         fontSize: "12.8px",
-        fontWeight: 500,
-        color: "#475569",
+        fontWeight: active ? 600 : 500,
+        color: active ? "#4338ca" : "#475569",
+        background: active ? "#eef2ff" : "transparent",
         textDecoration: "none",
-        transition: "background 120ms",
-      }}
-      onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => {
-        (e.currentTarget as HTMLElement).style.background = "#f3f4f6";
-      }}
-      onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => {
-        (e.currentTarget as HTMLElement).style.background = "transparent";
       }}
     >
       {icon}
