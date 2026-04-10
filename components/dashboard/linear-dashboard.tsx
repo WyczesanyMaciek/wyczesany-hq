@@ -205,8 +205,8 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
         {/* ============ SRODEK ============ */}
         <main style={{ overflow: "auto", background: "#ffffff" }}>
           {/* Top bar */}
-          <div className="lbar">
-            <span className="crumb">
+          <div className="t-content-header">
+            <span className="t-breadcrumb">
               Konteksty / <b>{title}</b>
               <span
                 className="pill-ctx"
@@ -215,7 +215,7 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
                 ● {title}
               </span>
             </span>
-            <div className="spacer">
+            <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
               <button className="t-btn-secondary">Filtry</button>
               {data.current ? (
                 <LinearNewProjectButton

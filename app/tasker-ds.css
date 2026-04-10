@@ -120,8 +120,13 @@
 .t-content-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 24px;
+  gap: 10px;
+  padding: 12px 20px;
+  border-bottom: 1.5px solid var(--border-default);
+  position: sticky;
+  top: 0;
+  background: var(--bg-surface);
+  z-index: 5;
 }
 
 .t-breadcrumb {
@@ -144,7 +149,12 @@
   align-items: center;
   gap: 8px;
   padding: 8px 0;
+  margin-top: 20px;
   margin-bottom: 4px;
+}
+
+.t-section-header:first-child {
+  margin-top: 0;
 }
 
 .t-section-title {

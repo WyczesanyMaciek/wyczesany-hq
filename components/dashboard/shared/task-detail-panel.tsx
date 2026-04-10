@@ -335,14 +335,14 @@ export function TaskDetailPanel({
       <div className="">
         {projectName ? (
           <div className="t-field-row">
-            <label>Projekt</label>
+            <label className="t-field-label">Projekt</label>
             <span className="t-field-value">
               <span className="t-context-badge">{projectName}</span>
             </span>
           </div>
         ) : null}
         <div className="t-field-row">
-          <label>Kontekst</label>
+          <label className="t-field-label">Kontekst</label>
           <span className="t-field-value">
             <span
               className="t-context-badge"
@@ -356,7 +356,7 @@ export function TaskDetailPanel({
           </span>
         </div>
         <div className="t-field-row">
-          <label>Przypisane</label>
+          <label className="t-field-label">Przypisane</label>
           {editing === "assignee" ? (
             <input
               autoFocus
@@ -404,7 +404,7 @@ export function TaskDetailPanel({
           )}
         </div>
         <div className="t-field-row">
-          <label>Deadline</label>
+          <label className="t-field-label">Deadline</label>
           {editing === "deadline" ? (
             <input
               type="date"
@@ -448,7 +448,7 @@ export function TaskDetailPanel({
           )}
         </div>
         <div className="t-field-row">
-          <label>Priorytet</label>
+          <label className="t-field-label">Priorytet</label>
           {editing === "priority" ? (
             <select
               autoFocus

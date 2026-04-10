@@ -24,7 +24,7 @@ export function ProblemsSection({
 }) {
   return (
     <>
-      <div className="t-section-header" style={{ marginTop: 22 }}>
+      <div className="t-section-header">
         <h3 className="t-section-title">Problemy</h3>
         <span className="t-section-counter">{problems.length}</span>
         {!readOnly && contextId ? (
