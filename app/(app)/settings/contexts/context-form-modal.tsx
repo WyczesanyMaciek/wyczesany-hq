@@ -1,7 +1,6 @@
 "use client";
 
-// Modal do dodawania i edycji kontekstu.
-// Pola: nazwa, kolor (paleta 10 przyciskow), rodzic (dropdown plaskiej listy).
+// Modal do dodawania i edycji kontekstu — Linear v2 style.
 
 import { useState, useTransition } from "react";
 import {
@@ -47,7 +46,6 @@ export function ContextFormModal({
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
-  // Reset przy otwarciu
   const resetForInitial = () => {
     setName(initial?.name ?? "");
     setColor(initial?.color ?? CONTEXT_PALETTE[0].hex);
@@ -58,11 +56,7 @@ export function ContextFormModal({
   const handleSubmit = () => {
     setError(null);
     startTransition(async () => {
-      const payload = {
-        name,
-        color,
-        parentId: parentId || null,
-      };
+      const payload = { name, color, parentId: parentId || null };
       const res =
         mode === "create"
           ? await createContext(payload)
@@ -75,45 +69,50 @@ export function ContextFormModal({
     });
   };
 
-  // Przy otwarciu wczytaj wartosci poczatkowe (gdy mode/initial sie zmieni)
   const handleOpenChange = (next: boolean) => {
     if (next) resetForInitial();
     onOpenChange(next);
   };
 
-  // Filtruj liste rodzicow: w trybie edit nie mozna wskazac samego siebie
-  // ani swoich potomkow (walidacja tez na serwerze, ale UI czystszy).
   const parentOptions = flatContexts.filter((c) =>
     mode === "edit" && initial ? c.id !== initial.id : true
   );
+
+  const inputStyle: React.CSSProperties = {
+    width: "100%",
+    padding: "8px 12px",
+    fontSize: 13,
+    border: "1px solid #e2e8f0",
+    borderRadius: 6,
+    background: "#fff",
+    font: "inherit",
+    outline: "none",
+  };
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
         className="max-w-md p-0 gap-0 overflow-hidden"
         style={{
-          background: "#FBF8F3",
-          border: "3px solid var(--ink)",
-          borderRadius: "16px",
-          boxShadow: "8px 8px 0 var(--ink)",
+          background: "#fff",
+          border: "1px solid #e2e8f0",
+          borderRadius: 12,
+          boxShadow: "0 16px 48px rgba(0,0,0,0.12)",
         }}
       >
-        <DialogHeader
-          className="p-6 border-b-[3px] border-[var(--ink)]"
-          style={{ background: "#F5EFE3" }}
-        >
-          <div className="eyebrow mb-1">
+        <DialogHeader style={{ padding: "20px 24px 16px" }}>
+          <div style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.08em", color: "#94a3b8", fontWeight: 600, marginBottom: 2 }}>
             {mode === "create" ? "Nowy" : "Edycja"}
           </div>
-          <DialogTitle className="text-2xl font-black tracking-tight">
+          <DialogTitle style={{ fontSize: 18, fontWeight: 700, color: "#0f172a" }}>
             {mode === "create" ? "Nowy kontekst" : "Edytuj kontekst"}
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6 p-6">
+        <div style={{ padding: "0 24px 20px", display: "flex", flexDirection: "column", gap: 16 }}>
           {/* Nazwa */}
           <div>
-            <label className="block text-sm font-black mb-2 uppercase tracking-wider">
+            <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "#475569", marginBottom: 6 }}>
               Nazwa
             </label>
             <input
@@ -121,17 +120,17 @@ export function ContextFormModal({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="np. Salony"
-              className="w-full px-4 py-3 border-[3px] border-[var(--ink)] rounded-xl bg-white font-bold focus:outline-none focus:shadow-[4px_4px_0_var(--ink)] focus:-translate-x-0.5 focus:-translate-y-0.5 transition-all"
+              style={inputStyle}
               autoFocus
             />
           </div>
 
-          {/* Kolor — paleta */}
+          {/* Kolor */}
           <div>
-            <label className="block text-sm font-black mb-3 uppercase tracking-wider">
+            <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "#475569", marginBottom: 8 }}>
               Kolor
             </label>
-            <div className="grid grid-cols-5 gap-2.5">
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 8 }}>
               {CONTEXT_PALETTE.map((c) => {
                 const selected = color === c.hex;
                 return (
@@ -139,15 +138,16 @@ export function ContextFormModal({
                     key={c.hex}
                     type="button"
                     onClick={() => setColor(c.hex)}
-                    title={`${c.name} ${c.hex}`}
-                    className="aspect-square rounded-lg transition-all"
+                    title={c.name}
                     style={{
+                      aspectRatio: "1",
+                      borderRadius: 6,
                       background: c.hex,
-                      border: "3px solid var(--ink)",
-                      boxShadow: selected
-                        ? "4px 4px 0 var(--ink)"
-                        : "2px 2px 0 var(--ink)",
-                      transform: selected ? "translate(-2px,-2px)" : "none",
+                      border: selected ? "2px solid #0f172a" : "2px solid transparent",
+                      cursor: "pointer",
+                      outline: selected ? "2px solid #fff" : "none",
+                      outlineOffset: -4,
+                      transition: "all 120ms",
                     }}
                     aria-label={c.name}
                     aria-pressed={selected}
@@ -159,13 +159,13 @@ export function ContextFormModal({
 
           {/* Rodzic */}
           <div>
-            <label className="block text-sm font-black mb-2 uppercase tracking-wider">
+            <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "#475569", marginBottom: 6 }}>
               Rodzic
             </label>
             <select
               value={parentId}
               onChange={(e) => setParentId(e.target.value)}
-              className="w-full px-4 py-3 border-[3px] border-[var(--ink)] rounded-xl bg-white font-bold focus:outline-none focus:shadow-[4px_4px_0_var(--ink)]"
+              style={inputStyle}
             >
               <option value="">— brak (kontekst glowny) —</option>
               {parentOptions.map((c) => (
@@ -178,21 +178,44 @@ export function ContextFormModal({
           </div>
 
           {error && (
-            <div className="text-sm font-bold text-[#7f1d1d] bg-[#FCE4E4] border-[3px] border-[#DC2626] rounded-xl p-3">
+            <div style={{
+              fontSize: 12,
+              fontWeight: 500,
+              color: "#b91c1c",
+              background: "#fef2f2",
+              border: "1px solid #fecaca",
+              borderRadius: 6,
+              padding: "8px 12px",
+            }}>
               {error}
             </div>
           )}
         </div>
 
         <DialogFooter
-          className="p-6 border-t-[3px] border-[var(--ink)] flex-row justify-end gap-3"
-          style={{ background: "#F5EFE3" }}
+          style={{
+            padding: "12px 24px",
+            borderTop: "1px solid #eef0f3",
+            display: "flex",
+            justifyContent: "flex-end",
+            gap: 8,
+          }}
         >
           <button
             type="button"
             onClick={() => onOpenChange(false)}
             disabled={pending}
-            className="brutal-btn"
+            style={{
+              padding: "6px 14px",
+              fontSize: 13,
+              fontWeight: 500,
+              color: "#475569",
+              background: "#fff",
+              border: "1px solid #e2e8f0",
+              borderRadius: 6,
+              cursor: "pointer",
+              font: "inherit",
+            }}
           >
             Anuluj
           </button>
@@ -200,13 +223,19 @@ export function ContextFormModal({
             type="button"
             onClick={handleSubmit}
             disabled={pending || !name.trim()}
-            className="brutal-btn brutal-btn-primary disabled:opacity-50"
+            style={{
+              padding: "6px 14px",
+              fontSize: 13,
+              fontWeight: 600,
+              color: "#fff",
+              background: pending || !name.trim() ? "#94a3b8" : "#5B3DF5",
+              border: "none",
+              borderRadius: 6,
+              cursor: pending || !name.trim() ? "not-allowed" : "pointer",
+              font: "inherit",
+            }}
           >
-            {pending
-              ? "Zapisywanie..."
-              : mode === "create"
-                ? "Dodaj"
-                : "Zapisz"}
+            {pending ? "Zapisywanie..." : mode === "create" ? "Dodaj" : "Zapisz"}
           </button>
         </DialogFooter>
       </DialogContent>

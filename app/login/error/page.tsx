@@ -1,4 +1,4 @@
-// /login/error — strona bledu logowania.
+// /login/error — strona bledu logowania. Linear v2 style.
 
 import Link from "next/link";
 
@@ -10,8 +10,8 @@ export default function LoginErrorPage() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "#FBF8F3",
-        fontFamily: "var(--font-nunito), Nunito, sans-serif",
+        background: "#fafbfc",
+        fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
       }}
     >
       <div
@@ -20,42 +20,28 @@ export default function LoginErrorPage() {
           maxWidth: 380,
           padding: 32,
           background: "#fff",
-          border: "3px solid #DC2626",
+          border: "1px solid #fecaca",
           borderRadius: 12,
-          boxShadow: "4px 4px 0 #1F1F2E",
+          boxShadow: "0 8px 32px rgba(0,0,0,0.08)",
           textAlign: "center",
         }}
       >
-        <div style={{ fontSize: 40, marginBottom: 12 }}>⚠️</div>
-        <h1
-          style={{
-            fontSize: 22,
-            fontWeight: 800,
-            color: "#DC2626",
-            margin: "0 0 8px",
-          }}
-        >
+        <div style={{ fontSize: 36, marginBottom: 12 }}>⚠️</div>
+        <h1 style={{ fontSize: 18, fontWeight: 700, color: "#b91c1c", margin: "0 0 8px" }}>
           Blad logowania
         </h1>
-        <p
-          style={{
-            fontSize: 14,
-            color: "#64748b",
-            margin: "0 0 20px",
-            lineHeight: 1.6,
-          }}
-        >
-          Twoj email nie jest na liscie. Poproś admina o dodanie Twojego maila.
+        <p style={{ fontSize: 13, color: "#94a3b8", margin: "0 0 20px", lineHeight: 1.6 }}>
+          Twoj email nie jest na liscie. Popros admina o dodanie Twojego maila.
         </p>
         <Link
           href="/login"
           style={{
             display: "inline-block",
             padding: "8px 20px",
-            fontSize: 14,
+            fontSize: 13,
             fontWeight: 600,
             color: "#5B3DF5",
-            border: "2px solid #5B3DF5",
+            border: "1px solid #5B3DF5",
             borderRadius: 6,
             textDecoration: "none",
           }}

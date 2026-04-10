@@ -1,14 +1,10 @@
 "use client";
 
-// Kliencka czesc strony /settings/contexts — zarzadza stanem modalu
-// (dodaj / edytuj) dla calej listy.
-// Kierunek: Neo-brutalist warm — grube bordery, twarde cienie, pastelowe
-// tla wierszy per kontekst, sprezyste hover.
+// Kliencka czesc strony /settings/contexts — Linear v2 style.
 
 import { useState } from "react";
 import { Pencil, Plus, ChevronRight } from "lucide-react";
 import type { ContextNode } from "@/lib/queries/contexts";
-import { softOf } from "@/lib/colors";
 import { ContextFormModal, type FlatContext } from "./context-form-modal";
 import { DeleteContextButton } from "./delete-context-button";
 
@@ -31,45 +27,76 @@ export function ContextsClient({
 
   return (
     <>
-      <header className="mb-10">
-        <div className="eyebrow mb-3">Ustawienia · Konteksty</div>
-        <div className="flex items-end justify-between gap-6 flex-wrap">
+      <div style={{ padding: "24px 32px" }}>
+        <div style={{
+          fontSize: 10,
+          textTransform: "uppercase",
+          letterSpacing: "0.08em",
+          color: "#94a3b8",
+          fontWeight: 600,
+          marginBottom: 4,
+        }}>
+          Ustawienia · Konteksty
+        </div>
+        <div style={{
+          display: "flex",
+          alignItems: "flex-end",
+          justifyContent: "space-between",
+          gap: 16,
+          marginBottom: 20,
+        }}>
           <div>
-            <h1 className="m-0 mb-2">Konteksty</h1>
-            <p className="opacity-70 max-w-xl m-0">
-              Zarzadzaj hierarchia kontekstow. Usuwac mozna tylko puste
-              konteksty — jesli maja projekty, taski, pomysly lub problemy,
-              trzeba je najpierw przeniesc albo skasowac.
+            <h2 style={{ fontSize: 20, fontWeight: 700, margin: "0 0 4px", color: "#0f172a" }}>
+              Konteksty
+            </h2>
+            <p style={{ fontSize: 13, color: "#94a3b8", margin: 0, maxWidth: 480, lineHeight: 1.5 }}>
+              Zarzadzaj hierarchia kontekstow. Usuwac mozna tylko puste konteksty.
             </p>
           </div>
           <button
             type="button"
             onClick={() => setModal({ kind: "create" })}
-            className="brutal-btn brutal-btn-primary"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
+              padding: "6px 14px",
+              fontSize: 13,
+              fontWeight: 600,
+              color: "#fff",
+              background: "#5B3DF5",
+              border: "none",
+              borderRadius: 6,
+              cursor: "pointer",
+              font: "inherit",
+            }}
           >
-            <Plus size={18} />
+            <Plus size={15} />
             Dodaj kontekst
           </button>
         </div>
-      </header>
 
-      <div className="brutal-card overflow-hidden">
-        {tree.length === 0 ? (
-          <div className="p-10 text-center opacity-60 italic font-semibold">
-            Brak kontekstow
-          </div>
-        ) : (
-          <div className="divide-y-[2px] divide-[var(--ink)]/10">
-            {tree.map((node) => (
+        <div style={{
+          border: "1px solid #eef0f3",
+          borderRadius: 8,
+          background: "#fff",
+          overflow: "hidden",
+        }}>
+          {tree.length === 0 ? (
+            <div style={{ padding: 40, textAlign: "center", color: "#94a3b8", fontSize: 13 }}>
+              Brak kontekstow
+            </div>
+          ) : (
+            tree.map((node) => (
               <ContextRow
                 key={node.id}
                 node={node}
                 depth={0}
                 onEdit={(ctx) => setModal({ kind: "edit", context: ctx })}
               />
-            ))}
-          </div>
-        )}
+            ))
+          )}
+        </div>
       </div>
 
       <ContextFormModal
@@ -102,35 +129,36 @@ function ContextRow({
   return (
     <>
       <div
-        className="flex items-center gap-3 py-3 pr-4 group transition-colors hover:bg-black/[0.03]"
         style={{
-          paddingLeft: `${20 + depth * 28}px`,
-          borderLeft: `5px solid ${node.color}`,
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+          padding: "8px 14px",
+          paddingLeft: 14 + depth * 22,
+          borderBottom: "1px solid #eef0f3",
+          transition: "background 120ms",
+          cursor: "default",
         }}
+        onMouseEnter={(e) => { e.currentTarget.style.background = "#f8fafc"; }}
+        onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
       >
         {depth > 0 && (
-          <ChevronRight size={14} className="opacity-30 -ml-3 shrink-0" />
+          <ChevronRight size={12} style={{ opacity: 0.3, marginLeft: -8, flexShrink: 0 }} />
         )}
-        <div
-          className="w-8 h-8 rounded-lg border-[2.5px] border-[var(--ink)] shrink-0"
+        <span
           style={{
-            background: softOf(node.color),
-            boxShadow: "2px 2px 0 var(--ink)",
+            display: "inline-block",
+            width: 10,
+            height: 10,
+            borderRadius: 3,
+            background: node.color,
+            flexShrink: 0,
           }}
-        >
-          <div
-            className="w-full h-full rounded-sm"
-            style={{
-              background: `linear-gradient(135deg, ${node.color} 50%, transparent 50%)`,
-              opacity: 0.9,
-            }}
-          />
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="font-black text-[16px] truncate">{node.name}</div>
-          <div className="text-[11px] opacity-55 font-mono">
-            {node.ownProjectCount}p · {node.ownTaskCount}t ·{" "}
-            {node.ownIdeaCount}i · {node.ownProblemCount}b
+        />
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: "#0f172a" }}>{node.name}</div>
+          <div style={{ fontSize: 10, color: "#94a3b8", fontFamily: "ui-monospace, monospace" }}>
+            {node.ownProjectCount}p · {node.ownTaskCount}t · {node.ownIdeaCount}i · {node.ownProblemCount}b
           </div>
         </div>
         <button
@@ -143,11 +171,18 @@ function ContextRow({
               parentId: node.parentId,
             })
           }
-          className="p-2 rounded-lg border-[2px] border-transparent hover:border-[var(--ink)] hover:bg-white transition-all"
-          aria-label="Edytuj"
+          style={{
+            padding: 4,
+            border: "1px solid transparent",
+            borderRadius: 4,
+            background: "transparent",
+            cursor: "pointer",
+            color: "#94a3b8",
+            display: "flex",
+          }}
           title="Edytuj"
         >
-          <Pencil size={16} strokeWidth={2.5} />
+          <Pencil size={13} />
         </button>
         <DeleteContextButton id={node.id} name={node.name} />
       </div>

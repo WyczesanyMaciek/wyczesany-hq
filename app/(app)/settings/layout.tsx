@@ -1,6 +1,4 @@
-// /settings — layout z lewym menu.
-// Na razie tylko „Konteksty"; w Etapie 8 dojda: Userzy, Uprawnienia,
-// Integracje itd.
+// /settings — layout z lewym menu w stylu Linear v2.
 
 import Link from "next/link";
 import { SlidersHorizontal, Layers, Users } from "lucide-react";
@@ -11,25 +9,42 @@ export default function SettingsLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen">
+    <div style={{ display: "flex", minHeight: "100vh" }}>
       <div
-        className="w-[240px] shrink-0 border-r-[3px] border-[var(--ink)] p-6"
-        style={{ background: "#EFE7D5" }}
+        style={{
+          width: 200,
+          flexShrink: 0,
+          borderRight: "1px solid #eef0f3",
+          background: "#fafbfc",
+          padding: "20px 12px",
+          fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
+          fontSize: "12.8px",
+        }}
       >
-        <div className="flex items-center gap-2 mb-8">
-          <SlidersHorizontal size={18} strokeWidth={2.5} />
-          <h3 className="m-0">Ustawienia</h3>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            padding: "0 8px",
+            marginBottom: 20,
+          }}
+        >
+          <SlidersHorizontal size={15} strokeWidth={2} style={{ color: "#475569" }} />
+          <span style={{ fontSize: 14, fontWeight: 700, color: "#0f172a" }}>
+            Ustawienia
+          </span>
         </div>
-        <nav className="flex flex-col gap-1">
-          <SettingsLink href="/settings/contexts" icon={<Layers size={16} />}>
+        <nav style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          <SettingsLink href="/settings/contexts" icon={<Layers size={14} />}>
             Konteksty
           </SettingsLink>
-          <SettingsLink href="/settings/users" icon={<Users size={16} />}>
+          <SettingsLink href="/settings/users" icon={<Users size={14} />}>
             Uzytkownicy
           </SettingsLink>
         </nav>
       </div>
-      <div className="flex-1 min-w-0">{children}</div>
+      <div style={{ flex: 1, minWidth: 0, background: "#ffffff" }}>{children}</div>
     </div>
   );
 }
@@ -43,13 +58,27 @@ function SettingsLink({
   icon: React.ReactNode;
   children: React.ReactNode;
 }) {
-  // Na razie tylko jedna trasa; w Etapie 8 dolozymy kolejne.
-  // Active styling: brutal pill z pasem koloru.
   return (
     <Link
       href={href}
-      className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl border-[2.5px] border-[var(--ink)] bg-white font-extrabold text-[15px] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_var(--ink)] transition-all"
-      style={{ boxShadow: "2px 2px 0 var(--ink)" }}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+        padding: "6px 10px",
+        borderRadius: 6,
+        fontSize: "12.8px",
+        fontWeight: 500,
+        color: "#475569",
+        textDecoration: "none",
+        transition: "background 120ms",
+      }}
+      onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => {
+        (e.currentTarget as HTMLElement).style.background = "#f3f4f6";
+      }}
+      onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => {
+        (e.currentTarget as HTMLElement).style.background = "transparent";
+      }}
     >
       {icon}
       {children}

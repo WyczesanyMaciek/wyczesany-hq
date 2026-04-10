@@ -1,6 +1,4 @@
-// /login — strona logowania magic linkiem.
-// Formularz z emailem. Auth.js wysyla magic link na maila.
-// Jasny motyw, Nunito, spojny z reszta UI.
+// /login — strona logowania magic linkiem. Linear v2 style.
 
 import { signIn } from "@/auth";
 
@@ -12,8 +10,8 @@ export default function LoginPage() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "#FBF8F3",
-        fontFamily: "var(--font-nunito), Nunito, sans-serif",
+        background: "#fafbfc",
+        fontFamily: "var(--font-inter), Inter, system-ui, sans-serif",
       }}
     >
       <div
@@ -22,29 +20,15 @@ export default function LoginPage() {
           maxWidth: 380,
           padding: 32,
           background: "#fff",
-          border: "3px solid #1F1F2E",
+          border: "1px solid #e2e8f0",
           borderRadius: 12,
-          boxShadow: "4px 4px 0 #1F1F2E",
+          boxShadow: "0 8px 32px rgba(0,0,0,0.08)",
         }}
       >
-        <h1
-          style={{
-            fontSize: 24,
-            fontWeight: 800,
-            color: "#1F1F2E",
-            margin: "0 0 4px",
-          }}
-        >
+        <h1 style={{ fontSize: 20, fontWeight: 700, color: "#0f172a", margin: "0 0 4px" }}>
           Wyczesany HQ
         </h1>
-        <p
-          style={{
-            fontSize: 14,
-            color: "#64748b",
-            margin: "0 0 24px",
-            lineHeight: 1.5,
-          }}
-        >
+        <p style={{ fontSize: 13, color: "#94a3b8", margin: "0 0 24px", lineHeight: 1.5 }}>
           Zaloguj sie magic linkiem — wpisz email i sprawdz skrzynke.
         </p>
 
@@ -56,13 +40,7 @@ export default function LoginPage() {
         >
           <label
             htmlFor="email"
-            style={{
-              display: "block",
-              fontSize: 13,
-              fontWeight: 600,
-              color: "#1F1F2E",
-              marginBottom: 6,
-            }}
+            style={{ display: "block", fontSize: 12, fontWeight: 600, color: "#475569", marginBottom: 6 }}
           >
             Email
           </label>
@@ -75,13 +53,14 @@ export default function LoginPage() {
             style={{
               width: "100%",
               padding: "10px 12px",
-              fontSize: 15,
-              border: "2px solid #1F1F2E",
+              fontSize: 14,
+              border: "1px solid #e2e8f0",
               borderRadius: 6,
-              background: "#FBF8F3",
+              background: "#fff",
               font: "inherit",
               marginBottom: 16,
               boxSizing: "border-box",
+              outline: "none",
             }}
           />
           <button
@@ -89,14 +68,13 @@ export default function LoginPage() {
             style={{
               width: "100%",
               padding: "10px 0",
-              fontSize: 15,
-              fontWeight: 700,
+              fontSize: 14,
+              fontWeight: 600,
               color: "#fff",
               background: "#5B3DF5",
-              border: "2px solid #1F1F2E",
+              border: "none",
               borderRadius: 6,
               cursor: "pointer",
-              boxShadow: "2px 2px 0 #1F1F2E",
               font: "inherit",
             }}
           >

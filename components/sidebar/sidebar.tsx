@@ -181,14 +181,9 @@ export function Sidebar({
         <FooterLink href="/settings" icon={<Settings size={14} />}>
           Ustawienia
         </FooterLink>
-        {/* Logi dev servera — widoczne tylko w dev mode.
-            Na produkcji (Vercel) plik .next/dev-server.log nie istnieje,
-            wiec narzedzie nie ma sensu — link chowamy zeby nie mylic. */}
-        {process.env.NODE_ENV === "development" && (
-          <FooterLink href="/dev/logs" icon={<Terminal size={14} />}>
-            Logi
-          </FooterLink>
-        )}
+        <FooterLink href="/dev/logs" icon={<Terminal size={14} />}>
+          Logi
+        </FooterLink>
         <div
           style={{
             padding: "6px 16px 4px",

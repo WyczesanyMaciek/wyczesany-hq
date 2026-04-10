@@ -117,7 +117,7 @@ export function UsersClient({
             flex: 1,
             padding: "8px 12px",
             fontSize: 14,
-            border: "2px solid #1F1F2E",
+            border: "1px solid #e2e8f0",
             borderRadius: 6,
             font: "inherit",
           }}
@@ -125,12 +125,17 @@ export function UsersClient({
         <button
           onClick={handleWhitelist}
           disabled={pending || !newEmail.trim()}
-          className="brutal-btn-primary"
+          className=""
           style={{
-            padding: "8px 16px",
-            fontSize: 14,
+            padding: "6px 14px",
+            fontSize: 13,
             fontWeight: 600,
+            color: "#fff",
+            background: "#5B3DF5",
+            border: "none",
+            borderRadius: 6,
             cursor: "pointer",
+            font: "inherit",
           }}
         >
           Dodaj
@@ -138,12 +143,11 @@ export function UsersClient({
       </div>
 
       {/* Lista userow */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      <div style={{ border: "1px solid #eef0f3", borderRadius: 8, overflow: "hidden" }}>
         {users.map((u) => (
           <div
             key={u.id}
             onClick={() => setSelectedUserId(u.id)}
-            className="brutal-card"
             style={{
               padding: "12px 16px",
               cursor: "pointer",
@@ -151,6 +155,7 @@ export function UsersClient({
               display: "flex",
               alignItems: "center",
               gap: 12,
+              borderBottom: "1px solid #eef0f3",
             }}
           >
             {/* Avatar */}
@@ -233,8 +238,13 @@ export function UsersClient({
       {/* Panel szczegolow wybranego usera */}
       {selectedUser && (
         <div
-          className="brutal-card"
-          style={{ marginTop: 20, padding: "16px 20px" }}
+          style={{
+            marginTop: 20,
+            padding: "16px 20px",
+            border: "1px solid #eef0f3",
+            borderRadius: 8,
+            background: "#fff",
+          }}
         >
           <h3 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 12px" }}>
             {selectedUser.name ?? selectedUser.email}
