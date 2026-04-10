@@ -237,13 +237,7 @@ Trzymamy się tej kolejności. Nie przeskakuj etapów.
 - Autoryzacja per user (Claude działa w imieniu konkretnego user'a)
 - Dokumentacja jak podłączyć w Cowork/Code
 
-### Etap 10 — Wbudowany czat z Claude w UI
-- Okienko czatu w dashboardzie (sidebar albo modal)
-- Czat zna aktualnie otwarty kontekst/projekt
-- Rozmowy zapisują się w historii rozmów tego kontekstu/projektu
-- Claude w tym czacie używa MCP server (Etap 9), żeby modyfikować dashboard
-
-### Etap 11 — Migracja na Postgres + deploy
+### Etap 10 — Migracja na Postgres + deploy
 - Zmiana provider'a Prismy z SQLite na Postgres
 - Deploy na Vercel + Neon (Postgres)
 - Konfiguracja domeny, certyfikatów, magic link mailera

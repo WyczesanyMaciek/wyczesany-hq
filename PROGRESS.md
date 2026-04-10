@@ -196,5 +196,4 @@
 
 ## Backlog
 
-- Etap 10 — Wbudowany czat z Claude
 - Etap 11 — Migracja produkcyjna + custom domain
