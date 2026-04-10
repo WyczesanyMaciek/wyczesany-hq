@@ -63,8 +63,8 @@ function RailIcon({
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        color: active ? "var(--ds-accent)" : "var(--text-secondary)",
-        background: active ? "var(--ds-accent-light)" : "transparent",
+        color: active ? "var(--accent)" : "var(--text-secondary)",
+        background: active ? "var(--accent-light)" : "transparent",
         textDecoration: "none",
         transition: "all var(--transition-fast)",
       }}

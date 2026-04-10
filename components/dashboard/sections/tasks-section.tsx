@@ -95,7 +95,7 @@ function LooseDropZone({ readOnly }: { readOnly: boolean }) {
         color: "#94a3b8",
         fontSize: 12.5,
         borderRadius: 4,
-        border: isOver ? "1px dashed var(--l-accent, #5B3DF5)" : "1px dashed transparent",
+        border: isOver ? "1px dashed var(--accent)" : "1px dashed transparent",
         background: isOver ? "rgba(99,102,241,0.05)" : "transparent",
         transition: "all 150ms",
         minHeight: 32,

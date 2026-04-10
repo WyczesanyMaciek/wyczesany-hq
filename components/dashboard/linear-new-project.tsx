@@ -90,7 +90,8 @@ export function LinearNewProjectButton({
             border: 0,
             font: "inherit",
             cursor: "pointer",
-            color: "var(--l-muted)",
+            color: "var(--accent)",
+            fontWeight: 600,
           }}
         >
           + dodaj projekt
@@ -292,7 +293,7 @@ export function LinearNewProjectButton({
                   font: "inherit",
                   padding: "6px 14px",
                   border: 0,
-                  background: "var(--l-accent)",
+                  background: "var(--accent)",
                   color: "#fff",
                   borderRadius: 6,
                   cursor: "pointer",

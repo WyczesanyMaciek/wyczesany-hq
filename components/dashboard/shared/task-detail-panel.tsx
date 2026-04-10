@@ -204,7 +204,7 @@ export function TaskDetailPanel({
               fontSize: 18,
               fontWeight: 800,
               padding: "4px 8px",
-              border: "1.5px solid var(--ds-accent)",
+              border: "1.5px solid var(--accent)",
               borderRadius: "var(--radius-sm)",
               background: "var(--bg-surface)",
               outline: "none",
@@ -248,8 +248,8 @@ export function TaskDetailPanel({
               display: "inline-flex", alignItems: "center", gap: 4,
               padding: "2px 8px", fontSize: 11, fontWeight: 700,
               borderRadius: "9999px",
-              background: "var(--ds-accent-light)",
-              color: "var(--ds-accent)",
+              background: "var(--accent-light)",
+              color: "var(--accent)",
             }}>
               {task.assigneeId}
             </span>
@@ -379,7 +379,7 @@ export function TaskDetailPanel({
               style={{
                 font: "inherit",
                 padding: "2px 6px",
-                border: "1px solid var(--l-accent)",
+                border: "1px solid var(--accent)",
                 borderRadius: 4,
                 background: "#fff",
                 maxWidth: 160,
@@ -426,7 +426,7 @@ export function TaskDetailPanel({
               style={{
                 font: "inherit",
                 padding: "2px 6px",
-                border: "1px solid var(--l-accent)",
+                border: "1px solid var(--accent)",
                 borderRadius: 4,
                 background: "#fff",
               }}
@@ -463,7 +463,7 @@ export function TaskDetailPanel({
               style={{
                 font: "inherit",
                 padding: "2px 6px",
-                border: "1px solid var(--l-accent)",
+                border: "1px solid var(--accent)",
                 borderRadius: 4,
                 background: "#fff",
               }}
@@ -508,7 +508,7 @@ export function TaskDetailPanel({
           <button
             onClick={() => saveField({ notes: " " })}
             style={{
-              fontSize: 12, color: "var(--ds-accent)", fontWeight: 600,
+              fontSize: 12, color: "var(--accent)", fontWeight: 600,
               cursor: "pointer", background: "none", border: "none", fontFamily: "inherit",
             }}
           >
@@ -616,7 +616,7 @@ export function TaskDetailPanel({
               disabled={pending || !attName.trim() || !attUrl.trim()}
               style={{
                 padding: "4px 10px",
-                background: "var(--l-accent)",
+                background: "var(--accent)",
                 color: "#fff",
                 border: 0,
                 borderRadius: 4,
@@ -656,7 +656,7 @@ export function TaskDetailPanel({
           <button
             onClick={() => setAddingLink(true)}
             style={{
-              fontSize: 12, color: "var(--ds-accent)", fontWeight: 600,
+              fontSize: 12, color: "var(--accent)", fontWeight: 600,
               cursor: "pointer", background: "none", border: "none", fontFamily: "inherit",
             }}
           >
@@ -760,7 +760,7 @@ export function TaskDetailPanel({
                 disabled={pending || !linkLabel.trim() || !linkUrl.trim()}
                 style={{
                   padding: "4px 10px",
-                  background: "var(--l-accent)",
+                  background: "var(--accent)",
                   color: "#fff",
                   border: 0,
                   borderRadius: 4,

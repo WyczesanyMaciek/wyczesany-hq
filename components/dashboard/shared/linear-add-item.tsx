@@ -111,7 +111,7 @@ export function LinearAddItem({
         style={{
           font: "inherit",
           padding: "6px 10px",
-          border: "1px solid var(--l-accent)",
+          border: "1px solid var(--accent)",
           borderRadius: 6,
           background: "#fff",
           outline: "none",

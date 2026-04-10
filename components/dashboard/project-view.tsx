@@ -207,7 +207,7 @@ function NotesSection({
                 disabled={pending || !newContent.trim()}
                 style={{
                   padding: "4px 10px",
-                  background: "var(--l-accent, #5B3DF5)",
+                  background: "var(--accent)",
                   color: "#fff",
                   border: 0,
                   borderRadius: 4,
@@ -320,7 +320,7 @@ function LinksSection({
                   gap: 6,
                   padding: "6px 0",
                   fontSize: 13,
-                  color: "var(--l-accent, #5B3DF5)",
+                  color: "var(--accent)",
                   textDecoration: "none",
                 }}
               >
@@ -405,7 +405,7 @@ function LinksSection({
                 disabled={pending || !label.trim() || !url.trim()}
                 style={{
                   padding: "4px 10px",
-                  background: "var(--l-accent, #5B3DF5)",
+                  background: "var(--accent)",
                   color: "#fff",
                   border: 0,
                   borderRadius: 4,

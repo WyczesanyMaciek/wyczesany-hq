@@ -162,7 +162,7 @@ function EmptyDropZone({ projectId, readOnly }: { projectId: string; readOnly: b
         color: "var(--l-muted)",
         padding: "8px 10px",
         borderRadius: 4,
-        border: isOver ? "1px dashed var(--l-accent, #5B3DF5)" : "1px dashed transparent",
+        border: isOver ? "1px dashed var(--accent)" : "1px dashed transparent",
         background: isOver ? "rgba(99,102,241,0.05)" : "transparent",
         transition: "all 150ms",
         minHeight: 32,
