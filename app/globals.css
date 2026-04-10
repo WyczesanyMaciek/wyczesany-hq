@@ -109,36 +109,38 @@
   --ctx-szkolenia: var(--ctx-pomaranczowy);
   --ctx-marka-osobista: var(--ctx-koralowy);
 
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  /* === SHADCN OVERRIDES — zmapowane na DS v1 tokeny === */
+  --card: #FFFFFF;
+  --card-foreground: #1F1F2E;
+  --popover: #FFFFFF;
+  --popover-foreground: #1F1F2E;
+  --primary: #6C5CE7;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F0EDE6;
+  --secondary-foreground: #1F1F2E;
+  --muted: #F0EDE6;
+  --muted-foreground: #6B6B7B;
+  --accent: #6C5CE7;
+  --accent-foreground: #FFFFFF;
+  --destructive: #E17055;
+  --destructive-foreground: #FFFFFF;
+  --border: #E5E2DB;
+  --input: #E5E2DB;
+  --ring: #6C5CE7;
+  --chart-1: #6C5CE7;
+  --chart-2: #00B894;
+  --chart-3: #FDCB6E;
+  --chart-4: #E17055;
+  --chart-5: #74B9FF;
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: #F5F2EC;
+  --sidebar-foreground: #1F1F2E;
+  --sidebar-primary: #6C5CE7;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #EDE9FC;
+  --sidebar-accent-foreground: #1F1F2E;
+  --sidebar-border: #E5E2DB;
+  --sidebar-ring: #6C5CE7;
 }
 
 @theme inline {
