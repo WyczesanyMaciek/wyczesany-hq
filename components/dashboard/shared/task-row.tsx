@@ -68,35 +68,9 @@ export const TaskRow = memo(function TaskRow({
   return (
     <div
       ref={setNodeRef}
-      style={{
-        ...dndStyle,
-        display: "grid",
-        gridTemplateColumns: "18px 8px 1fr 80px 60px 28px",
-        gap: 10,
-        alignItems: "center",
-        padding: "10px 16px",
-        border: selected ? "1.5px solid #6C5CE7" : "1.5px solid transparent",
-        borderRadius: 10,
-        transition: "all 120ms ease",
-        cursor: "pointer",
-        background: selected ? "#EDE9FC" : "#FFFFFF",
-        marginBottom: 2,
-      }}
+      className={`ltask${selected ? " selected" : ""}`}
+      style={dndStyle}
       {...attributes}
-      onMouseEnter={(e) => {
-        if (!selected) {
-          e.currentTarget.style.borderColor = "#E5E2DB";
-          e.currentTarget.style.boxShadow = "0 1px 2px rgba(31,31,46,0.04)";
-          e.currentTarget.style.transform = "translateY(-1px)";
-        }
-      }}
-      onMouseLeave={(e) => {
-        if (!selected) {
-          e.currentTarget.style.borderColor = "transparent";
-          e.currentTarget.style.boxShadow = "none";
-          e.currentTarget.style.transform = "none";
-        }
-      }}
       onClick={() => {
         if (!editingName) onSelect(task.id);
       }}

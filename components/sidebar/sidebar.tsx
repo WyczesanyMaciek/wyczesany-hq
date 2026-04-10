@@ -73,7 +73,7 @@ export function Sidebar({
         height: "100vh",
         display: "flex",
         flexDirection: "column",
-        fontFamily: "var(--font-nunito), Nunito, -apple-system, sans-serif",
+        fontFamily: "var(--font-family)",
         fontSize: "13px",
         color: "var(--text-primary)",
       }}

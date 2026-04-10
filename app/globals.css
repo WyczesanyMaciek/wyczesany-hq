@@ -29,10 +29,24 @@
   --foreground-muted: #6B6B7B;
 
   /* === ACCENT / BRAND === */
+  --accent: #6C5CE7;
+  --accent-hover: #5A4BD6;
+  --accent-light: #EDE9FC;
+  --accent-subtle: #F5F3FF;
   --ds-accent: #6C5CE7;
   --ds-accent-hover: #5A4BD6;
   --ds-accent-light: #EDE9FC;
   --ds-accent-subtle: #F5F3FF;
+
+  /* === TEXT extras === */
+  --text-on-accent: #FFFFFF;
+
+  /* === STATUS extras === */
+  --status-info: #74B9FF;
+  --status-info-light: #EBF5FF;
+
+  /* === FONT === */
+  --font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
 
   /* === STATUS === */
   --status-success: #00B894;
@@ -485,30 +499,26 @@ h4 { font-size: 1.07rem; }   /* 16px */
   padding: 4px 6px 6px;
 }
 
-/* 05. TaskRow — wg Component Map */
-.linear-app .ltask {
+/* 05. TaskRow — DS v1 */
+.ltask {
   display: grid;
   grid-template-columns: 18px 8px 1fr 80px 60px 28px;
-  gap: 10px;
   align-items: center;
-  padding: 10px 16px;
-  border: 1.5px solid transparent;
-  border-radius: var(--radius-md);
-  transition: all var(--transition-fast);
+  gap: 0 8px;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  color: var(--text-primary);
   cursor: pointer;
-  background: var(--bg-surface);
-  margin-bottom: 2px;
+  transition: background 120ms ease;
 }
-.linear-app .ltask:hover {
-  border-color: var(--border-default);
-  box-shadow: var(--shadow-sm);
-  transform: translateY(-1px);
+.ltask:hover {
+  background: var(--bg-surface-hover);
 }
-.linear-app .ltask.selected {
-  border-color: var(--ds-accent);
-  background: var(--ds-accent-light);
+.ltask.selected {
+  background: var(--accent-light);
 }
-.linear-app .ltask .grip {
+.ltask .grip {
   display: none;
 }
 .linear-app .ltask.done .name {
