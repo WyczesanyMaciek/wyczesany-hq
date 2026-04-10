@@ -1,11 +1,6 @@
 "use client";
 
-// ProjectCard — karta projektu w sekcji Projekty dashboardu Linear v2.
-// Naglowek z gripem, nazwa, badge kontekstu (opcjonalnie), progress bar,
-// liczba taskow done/total, deadline, chevron zwijania.
-// Body: SortableContext z taskami projektu + LinearAddTask.
-//
-// DnD: useSortable z prefiksem `project:${id}`. W trybie readOnly DnD wylaczony.
+// ProjectCard — DS v1 klasy t-project-card, t-project-header, etc.
 
 import { memo, useMemo } from "react";
 import Link from "next/link";
@@ -41,14 +36,8 @@ export const ProjectCard = memo(function ProjectCard({
       : 0;
   const due = formatDue(project.deadline);
 
-  // DnD — projekt sortowalny w ramach kontekstu, disabled w read-only
   const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
+    attributes, listeners, setNodeRef, transform, transition, isDragging,
   } = useSortable({ id: `project:${project.id}`, disabled: readOnly });
   const dndStyle: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
@@ -56,44 +45,39 @@ export const ProjectCard = memo(function ProjectCard({
     opacity: isDragging ? 0.4 : 1,
   };
 
-  // Id taskow projektu jako `task:xxx` — dla wewnetrznego SortableContext
   const taskItemIds = useMemo(
     () => project.tasks.map((t) => `task:${t.id}`),
     [project.tasks]
   );
 
   return (
-    <div ref={setNodeRef} style={dndStyle} {...attributes} className="lprj">
+    <div ref={setNodeRef} style={dndStyle} {...attributes} className="t-project-card">
       <div
-        className="head"
+        className="t-project-header"
         onClick={(e) => {
-          // Klik w grip nie zwija
           if ((e.target as HTMLElement).closest(".grip")) return;
           onToggle();
         }}
       >
         {readOnly ? (
-          <span className="grip" style={{ opacity: 0 }} aria-hidden="true" />
+          <span className="grip" style={{ opacity: 0, width: 14 }} aria-hidden="true" />
         ) : (
           <span
             className="grip"
             {...listeners}
             onClick={(e) => e.stopPropagation()}
-            style={{ cursor: "grab", display: "flex", alignItems: "center" }}
+            style={{ cursor: "grab", display: "flex", alignItems: "center", color: "var(--text-tertiary)" }}
             aria-label="Przeciagnij projekt"
           >
-            <GripVertical size={12} />
+            <GripVertical size={14} />
           </span>
         )}
-        <div>
+        <div style={{ flex: 1, minWidth: 0 }}>
           <Link
             href={`/c/${project.context.id}/p/${project.id}`}
             onClick={(e) => e.stopPropagation()}
-            style={{
-              fontWeight: 700,
-              color: "inherit",
-              textDecoration: "none",
-            }}
+            className="t-project-name"
+            style={{ textDecoration: "none" }}
             onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.textDecoration = "underline"; }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.textDecoration = "none"; }}
           >
@@ -101,31 +85,29 @@ export const ProjectCard = memo(function ProjectCard({
           </Link>{" "}
           {showContextBadge && (
             <span
-              className="ctx"
-              style={{
-                background: `${project.context.color}22`,
-                color: project.context.color,
-              }}
+              className="t-context-badge"
+              style={{ background: `${project.context.color}22`, color: project.context.color }}
             >
               {project.context.name}
             </span>
           )}
         </div>
-        <div className="meta">
-          <div className="progbar">
-            <i style={{ width: `${percent}%` }} />
+        <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+          <div className="t-progress-bar">
+            <div className="t-progress-fill" style={{ width: `${percent}%` }} />
           </div>
-          {project.taskDone}/{project.taskTotal}
-          {due ? ` · ${due.text}` : ""}
+          <span className="t-progress-text">
+            {project.taskDone}/{project.taskTotal}
+            {due ? ` · ${due.text}` : ""}
+          </span>
         </div>
-        <span className="chev">{collapsed ? "▸" : "▾"}</span>
+        <span style={{ color: "var(--text-tertiary)", fontSize: 11, width: 14, textAlign: "center" as const }}>
+          {collapsed ? "▸" : "▾"}
+        </span>
       </div>
       {!collapsed ? (
-        <div className="body">
-          <SortableContext
-            items={taskItemIds}
-            strategy={verticalListSortingStrategy}
-          >
+        <div style={{ borderTop: "1px solid var(--border-subtle)", padding: "4px 8px 8px" }}>
+          <SortableContext items={taskItemIds} strategy={verticalListSortingStrategy}>
             {project.tasks.length === 0 ? (
               <EmptyDropZone projectId={project.id} readOnly={readOnly} />
             ) : (
@@ -147,7 +129,6 @@ export const ProjectCard = memo(function ProjectCard({
   );
 });
 
-// Drop target dla pustego projektu — pozwala wrzucic task do projektu bez taskow.
 function EmptyDropZone({ projectId, readOnly }: { projectId: string; readOnly: boolean }) {
   const { setNodeRef, isOver } = useDroppable({
     id: `project:${projectId}`,
@@ -157,15 +138,15 @@ function EmptyDropZone({ projectId, readOnly }: { projectId: string; readOnly: b
   return (
     <div
       ref={setNodeRef}
-      className="add-row"
       style={{
-        color: "var(--l-muted)",
-        padding: "8px 10px",
-        borderRadius: 4,
-        border: isOver ? "1px dashed var(--accent)" : "1px dashed transparent",
-        background: isOver ? "rgba(99,102,241,0.05)" : "transparent",
+        color: "var(--text-tertiary)",
+        padding: "8px 16px",
+        borderRadius: "var(--radius-sm)",
+        border: isOver ? "1.5px dashed var(--accent)" : "1.5px dashed transparent",
+        background: isOver ? "var(--accent-subtle)" : "transparent",
         transition: "all 150ms",
         minHeight: 32,
+        fontSize: 13,
       }}
     >
       {isOver ? "Upusc tutaj" : "Brak zadan"}
