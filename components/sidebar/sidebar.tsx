@@ -190,7 +190,6 @@ export function Sidebar({
           </FooterLink>
         )}
         <div
-          title={`commit ${process.env.NEXT_PUBLIC_GIT_HASH}`}
           style={{
             padding: "6px 16px 4px",
             fontSize: "11px",
@@ -200,10 +199,9 @@ export function Sidebar({
           }}
         >
           <b style={{ color: "#64748b" }}>
-            #{process.env.NEXT_PUBLIC_BUILD_NUMBER}
+            Build{process.env.NEXT_PUBLIC_BUILD_NUMBER}
           </b>{" "}
-          · v{process.env.NEXT_PUBLIC_APP_VERSION} ·{" "}
-          {process.env.NEXT_PUBLIC_BUILD_TIME}
+          · {process.env.NEXT_PUBLIC_BUILD_TIME}
         </div>
       </div>
     </aside>
