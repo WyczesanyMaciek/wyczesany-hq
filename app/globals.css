@@ -933,3 +933,6 @@ h4 { font-size: 1.07rem; }   /* 16px */
     @apply font-sans;
   }
 }
+
+/* DS v1 — jedyne zrodlo prawdy dla komponentow Taskera */
+@import "./tasker-ds.css";

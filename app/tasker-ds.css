@@ -1,0 +1,610 @@
+/* ================================================
+   TASKER DESIGN SYSTEM — Component Styles
+   Jedyne źródło prawdy dla wyglądu komponentów.
+   Prefix: t-  |  Tokeny: var(--*)  |  Zero hardcoded hex
+   ================================================ */
+
+/* ---------- RAIL ---------- */
+.t-rail {
+  width: 52px;
+  flex-shrink: 0;
+  background: var(--bg-sidebar);
+  border-right: 1.5px solid var(--border-default);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 0;
+  gap: 4px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.t-rail-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 120ms ease;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  text-decoration: none;
+}
+
+.t-rail-icon:hover {
+  background: var(--bg-sidebar-hover);
+  color: var(--text-primary);
+}
+
+.t-rail-icon--active {
+  background: var(--accent-light);
+  color: var(--accent);
+}
+
+/* ---------- SIDEBAR ---------- */
+.t-sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  background: var(--bg-sidebar);
+  border-right: 1.5px solid var(--border-default);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  color: var(--text-primary);
+  overflow-y: auto;
+}
+
+.t-sidebar-section {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-tertiary);
+  padding: 16px 16px 6px;
+}
+
+.t-sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  margin: 0 8px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 120ms ease;
+  text-decoration: none;
+  border: none;
+  background: transparent;
+  width: calc(100% - 16px);
+  text-align: left;
+  font-family: inherit;
+  font-size: 13px;
+}
+
+.t-sidebar-item:hover {
+  background: var(--bg-sidebar-hover);
+  color: var(--text-primary);
+}
+
+.t-sidebar-item--active {
+  background: var(--accent-light);
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.t-sidebar-item-count {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+/* ---------- CONTENT ---------- */
+.t-content {
+  flex: 1;
+  min-width: 0;
+  padding: 24px 32px;
+  overflow-y: auto;
+  height: 100vh;
+}
+
+.t-content-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.t-breadcrumb {
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+
+.t-breadcrumb span {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+/* ---------- SECTION ---------- */
+.t-section {
+  margin-bottom: 24px;
+}
+
+.t-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  margin-bottom: 4px;
+}
+
+.t-section-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+}
+
+.t-section-counter {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  background: var(--bg-muted);
+  padding: 1px 8px;
+  border-radius: var(--radius-full);
+}
+
+.t-section-action {
+  margin-left: auto;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: inherit;
+  padding: 0;
+}
+
+.t-section-action:hover {
+  text-decoration: underline;
+}
+
+/* ---------- TASK ROW ---------- */
+.t-task-row {
+  display: grid;
+  grid-template-columns: 18px 8px 1fr 80px 60px 28px;
+  gap: 0 10px;
+  align-items: center;
+  padding: 8px 16px;
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-sm);
+  transition: all 120ms ease;
+  cursor: pointer;
+  background: var(--bg-surface);
+  margin-bottom: 1px;
+}
+
+.t-task-row:hover {
+  background: var(--bg-surface-hover);
+  border-color: var(--border-default);
+  box-shadow: var(--shadow-sm);
+}
+
+.t-task-row--done {
+  opacity: 0.6;
+}
+
+/* Checkbox */
+.t-task-checkbox {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--border-strong);
+  border-radius: 4px;
+  transition: all 120ms ease;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.t-task-row:hover .t-task-checkbox {
+  border-color: var(--accent);
+}
+
+.t-task-checkbox--done {
+  background: var(--status-success);
+  border-color: var(--status-success);
+}
+
+/* Priority dot */
+.t-priority-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.t-priority-dot--critical { background: var(--status-danger); }
+.t-priority-dot--high { background: var(--status-warning); }
+.t-priority-dot--medium { background: var(--status-info); }
+.t-priority-dot--low { background: var(--border-default); }
+
+/* Title */
+.t-task-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.t-task-title--done {
+  text-decoration: line-through;
+  color: var(--text-tertiary);
+}
+
+/* Status badge */
+.t-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+  justify-self: end;
+}
+
+.t-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.t-badge--todo { background: var(--bg-muted); color: var(--text-secondary); }
+.t-badge--todo .t-badge-dot { background: var(--text-tertiary); }
+.t-badge--progress { background: var(--status-info-light); color: #3A8FD6; }
+.t-badge--progress .t-badge-dot { background: var(--status-info); }
+.t-badge--blocked { background: var(--status-danger-light); color: #C0533A; }
+.t-badge--blocked .t-badge-dot { background: var(--status-danger); }
+.t-badge--done { background: var(--status-success-light); color: #00856B; }
+.t-badge--done .t-badge-dot { background: var(--status-success); }
+
+/* Date */
+.t-task-date {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.t-task-date--overdue {
+  color: var(--status-danger);
+  font-weight: 700;
+}
+
+/* Avatar */
+.t-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  background: var(--accent-light);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  justify-self: end;
+  flex-shrink: 0;
+}
+
+/* ---------- PROJECT CARD ---------- */
+.t-project-card {
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: all 200ms ease;
+  margin-bottom: 8px;
+}
+
+.t-project-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
+}
+
+.t-project-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  cursor: pointer;
+}
+
+.t-project-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.t-context-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+.t-progress-bar {
+  width: 80px;
+  height: 4px;
+  background: var(--bg-muted);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.t-progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 200ms ease;
+}
+
+.t-progress-text {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ---------- SIDE PANEL ---------- */
+.t-panel {
+  width: 340px;
+  flex-shrink: 0;
+  background: var(--bg-surface);
+  border-left: 1.5px solid var(--border-default);
+  box-shadow: -4px 0 16px rgba(31,31,46,0.06);
+  height: 100vh;
+  overflow-y: auto;
+  position: sticky;
+  top: 0;
+}
+
+.t-panel-tabs {
+  display: flex;
+  border-bottom: 1.5px solid var(--border-subtle);
+}
+
+.t-panel-tab {
+  flex: 1;
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  text-align: center;
+  cursor: pointer;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: none;
+  font-family: inherit;
+  transition: all 120ms ease;
+}
+
+.t-panel-tab--active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.t-panel-header {
+  padding: 20px 20px 12px;
+}
+
+.t-panel-breadcrumb {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-bottom: 4px;
+}
+
+.t-panel-breadcrumb a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.t-panel-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+}
+
+.t-field-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.t-field-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.t-field-value {
+  font-size: 13px;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.t-panel-section {
+  padding: 16px 20px 0;
+}
+
+.t-panel-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+/* ---------- BUTTONS ---------- */
+.t-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--accent);
+  color: var(--text-on-accent);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 120ms ease;
+}
+
+.t-btn-primary:hover {
+  background: var(--accent-hover);
+}
+
+.t-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border: 1.5px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 120ms ease;
+}
+
+.t-btn-secondary:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.t-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  color: var(--accent);
+  border: none;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 120ms ease;
+  border-radius: var(--radius-sm);
+}
+
+.t-btn-ghost:hover {
+  background: var(--accent-subtle);
+}
+
+/* ---------- ADD TASK / ADD ITEM ---------- */
+.t-add-task,
+.t-add-item {
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 6px 16px;
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  transition: all 120ms ease;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.t-add-task:hover,
+.t-add-item:hover {
+  background: var(--accent-subtle);
+}
+
+/* ---------- IDEA ROW ---------- */
+.t-idea-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+
+.t-idea-row:hover {
+  background: var(--bg-surface-hover);
+}
+
+/* ---------- PROBLEM ROW ---------- */
+.t-problem-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+
+.t-problem-row:hover {
+  background: var(--bg-surface-hover);
+}
+
+/* ---------- SEARCH ---------- */
+.t-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px;
+  padding: 7px 12px;
+  background: var(--bg-sidebar-hover);
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--text-tertiary);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 120ms ease;
+  font-family: inherit;
+  border: none;
+  width: calc(100% - 16px);
+}
+
+.t-search:hover {
+  border-color: var(--border-default);
+}

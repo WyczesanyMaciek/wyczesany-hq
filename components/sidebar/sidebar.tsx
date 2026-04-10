@@ -61,23 +61,7 @@ export function Sidebar({
   };
 
   return (
-    <aside
-      className="lside"
-      style={{
-        width: 240,
-        flexShrink: 0,
-        borderRight: "1.5px solid var(--border-default)",
-        background: "var(--bg-sidebar)",
-        position: "sticky",
-        top: 0,
-        height: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        fontFamily: "var(--font-family)",
-        fontSize: "13px",
-        color: "var(--text-primary)",
-      }}
-    >
+    <aside className="t-sidebar">
       {/* Brand header */}
       <Link
         href="/"
@@ -108,32 +92,15 @@ export function Sidebar({
 
       {/* Search button */}
       {onSearch && (
-        <button
-          onClick={onSearch}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            margin: "8px 12px 4px",
-            padding: "6px 10px",
-            border: "1px solid #eef0f3",
-            borderRadius: 6,
-            background: "#fff",
-            cursor: "pointer",
-            font: "inherit",
-            fontSize: "12px",
-            color: "var(--text-tertiary)",
-            width: "calc(100% - 24px)",
-          }}
-        >
+        <button onClick={onSearch} className="t-search">
           <Search size={13} />
           <span style={{ flex: 1, textAlign: "left" }}>Szukaj...</span>
           <kbd style={{
             fontSize: 10,
             padding: "1px 4px",
-            border: "1px solid #e2e8f0",
+            border: "1px solid var(--border-default)",
             borderRadius: 3,
-            background: "#f8fafc",
+            background: "var(--bg-muted)",
             color: "var(--text-tertiary)",
           }}>/</kbd>
         </button>
@@ -141,19 +108,7 @@ export function Sidebar({
 
       {/* Drzewko kontekstow */}
       <nav style={{ flex: 1, overflowY: "auto", padding: "10px 0" }}>
-        <div
-          style={{
-            fontSize: "10px",
-            textTransform: "uppercase",
-            letterSpacing: "0.08em",
-            color: "var(--text-tertiary)",
-            fontWeight: 600,
-            padding: "0 16px",
-            marginBottom: 6,
-          }}
-        >
-          Konteksty
-        </div>
+        <div className="t-sidebar-section">Konteksty</div>
         <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
           {tree.map((node) => (
             <ContextTreeNode
@@ -225,27 +180,8 @@ function ContextTreeNode({
   return (
     <li>
       <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 6,
-          paddingLeft: 8 + depth * 14,
-          paddingRight: 10,
-          paddingTop: 5,
-          paddingBottom: 5,
-          cursor: "pointer",
-          background: isActive ? "var(--accent-light)" : undefined,
-          color: isActive ? "var(--accent)" : "var(--text-primary)",
-          fontWeight: isActive ? 700 : 600,
-          transition: "background var(--transition-fast)",
-          borderRadius: "var(--radius-sm)",
-        }}
-        onMouseEnter={(e) => {
-          if (!isActive) e.currentTarget.style.background = "var(--bg-sidebar-hover)";
-        }}
-        onMouseLeave={(e) => {
-          if (!isActive) e.currentTarget.style.background = "transparent";
-        }}
+        className={`t-sidebar-item${isActive ? " t-sidebar-item--active" : ""}`}
+        style={{ paddingLeft: 8 + depth * 14 }}
       >
         <button
           type="button"
@@ -254,16 +190,11 @@ function ContextTreeNode({
             if (hasChildren) onToggle(node.id);
           }}
           style={{
-            width: 14,
-            height: 14,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexShrink: 0,
-            border: "none",
-            background: "transparent",
+            width: 14, height: 14,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            flexShrink: 0, border: "none", background: "transparent",
             cursor: hasChildren ? "pointer" : "default",
-            color: "#64748b",
+            color: "var(--text-tertiary)",
           }}
           aria-label={hasChildren ? (isOpen ? "Zwin" : "Rozwin") : undefined}
           tabIndex={hasChildren ? 0 : -1}
@@ -282,44 +213,15 @@ function ContextTreeNode({
         <Link
           href={`/c/${node.id}`}
           style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            flex: 1,
-            minWidth: 0,
-            textDecoration: "none",
-            color: "inherit",
-            fontSize: "12.8px",
+            display: "flex", alignItems: "center", gap: 8,
+            flex: 1, minWidth: 0, textDecoration: "none", color: "inherit",
           }}
         >
-          <span
-            style={{
-              display: "inline-block",
-              width: 8,
-              height: 8,
-              borderRadius: 2,
-              flexShrink: 0,
-              background: node.color,
-            }}
-          />
-          <span
-            style={{
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            }}
-          >
+          <span style={{ width: 8, height: 8, borderRadius: 2, flexShrink: 0, background: node.color }} />
+          <span style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
             {node.name}
           </span>
-          <span
-            style={{
-              marginLeft: "auto",
-              fontSize: "10px",
-              color: "var(--text-tertiary)",
-              fontFamily: "ui-monospace, monospace",
-              flexShrink: 0,
-            }}
-          >
+          <span className="t-sidebar-item-count">
             {node.projectCount}·{node.taskCount}
           </span>
         </Link>
