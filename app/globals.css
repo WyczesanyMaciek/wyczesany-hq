@@ -911,8 +911,8 @@ h4 { font-size: 1.07rem; }   /* 16px */
 
 /* Sidebar Linear-style (nadpisuje brutal) */
 .linear-app .lside {
-  background: var(--l-bg-soft);
-  border-right: 1px solid var(--l-line);
+  background: var(--bg-sidebar);
+  border-right: 1.5px solid var(--border-default);
   padding: 12px 8px;
   overflow-y: auto;
   font-family: inherit;
