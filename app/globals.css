@@ -310,16 +310,16 @@ h4 { font-size: 1.07rem; }   /* 16px */
   text-transform: none;
 }
 
-/* Sticky top bar */
+/* Sticky top bar — DS v1 */
 .linear-app .lbar {
   display: flex;
   align-items: center;
-  padding: 10px 16px;
-  border-bottom: 1px solid var(--l-line);
+  padding: 12px 20px;
+  border-bottom: 1.5px solid var(--border-default);
   gap: 10px;
   position: sticky;
   top: 0;
-  background: #fff;
+  background: var(--bg-surface);
   z-index: 5;
 }
 .linear-app .lbar .crumb {
@@ -347,47 +347,55 @@ h4 { font-size: 1.07rem; }   /* 16px */
   gap: 6px;
 }
 .linear-app .lbtn {
-  background: var(--l-accent);
+  background: var(--ds-accent);
   color: #fff;
   border: 0;
-  padding: 6px 11px;
-  border-radius: 6px;
-  font: 600 12px var(--font-inter), "Inter", system-ui, sans-serif;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 700;
+  font-family: inherit;
   cursor: pointer;
+  transition: all var(--transition-fast);
 }
 .linear-app .lbtn:hover {
-  background: #4f46e5;
+  background: var(--ds-accent-hover);
+  box-shadow: var(--shadow-sm);
+}
+.linear-app .lbtn:active {
+  transform: scale(0.97);
 }
 .linear-app .lbtn.ghost {
-  background: #fff;
-  color: var(--l-ink);
-  border: 1.5px solid var(--l-line);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border: 1.5px solid var(--border-default);
 }
 .linear-app .lbtn.ghost:hover {
-  background: var(--l-hover);
+  background: var(--bg-surface-hover);
+  border-color: var(--border-strong);
 }
 
-/* Section header */
+/* Section header — DS v1 */
 .linear-app .lsec {
-  margin: 14px 12px 4px;
+  margin: 16px 16px 6px;
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
 }
 .linear-app .lsec h3 {
   margin: 0;
-  font-size: 11px;
+  font-size: 12px;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--l-muted);
+  letter-spacing: 0.06em;
+  color: var(--text-tertiary);
   font-weight: 700;
 }
 .linear-app .lsec .n {
-  background: #f3f4f6;
-  padding: 1px 7px;
-  border-radius: 10px;
-  font-size: 10.5px;
-  color: var(--l-ink);
+  background: var(--bg-muted);
+  padding: 1px 8px;
+  border-radius: var(--radius-full, 9999px);
+  font-size: 12px;
+  color: var(--text-secondary);
   font-weight: 600;
 }
 .linear-app .lsec .add {
@@ -556,11 +564,11 @@ h4 { font-size: 1.07rem; }   /* 16px */
   background: #74B9FF;
 }
 .linear-app .ltask .who {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  background: #ddd6fe;
-  color: #5b21b6;
+  background: var(--ds-accent-light);
+  color: var(--ds-accent);
   font-size: 10px;
   font-weight: 700;
   display: flex;
@@ -649,17 +657,18 @@ h4 { font-size: 1.07rem; }   /* 16px */
 
 /* Right detail panel — DS v1 */
 .linear-app .lright {
-  background: var(--bg-sidebar);
+  background: var(--bg-surface);
   border-left: 1.5px solid var(--border-default);
+  box-shadow: -4px 0 16px rgba(31,31,46,0.06);
   overflow-y: auto;
   height: 100%;
 }
 .linear-app .lright .head {
-  padding: 12px 16px 10px;
-  border-bottom: 1px solid var(--l-line);
+  padding: 16px 20px 12px;
+  border-bottom: 1.5px solid var(--border-default);
   position: sticky;
   top: 0;
-  background: var(--l-bg-soft);
+  background: var(--bg-surface);
   z-index: 2;
 }
 .linear-app .lright .topline {
@@ -688,24 +697,32 @@ h4 { font-size: 1.07rem; }   /* 16px */
   flex-wrap: wrap;
 }
 .linear-app .lright .dactions button {
-  font: 600 11px var(--font-inter), "Inter", system-ui, sans-serif;
-  padding: 4px 9px;
-  border-radius: 5px;
-  border: 1.5px solid var(--l-line);
-  background: #fff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border-default);
+  background: var(--bg-surface);
   cursor: pointer;
-  color: var(--l-ink);
+  color: var(--text-primary);
+  transition: all var(--transition-fast);
 }
 .linear-app .lright .dactions button.primary {
-  background: var(--l-accent);
+  background: var(--ds-accent);
   color: #fff;
-  border-color: var(--l-accent);
+  border-color: var(--ds-accent);
 }
 .linear-app .lright .dactions button:hover {
-  background: var(--l-hover);
+  background: var(--bg-surface-hover);
+  border-color: var(--border-strong);
 }
 .linear-app .lright .dactions button.primary:hover {
-  background: #4f46e5;
+  background: var(--ds-accent-hover);
+  border-color: var(--ds-accent-hover);
+}
+.linear-app .lright .dactions button:active {
+  transform: scale(0.97);
 }
 .linear-app .lright .lmeta {
   padding: 10px 16px 4px;

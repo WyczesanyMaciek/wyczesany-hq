@@ -5,7 +5,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, FolderOpen, Search, Settings } from "lucide-react";
+import { Home, FolderOpen, CheckSquare, Plus, Search, Settings } from "lucide-react";
 import { useOpenSearch } from "@/components/app-shell";
 
 export function Rail() {
@@ -24,11 +24,15 @@ export function Rail() {
         alignItems: "center",
         padding: "12px 0",
         gap: 4,
+        position: "sticky",
+        top: 0,
+        height: "100vh",
       }}
     >
       <RailIcon href="/" active={pathname === "/"} icon={<Home size={18} />} label="Dashboard" />
       <RailIcon href="/c" active={pathname.startsWith("/c/")} icon={<FolderOpen size={18} />} label="Konteksty" />
-      <RailButton onClick={onSearch ?? undefined} icon={<Search size={18} />} label="Szukaj" />
+      <RailIcon href="/tasks" active={pathname === "/tasks"} icon={<CheckSquare size={18} />} label="Moje zadania" />
+      <RailButton onClick={onSearch ?? undefined} icon={<Search size={18} />} label="Szukaj (/)" />
 
       <div style={{ flex: 1 }} />
 
