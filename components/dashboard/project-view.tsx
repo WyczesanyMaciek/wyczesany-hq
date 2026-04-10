@@ -10,6 +10,7 @@
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useHotkeys } from "@/lib/use-hotkeys";
 import {
   DndContext,
   type DragEndEvent,
@@ -491,6 +492,12 @@ export function ProjectView({ project }: { project: ProjectDetail }) {
   }, [tasks, project.name]);
 
   const selected = selectedTaskId ? taskMap.get(selectedTaskId) ?? null : null;
+
+  // Skroty klawiszowe
+  const hotkeys = useMemo(() => ({
+    Escape: () => setSelectedTaskId(null),
+  }), []);
+  useHotkeys(hotkeys);
 
   const percent = project.taskTotal > 0
     ? Math.round((project.taskDone / project.taskTotal) * 100)

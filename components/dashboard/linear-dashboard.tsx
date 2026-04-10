@@ -15,8 +15,9 @@
 // orchestratora, co psulo: a) toggle checkboxa, b) drop taska (wracal).
 // Pliki `shared/dnd/*` zostaly jako kandydaci do posprzatania w Etapie 7.
 
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { useHotkeys } from "@/lib/use-hotkeys";
 import {
   DndContext,
   type DragEndEvent,
@@ -79,6 +80,12 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
   }, [projects, looseTasks, data.doneTasks]);
 
   const selected = selectedTaskId ? taskMap.get(selectedTaskId) ?? null : null;
+
+  // Skroty klawiszowe
+  const hotkeys = useMemo(() => ({
+    Escape: () => setSelectedTaskId(null),
+  }), []);
+  useHotkeys(hotkeys);
 
   const title = data.current?.name ?? "Wszystko";
   const color = data.current?.color ?? "#64748b";
