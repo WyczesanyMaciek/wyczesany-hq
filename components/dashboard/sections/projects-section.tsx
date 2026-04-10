@@ -45,9 +45,9 @@ export function ProjectsSection({
 
   return (
     <>
-      <div className="lsec">
-        <h3>Projekty</h3>
-        <span className="n">{projects.length}</span>
+      <div className="t-section-header">
+        <h3 className="t-section-title">Projekty</h3>
+        <span className="t-section-counter">{projects.length}</span>
         {!readOnly && contextId ? (
           <LinearNewProjectButton contextId={contextId} variant="addline" />
         ) : null}

@@ -60,18 +60,8 @@ export function LinearAddTask(props: Props) {
           setOpen(true);
           setTimeout(() => inputRef.current?.focus(), 0);
         }}
-        className="add-row"
-        style={{
-          background: "transparent",
-          border: 0,
-          width: "100%",
-          textAlign: "left",
-          font: "inherit",
-          cursor: "pointer",
-          color: "var(--accent)",
-          fontWeight: 600,
-          padding: "6px 10px",
-        }}
+        className="t-add-task"
+        style={{ width: "100%", textAlign: "left" }}
       >
         {label}
       </button>

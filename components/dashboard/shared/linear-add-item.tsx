@@ -60,16 +60,7 @@ export function LinearAddItem({
           setOpen(true);
           setTimeout(() => inputRef.current?.focus(), 0);
         }}
-        className="add"
-        style={{
-          background: "transparent",
-          border: 0,
-          font: "inherit",
-          cursor: "pointer",
-          color: "var(--accent)",
-          fontWeight: 600,
-          padding: 0,
-        }}
+        className="t-add-item"
       >
         {label}
       </button>

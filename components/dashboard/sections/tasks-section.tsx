@@ -40,9 +40,9 @@ export function TasksSection({
 
   return (
     <>
-      <div className="lsec" style={{ marginTop: 22 }}>
-        <h3>Luźne taski</h3>
-        <span className="n">{looseTasks.length}</span>
+      <div className="t-section-header" style={{ marginTop: 22 }}>
+        <h3 className="t-section-title">Luźne taski</h3>
+        <span className="t-section-counter">{looseTasks.length}</span>
       </div>
       <div
         style={{

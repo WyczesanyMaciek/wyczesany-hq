@@ -24,9 +24,9 @@ export function IdeasSection({
 }) {
   return (
     <>
-      <div className="lsec" style={{ marginTop: 22 }}>
-        <h3>Pomysły</h3>
-        <span className="n">{ideas.length}</span>
+      <div className="t-section-header" style={{ marginTop: 22 }}>
+        <h3 className="t-section-title">Pomysły</h3>
+        <span className="t-section-counter">{ideas.length}</span>
         {!readOnly && contextId ? (
           <LinearAddItem kind="idea" contextId={contextId} />
         ) : null}

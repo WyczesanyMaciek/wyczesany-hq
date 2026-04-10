@@ -205,6 +205,11 @@
   opacity: 0.6;
 }
 
+.t-task-row--selected {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
 /* Checkbox */
 .t-task-checkbox {
   width: 18px;
