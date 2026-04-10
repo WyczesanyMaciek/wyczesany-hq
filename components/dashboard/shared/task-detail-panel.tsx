@@ -55,8 +55,8 @@ export function TaskDetailPanel({
 
   if (!task) {
     return (
-      <div className="lright">
-        <div className="lempty">Kliknij zadanie żeby zobaczyć szczegóły</div>
+      <div className="t-panel">
+        <div style={{ padding: "60px 20px", textAlign: "center", color: "var(--text-tertiary)", fontSize: 13 }}>Kliknij zadanie żeby zobaczyć szczegóły</div>
       </div>
     );
   }
@@ -166,16 +166,16 @@ export function TaskDetailPanel({
   };
 
   return (
-    <div className="lright">
-      {/* Tabs — DS v1 */}
-      <div className="panel-tabs">
-        <button className="active">Szczegóły</button>
-        <button>Aktywność</button>
+    <div className="t-panel">
+      {/* Tabs */}
+      <div className="t-panel-tabs">
+        <button className="t-panel-tab t-panel-tab--active">Szczegóły</button>
+        <button className="t-panel-tab">Aktywność</button>
       </div>
       <MotionWrap>
-      <div className="head">
-        <div className="topline">
-          <span className="path">
+      <div className="t-panel-header">
+        <div className="t-panel-breadcrumb">
+          <span>
             {projectName ? `${projectName}` : ""}
             {projectName ? " → " : ""}
             {task.context.name}
@@ -255,9 +255,9 @@ export function TaskDetailPanel({
             </span>
           )}
         </div>
-        <div className="dactions">
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
           <button
-            className="primary"
+            className="t-btn-primary"
             onClick={handleToggle}
             disabled={pending}
           >
@@ -332,20 +332,20 @@ export function TaskDetailPanel({
         </div>
       </div>
 
-      <div className="lmeta">
+      <div className="">
         {projectName ? (
-          <div className="mrow">
+          <div className="t-field-row">
             <label>Projekt</label>
-            <span className="v">
-              <span className="pill">{projectName}</span>
+            <span className="t-field-value">
+              <span className="t-context-badge">{projectName}</span>
             </span>
           </div>
         ) : null}
-        <div className="mrow">
+        <div className="t-field-row">
           <label>Kontekst</label>
-          <span className="v">
+          <span className="t-field-value">
             <span
-              className="pill"
+              className="t-context-badge"
               style={{
                 background: `${task.context.color}22`,
                 color: task.context.color,
@@ -355,7 +355,7 @@ export function TaskDetailPanel({
             </span>
           </span>
         </div>
-        <div className="mrow">
+        <div className="t-field-row">
           <label>Przypisane</label>
           {editing === "assignee" ? (
             <input
@@ -387,7 +387,7 @@ export function TaskDetailPanel({
             />
           ) : (
             <span
-              className="v"
+              className="t-field-value"
               onClick={() => setEditing("assignee")}
               style={{ cursor: "text" }}
               title="Kliknij zeby edytowac"
@@ -403,7 +403,7 @@ export function TaskDetailPanel({
             </span>
           )}
         </div>
-        <div className="mrow">
+        <div className="t-field-row">
           <label>Deadline</label>
           {editing === "deadline" ? (
             <input
@@ -433,7 +433,7 @@ export function TaskDetailPanel({
             />
           ) : (
             <span
-              className="v"
+              className="t-field-value"
               onClick={() => setEditing("deadline")}
               style={{
                 cursor: "text",
@@ -447,7 +447,7 @@ export function TaskDetailPanel({
             </span>
           )}
         </div>
-        <div className="mrow">
+        <div className="t-field-row">
           <label>Priorytet</label>
           {editing === "priority" ? (
             <select
@@ -475,7 +475,7 @@ export function TaskDetailPanel({
             </select>
           ) : (
             <span
-              className="v"
+              className="t-field-value"
               onClick={() => setEditing("priority")}
               style={{ cursor: "pointer" }}
               title="Kliknij zeby zmienic"
@@ -489,9 +489,9 @@ export function TaskDetailPanel({
       {/* Notatki — ukryte jesli puste, z przyciskiem dodaj */}
       {task.notes ? (
         <>
-          <div className="sect-h">Notatki</div>
+          <div className="t-panel-section-header">Notatki</div>
           <textarea
-            className="notes"
+            className="t-panel-section"
             defaultValue={task.notes}
             disabled={pending}
             onBlur={(e) => {
@@ -503,7 +503,7 @@ export function TaskDetailPanel({
           />
         </>
       ) : (
-        <div className="sect-h">
+        <div className="t-panel-section-header">
           <span>Notatki</span>
           <button
             onClick={() => saveField({ notes: " " })}
@@ -520,7 +520,7 @@ export function TaskDetailPanel({
       {/* Pliki — ukryte jesli puste */}
       {task.attachments.length > 0 ? (
         <>
-          <div className="sect-h">Pliki i zdjęcia</div>
+          <div className="t-panel-section-header">Pliki i zdjęcia</div>
           <div className="files">
             {task.attachments.map((a) => (
               <div
@@ -649,9 +649,9 @@ export function TaskDetailPanel({
 
       {/* Linki — ukryte jesli puste */}
       {task.links.length > 0 ? (
-        <div className="sect-h">Linki</div>
+        <div className="t-panel-section-header">Linki</div>
       ) : (
-        <div className="sect-h">
+        <div className="t-panel-section-header">
           <span>Linki</span>
           <button
             onClick={() => setAddingLink(true)}

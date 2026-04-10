@@ -100,7 +100,7 @@ export function LinearNewProjectButton({
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className={`lbtn ${variant === "ghost" ? "ghost" : ""}`}
+          className={variant === "ghost" ? "t-btn-secondary" : "t-btn-primary"}
         >
           + Nowy projekt
         </button>

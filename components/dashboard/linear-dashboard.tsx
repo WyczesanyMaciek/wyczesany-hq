@@ -216,7 +216,7 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
               </span>
             </span>
             <div className="spacer">
-              <button className="lbtn ghost">Filtry</button>
+              <button className="t-btn-secondary">Filtry</button>
               {data.current ? (
                 <LinearNewProjectButton
                   contextId={data.current.id}
