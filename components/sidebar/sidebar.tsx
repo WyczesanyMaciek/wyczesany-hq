@@ -63,31 +63,9 @@ export function Sidebar({
   return (
     <aside className="t-sidebar">
       {/* Brand header */}
-      <Link
-        href="/"
-        style={{
-          display: "block",
-          padding: "14px 16px",
-          borderBottom: "1.5px solid var(--border-default)",
-          textDecoration: "none",
-          color: "inherit",
-        }}
-      >
-        <div
-          style={{
-            fontSize: "10px",
-            textTransform: "uppercase",
-            letterSpacing: "0.08em",
-            color: "var(--text-tertiary)",
-            fontWeight: 600,
-            marginBottom: 2,
-          }}
-        >
-          Dashboard
-        </div>
-        <div style={{ fontSize: "14px", fontWeight: 700, letterSpacing: "-0.01em" }}>
-          Wyczesany HQ
-        </div>
+      <Link href="/" className="t-sidebar-brand">
+        <div className="t-sidebar-brand-label">Dashboard</div>
+        <div className="t-sidebar-brand-title">Wyczesany HQ</div>
       </Link>
 
       {/* Search button */}
@@ -95,21 +73,14 @@ export function Sidebar({
         <button onClick={onSearch} className="t-search">
           <Search size={13} />
           <span style={{ flex: 1, textAlign: "left" }}>Szukaj...</span>
-          <kbd style={{
-            fontSize: 10,
-            padding: "1px 4px",
-            border: "1px solid var(--border-default)",
-            borderRadius: 3,
-            background: "var(--bg-muted)",
-            color: "var(--text-tertiary)",
-          }}>/</kbd>
+          <kbd className="t-search-kbd">/</kbd>
         </button>
       )}
 
       {/* Drzewko kontekstow */}
-      <nav style={{ flex: 1, overflowY: "auto", padding: "10px 0" }}>
+      <nav className="t-sidebar-nav">
         <div className="t-sidebar-section">Konteksty</div>
-        <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+        <ul className="t-nav-list">
           {tree.map((node) => (
             <ContextTreeNode
               key={node.id}
@@ -126,31 +97,21 @@ export function Sidebar({
 
       {/* User menu */}
       {user && signOutAction && (
-        <div style={{ borderTop: "1.5px solid var(--border-default)" }}>
+        <div className="t-sidebar-user-border">
           <UserMenu user={user} signOutAction={signOutAction} />
         </div>
       )}
 
       {/* Footer */}
-      <div style={{ borderTop: "1.5px solid var(--border-default)", padding: "6px 0" }}>
+      <div className="t-sidebar-footer">
         <FooterLink href="/settings" icon={<Settings size={14} />}>
           Ustawienia
         </FooterLink>
         <FooterLink href="/dev/logs" icon={<Terminal size={14} />}>
           Logi
         </FooterLink>
-        <div
-          style={{
-            padding: "6px 16px 4px",
-            fontSize: "11px",
-            color: "var(--text-tertiary)",
-            fontFamily: "ui-monospace, monospace",
-            fontVariantNumeric: "tabular-nums",
-          }}
-        >
-          <b style={{ color: "#64748b" }}>
-            Build {process.env.NEXT_PUBLIC_BUILD_NUMBER}
-          </b>{" "}
+        <div className="t-sidebar-build">
+          <b>Build {process.env.NEXT_PUBLIC_BUILD_NUMBER}</b>{" "}
           · {process.env.NEXT_PUBLIC_BUILD_TIME}
         </div>
       </div>
@@ -189,13 +150,7 @@ function ContextTreeNode({
             e.preventDefault();
             if (hasChildren) onToggle(node.id);
           }}
-          style={{
-            width: 14, height: 14,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            flexShrink: 0, border: "none", background: "transparent",
-            cursor: hasChildren ? "pointer" : "default",
-            color: "var(--text-tertiary)",
-          }}
+          className={`t-chevron-btn${hasChildren ? " t-chevron-btn--has-children" : ""}`}
           aria-label={hasChildren ? (isOpen ? "Zwin" : "Rozwin") : undefined}
           tabIndex={hasChildren ? 0 : -1}
         >
@@ -212,13 +167,10 @@ function ContextTreeNode({
 
         <Link
           href={`/c/${node.id}`}
-          style={{
-            display: "flex", alignItems: "center", gap: 8,
-            flex: 1, minWidth: 0, textDecoration: "none", color: "inherit",
-          }}
+          className="t-sidebar-item-link"
         >
-          <span style={{ width: 8, height: 8, borderRadius: 2, flexShrink: 0, background: node.color }} />
-          <span style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+          <span className="t-context-dot" style={{ background: node.color }} />
+          <span className="t-sidebar-item-text">
             {node.name}
           </span>
           <span className="t-sidebar-item-count">
@@ -230,16 +182,12 @@ function ContextTreeNode({
       <AnimatePresence initial={false}>
         {hasChildren && isOpen && (
           <motion.ul
+            className="t-nav-list"
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ ...springSnappy, stiffness: 500, damping: 40 }}
-            style={{
-              listStyle: "none",
-              margin: 0,
-              padding: 0,
-              overflow: "hidden",
-            }}
+            style={{ overflow: "hidden" }}
           >
             {node.children.map((child) => (
               <ContextTreeNode
@@ -273,18 +221,7 @@ function FooterLink({
   return (
     <Link
       href={href}
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 8,
-        padding: "6px 16px",
-        fontSize: "12.5px",
-        fontWeight: 500,
-        color: isActive ? "var(--accent)" : "var(--text-secondary)",
-        background: isActive ? "var(--accent-light)" : undefined,
-        borderRadius: "var(--radius-sm)",
-        textDecoration: "none",
-      }}
+      className={`t-sidebar-footer-link${isActive ? " t-sidebar-footer-link--active" : ""}`}
     >
       {icon}
       {children}
