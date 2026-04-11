@@ -507,6 +507,10 @@
   background: var(--accent-hover);
 }
 
+.t-btn-primary:active {
+  transform: scale(0.97);
+}
+
 .t-btn-secondary {
   display: inline-flex;
   align-items: center;
@@ -528,6 +532,10 @@
   color: var(--accent);
 }
 
+.t-btn-secondary:active {
+  transform: scale(0.97);
+}
+
 .t-btn-ghost {
   display: inline-flex;
   align-items: center;
@@ -546,6 +554,10 @@
 
 .t-btn-ghost:hover {
   background: var(--accent-subtle);
+}
+
+.t-btn-ghost:active {
+  transform: scale(0.97);
 }
 
 /* ---------- ADD TASK / ADD ITEM ---------- */
