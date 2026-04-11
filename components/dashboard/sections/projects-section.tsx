@@ -44,7 +44,7 @@ export function ProjectsSection({
   );
 
   return (
-    <>
+    <div className="t-section">
       <div className="t-section-header">
         <h3 className="t-section-title">Projekty</h3>
         <span className="t-section-counter">{projects.length}</span>
@@ -86,6 +86,6 @@ export function ProjectsSection({
           </motion.div>
         </SortableContext>
       )}
-    </>
+    </div>
   );
 }

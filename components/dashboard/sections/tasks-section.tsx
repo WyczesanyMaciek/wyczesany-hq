@@ -39,7 +39,7 @@ export function TasksSection({
   if (!contextId && looseTasks.length === 0) return null;
 
   return (
-    <>
+    <div className="t-section">
       <div className="t-section-header">
         <h3 className="t-section-title">Luźne taski</h3>
         <span className="t-section-counter">{looseTasks.length}</span>
@@ -68,7 +68,7 @@ export function TasksSection({
           <LinearAddTask contextId={contextId} label="+ Dodaj zadanie" />
         ) : null}
       </div>
-    </>
+    </div>
   );
 }
 

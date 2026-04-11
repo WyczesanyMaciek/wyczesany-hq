@@ -209,7 +209,8 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
                 ● {title}
               </span>
             </span>
-            <div style={{ marginLeft: "auto", display: "flex", gap: 8 }} >
+            <div className="t-flex-spacer" />
+            <div style={{ display: "flex", gap: 8 }}>
               <button className="t-btn-secondary">Filtry</button>
               {data.current ? (
                 <LinearNewProjectButton

@@ -48,7 +48,7 @@ export default async function Home() {
 
   return (
     <div className="t-global-dashboard">
-      <h2 style={{ margin: "0 0 24px", fontSize: 22, fontWeight: 800 }}>
+      <h2 className="t-dashboard-section-title" style={{ fontSize: 22, marginBottom: 24 }}>
         Dashboard
       </h2>
 
@@ -147,7 +147,7 @@ export default async function Home() {
                 <span className="t-context-card-icon">
                   <span
                     className="t-context-dot"
-                    style={{ background: c.color, width: 12, height: 12, borderRadius: 3, display: "inline-block" }}
+                    style={{ background: c.color }}
                   />
                 </span>
                 <div className="t-context-card-body">

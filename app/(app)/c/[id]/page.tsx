@@ -15,9 +15,5 @@ export default async function ContextPage({
   const data = await getContextDashboard(id);
   if (!data) notFound();
 
-  return (
-    <div className="linear-app" style={{ minHeight: "100vh" }}>
-      <LinearDashboard data={data} />
-    </div>
-  );
+  return <LinearDashboard data={data} />;
 }

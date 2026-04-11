@@ -23,7 +23,7 @@ export function ProblemsSection({
   readOnly?: boolean;
 }) {
   return (
-    <>
+    <div className="t-section">
       <div className="t-section-header">
         <h3 className="t-section-title">Problemy</h3>
         <span className="t-section-counter">{problems.length}</span>
@@ -45,6 +45,6 @@ export function ProblemsSection({
           </motion.div>
         ))}
       </motion.div>
-    </>
+    </div>
   );
 }
