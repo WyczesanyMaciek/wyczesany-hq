@@ -53,8 +53,12 @@ export function ProjectsSection({
         ) : null}
       </div>
       {projects.length === 0 ? (
-        <div className="t-empty-state">
-          Brak projektów
+        <div className="t-empty-state--centered">
+          <div className="t-empty-icon">📋</div>
+          <div className="t-empty-text">Brak projektów</div>
+          {!readOnly && contextId && (
+            <LinearNewProjectButton contextId={contextId} variant="ghost" />
+          )}
         </div>
       ) : (
         <SortableContext

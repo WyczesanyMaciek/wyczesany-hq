@@ -1773,6 +1773,48 @@
 }
 
 /* ---------- OVERDUE BADGE ---------- */
+/* ---------- EMPTY STATES ---------- */
+.t-empty-state--centered {
+  text-align: center;
+  padding: 48px 24px;
+}
+
+.t-empty-icon {
+  font-size: 32px;
+  color: var(--text-tertiary);
+  margin-bottom: 8px;
+}
+
+.t-empty-text {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+/* ---------- SKELETON LOADING ---------- */
+@keyframes t-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.t-skeleton {
+  background: var(--bg-muted);
+  border-radius: var(--radius-sm);
+  animation: t-pulse 1.5s ease-in-out infinite;
+}
+
+.t-skeleton-row {
+  height: 44px;
+  width: 100%;
+  margin-bottom: 4px;
+}
+
+.t-skeleton-card {
+  height: 120px;
+  width: 100%;
+  border-radius: var(--radius-lg);
+}
+
 .t-overdue-badge {
   display: inline-flex;
   align-items: center;
