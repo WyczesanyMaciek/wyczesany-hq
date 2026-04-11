@@ -24,6 +24,13 @@ export type TaskLinkDTO = {
   url: string;
 };
 
+export type SubtaskDTO = {
+  id: string;
+  title: string;
+  done: boolean;
+  order: number;
+};
+
 export type DashboardTask = {
   id: string;
   title: string;
@@ -36,6 +43,7 @@ export type DashboardTask = {
   projectId: string | null;
   createdAt: Date;
   context: OriginContext;
+  subtasks: SubtaskDTO[];
   attachments: TaskAttachmentDTO[];
   links: TaskLinkDTO[];
 };
@@ -57,6 +65,8 @@ export type DashboardProject = {
 export type DashboardItem = {
   id: string;
   content: string;
+  description?: string | null;
+  priority?: number;
   createdAt: Date;
   context: OriginContext;
 };
@@ -137,8 +147,9 @@ function buildBreadcrumb(
   return path;
 }
 
-// Prisma include dla taska z pelnymi szczegolami (zalaczniki + linki).
+// Prisma include dla taska z pelnymi szczegolami (subtaski + zalaczniki + linki).
 const taskInclude = {
+  subtasks: { orderBy: { order: "asc" as const } },
   attachments: { orderBy: { createdAt: "asc" as const } },
   links: { orderBy: { createdAt: "asc" as const } },
 };
@@ -156,6 +167,7 @@ type RawTask = {
   projectId: string | null;
   createdAt: Date;
   contextId: string;
+  subtasks: Array<{ id: string; title: string; done: boolean; order: number }>;
   attachments: Array<{ id: string; kind: string; url: string; name: string }>;
   links: Array<{ id: string; label: string; url: string }>;
 };
@@ -173,6 +185,12 @@ function mapTask(t: RawTask, toOrigin: (cid: string) => OriginContext): Dashboar
     projectId: t.projectId,
     createdAt: t.createdAt,
     context: toOrigin(t.contextId),
+    subtasks: t.subtasks.map((s) => ({
+      id: s.id,
+      title: s.title,
+      done: s.done,
+      order: s.order,
+    })),
     attachments: t.attachments.map((a) => ({
       id: a.id,
       kind: a.kind,
@@ -260,12 +278,15 @@ export async function getContextDashboard(
     ideas: ideas.map((i) => ({
       id: i.id,
       content: i.content,
+      description: i.description,
       createdAt: i.createdAt,
       context: toOrigin(i.contextId),
     })),
     problems: problems.map((pr) => ({
       id: pr.id,
       content: pr.content,
+      description: pr.description,
+      priority: pr.priority,
       createdAt: pr.createdAt,
       context: toOrigin(pr.contextId),
     })),
@@ -394,4 +415,95 @@ export async function getGlobalStats(): Promise<{
     prisma.problem.count(),
   ]);
   return { projects, tasks, ideas, problems };
+}
+
+/**
+ * Taski z deadline <= dzisiaj (niezakonczone). Overdue + today.
+ */
+export async function getOverdueTasks(): Promise<DashboardTask[]> {
+  const all = await loadAllContexts();
+  const now = new Date();
+  now.setHours(23, 59, 59, 999);
+
+  const tasks = await prisma.task.findMany({
+    where: {
+      done: false,
+      deadline: { lte: now },
+    },
+    orderBy: [{ deadline: "asc" }, { priority: "desc" }],
+    include: taskInclude,
+  });
+
+  const toOrigin = (cid: string): OriginContext => {
+    const c = all.get(cid);
+    return c
+      ? { id: c.id, name: c.name, color: c.color }
+      : { id: cid, name: "?", color: "#64748B" };
+  };
+
+  return tasks.map((t) => mapTask(t as RawTask, toOrigin));
+}
+
+/**
+ * Taski pogrupowane po kontekscie — do widoku "Moje zadania".
+ */
+export async function getMyTasks(assignee?: string): Promise<{
+  tasks: DashboardTask[];
+  byContext: Map<string, DashboardTask[]>;
+}> {
+  const all = await loadAllContexts();
+
+  const where: { done: boolean; assigneeId?: string } = { done: false };
+  if (assignee) where.assigneeId = assignee;
+
+  const tasks = await prisma.task.findMany({
+    where,
+    orderBy: [{ priority: "desc" }, { deadline: "asc" }, { order: "asc" }],
+    include: taskInclude,
+  });
+
+  const toOrigin = (cid: string): OriginContext => {
+    const c = all.get(cid);
+    return c
+      ? { id: c.id, name: c.name, color: c.color }
+      : { id: cid, name: "?", color: "#64748B" };
+  };
+
+  const mapped = tasks.map((t) => mapTask(t as RawTask, toOrigin));
+  const byContext = new Map<string, DashboardTask[]>();
+  for (const t of mapped) {
+    const key = t.context.id;
+    if (!byContext.has(key)) byContext.set(key, []);
+    byContext.get(key)!.push(t);
+  }
+
+  return { tasks: mapped, byContext };
+}
+
+/**
+ * Problemy pilne (priorytet >= 2) ze wszystkich kontekstow.
+ */
+export async function getUrgentProblems(): Promise<DashboardItem[]> {
+  const all = await loadAllContexts();
+
+  const problems = await prisma.problem.findMany({
+    where: { priority: { gte: 2 } },
+    orderBy: [{ priority: "desc" }, { createdAt: "desc" }],
+  });
+
+  const toOrigin = (cid: string): OriginContext => {
+    const c = all.get(cid);
+    return c
+      ? { id: c.id, name: c.name, color: c.color }
+      : { id: cid, name: "?", color: "#64748B" };
+  };
+
+  return problems.map((pr) => ({
+    id: pr.id,
+    content: pr.content,
+    description: pr.description,
+    priority: pr.priority,
+    createdAt: pr.createdAt,
+    context: toOrigin(pr.contextId),
+  }));
 }

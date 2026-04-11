@@ -766,6 +766,162 @@ export async function deleteProjectNote(noteId: string): Promise<Result> {
   return { ok: true };
 }
 
+// ---- SUBTASK ----
+
+export async function addSubtask(
+  taskId: string,
+  title: string
+): Promise<Result<{ id: string }>> {
+  const t = str(title);
+  if (t.length < 1 || t.length > 200) {
+    return { ok: false, error: "Tytul subtaska 1-200 znakow." };
+  }
+  const task = await prisma.task.findUnique({ where: { id: taskId } });
+  if (!task) return { ok: false, error: "Task nie istnieje." };
+
+  const last = await prisma.subtask.findFirst({
+    where: { taskId },
+    orderBy: { order: "desc" },
+    select: { order: true },
+  });
+  const nextOrder = (last?.order ?? -1) + 1;
+
+  const s = await prisma.subtask.create({
+    data: { title: t, taskId, order: nextOrder },
+  });
+  revalidatePath("/", "page");
+  return { ok: true, data: { id: s.id } };
+}
+
+export async function toggleSubtask(subtaskId: string): Promise<Result<{ done: boolean }>> {
+  const s = await prisma.subtask.findUnique({
+    where: { id: subtaskId },
+    select: { done: true },
+  });
+  if (!s) return { ok: false, error: "Subtask nie istnieje." };
+
+  const updated = await prisma.subtask.update({
+    where: { id: subtaskId },
+    data: { done: !s.done },
+    select: { done: true },
+  });
+  revalidatePath("/", "page");
+  return { ok: true, data: { done: updated.done } };
+}
+
+export async function deleteSubtask(subtaskId: string): Promise<Result> {
+  const s = await prisma.subtask.findUnique({ where: { id: subtaskId } });
+  if (!s) return { ok: false, error: "Subtask nie istnieje." };
+  await prisma.subtask.delete({ where: { id: subtaskId } });
+  revalidatePath("/", "page");
+  return { ok: true };
+}
+
+export async function updateSubtaskTitle(
+  subtaskId: string,
+  title: string
+): Promise<Result> {
+  const t = str(title);
+  if (t.length < 1 || t.length > 200) {
+    return { ok: false, error: "Tytul 1-200 znakow." };
+  }
+  const s = await prisma.subtask.findUnique({ where: { id: subtaskId } });
+  if (!s) return { ok: false, error: "Subtask nie istnieje." };
+  await prisma.subtask.update({ where: { id: subtaskId }, data: { title: t } });
+  revalidatePath("/", "page");
+  return { ok: true };
+}
+
+export async function reorderSubtasks(orderedIds: string[]): Promise<Result> {
+  if (!Array.isArray(orderedIds) || orderedIds.length === 0) {
+    return { ok: false, error: "Pusta lista." };
+  }
+  await prisma.$transaction(
+    orderedIds.map((id, idx) =>
+      prisma.subtask.update({ where: { id }, data: { order: idx } })
+    )
+  );
+  revalidatePath("/", "page");
+  return { ok: true };
+}
+
+// ---- IDEA: update ----
+
+export async function updateIdea(
+  ideaId: string,
+  input: { content?: string; description?: string | null }
+): Promise<Result> {
+  const idea = await prisma.idea.findUnique({ where: { id: ideaId } });
+  if (!idea) return { ok: false, error: "Pomysl nie istnieje." };
+
+  const data: { content?: string; description?: string | null } = {};
+  if (input.content !== undefined) {
+    const c = str(input.content);
+    if (c.length < 1 || c.length > 500) return { ok: false, error: "Tresc 1-500 znakow." };
+    data.content = c;
+  }
+  if (input.description !== undefined) {
+    data.description = input.description === null ? null : str(input.description) || null;
+  }
+
+  await prisma.idea.update({ where: { id: ideaId }, data });
+  revalidatePath("/", "page");
+  return { ok: true };
+}
+
+// ---- PROBLEM: update ----
+
+export async function updateProblem(
+  problemId: string,
+  input: { content?: string; description?: string | null; priority?: number }
+): Promise<Result> {
+  const problem = await prisma.problem.findUnique({ where: { id: problemId } });
+  if (!problem) return { ok: false, error: "Problem nie istnieje." };
+
+  const data: { content?: string; description?: string | null; priority?: number } = {};
+  if (input.content !== undefined) {
+    const c = str(input.content);
+    if (c.length < 1 || c.length > 500) return { ok: false, error: "Tresc 1-500 znakow." };
+    data.content = c;
+  }
+  if (input.description !== undefined) {
+    data.description = input.description === null ? null : str(input.description) || null;
+  }
+  if (input.priority !== undefined) {
+    data.priority = parsePriority(input.priority);
+  }
+
+  await prisma.problem.update({ where: { id: problemId }, data });
+  revalidatePath("/", "page");
+  return { ok: true };
+}
+
+// ---- CONTEXT: archive ----
+
+export async function archiveContext(contextId: string): Promise<Result> {
+  const ctx = await prisma.context.findUnique({ where: { id: contextId } });
+  if (!ctx) return { ok: false, error: "Kontekst nie istnieje." };
+  await prisma.context.update({
+    where: { id: contextId },
+    data: { archived: true },
+  });
+  refreshSidebar();
+  revalidatePath("/", "page");
+  return { ok: true };
+}
+
+export async function unarchiveContext(contextId: string): Promise<Result> {
+  const ctx = await prisma.context.findUnique({ where: { id: contextId } });
+  if (!ctx) return { ok: false, error: "Kontekst nie istnieje." };
+  await prisma.context.update({
+    where: { id: contextId },
+    data: { archived: false },
+  });
+  refreshSidebar();
+  revalidatePath("/", "page");
+  return { ok: true };
+}
+
 // ---- LINKI PROJEKTU ----
 
 export async function createProjectLink(
