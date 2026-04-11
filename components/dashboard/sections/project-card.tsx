@@ -60,13 +60,12 @@ export const ProjectCard = memo(function ProjectCard({
         }}
       >
         {readOnly ? (
-          <span className="grip" style={{ opacity: 0, width: 14 }} aria-hidden="true" />
+          <span className="t-project-grip--hidden" aria-hidden="true" />
         ) : (
           <span
-            className="grip"
+            className="t-project-grip"
             {...listeners}
             onClick={(e) => e.stopPropagation()}
-            style={{ cursor: "grab", display: "flex", alignItems: "center", color: "var(--text-tertiary)" }}
             aria-label="Przeciagnij projekt"
           >
             <GripVertical size={14} />
@@ -77,9 +76,6 @@ export const ProjectCard = memo(function ProjectCard({
             href={`/c/${project.context.id}/p/${project.id}`}
             onClick={(e) => e.stopPropagation()}
             className="t-project-name"
-            style={{ textDecoration: "none" }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.textDecoration = "underline"; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.textDecoration = "none"; }}
           >
             {project.name}
           </Link>{" "}
@@ -92,7 +88,7 @@ export const ProjectCard = memo(function ProjectCard({
             </span>
           )}
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+        <div className="t-project-meta">
           <div className="t-progress-bar">
             <div className="t-progress-fill" style={{ width: `${percent}%` }} />
           </div>
@@ -101,12 +97,12 @@ export const ProjectCard = memo(function ProjectCard({
             {due ? ` · ${due.text}` : ""}
           </span>
         </div>
-        <span style={{ color: "var(--text-tertiary)", fontSize: 11, width: 14, textAlign: "center" as const }}>
+        <span className="t-collapse-icon">
           {collapsed ? "▸" : "▾"}
         </span>
       </div>
       {!collapsed ? (
-        <div style={{ borderTop: "1px solid var(--border-subtle)", padding: "4px 8px 8px" }}>
+        <div className="t-project-tasks">
           <SortableContext items={taskItemIds} strategy={verticalListSortingStrategy}>
             {project.tasks.length === 0 ? (
               <EmptyDropZone projectId={project.id} readOnly={readOnly} />
@@ -138,16 +134,7 @@ function EmptyDropZone({ projectId, readOnly }: { projectId: string; readOnly: b
   return (
     <div
       ref={setNodeRef}
-      style={{
-        color: "var(--text-tertiary)",
-        padding: "8px 16px",
-        borderRadius: "var(--radius-sm)",
-        border: isOver ? "1.5px dashed var(--accent)" : "1.5px dashed transparent",
-        background: isOver ? "var(--accent-subtle)" : "transparent",
-        transition: "all 150ms",
-        minHeight: 32,
-        fontSize: 13,
-      }}
+      className={`t-drop-zone${isOver ? " t-drop-zone--active" : ""}`}
     >
       {isOver ? "Upusc tutaj" : "Brak zadan"}
     </div>
