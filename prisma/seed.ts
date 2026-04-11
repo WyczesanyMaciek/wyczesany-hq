@@ -6,6 +6,9 @@ import { prisma } from "../lib/db";
 async function main() {
   console.log("🌱 Seed: czyszcze stare dane...");
   // Kolejnosc usuwania wazna ze wzgledu na FK
+  await prisma.subtask.deleteMany();
+  await prisma.taskAttachment.deleteMany();
+  await prisma.taskLink.deleteMany();
   await prisma.task.deleteMany();
   await prisma.note.deleteMany();
   await prisma.link.deleteMany();
@@ -18,58 +21,58 @@ async function main() {
 
   // === Salony (fioletowy) ===
   const salony = await prisma.context.create({
-    data: { name: "Salony", color: "#5B3DF5", order: 0 },
+    data: { name: "Salony", color: "#5B3DF5", icon: "💈", order: 0, description: "Wszystkie salony fryzjerskie" },
   });
   const wfm = await prisma.context.create({
-    data: { name: "WFM", color: "#5B3DF5", order: 0, parentId: salony.id },
+    data: { name: "WFM", color: "#5B3DF5", icon: "🏢", order: 0, parentId: salony.id },
   });
   const legnicka = await prisma.context.create({
-    data: { name: "Legnicka", color: "#5B3DF5", order: 0, parentId: wfm.id },
+    data: { name: "Legnicka", color: "#5B3DF5", icon: "📍", order: 0, parentId: wfm.id },
   });
   await prisma.context.create({
-    data: { name: "Łódzka", color: "#5B3DF5", order: 1, parentId: wfm.id },
+    data: { name: "Łódzka", color: "#5B3DF5", icon: "📍", order: 1, parentId: wfm.id },
   });
   await prisma.context.create({
-    data: { name: "Zakładowa", color: "#5B3DF5", order: 2, parentId: wfm.id },
+    data: { name: "Zakładowa", color: "#5B3DF5", icon: "📍", order: 2, parentId: wfm.id },
   });
   await prisma.context.create({
-    data: { name: "Luxfera", color: "#5B3DF5", order: 1, parentId: salony.id },
+    data: { name: "Luxfera", color: "#5B3DF5", icon: "✨", order: 1, parentId: salony.id },
   });
   await prisma.context.create({
-    data: { name: "Głogów", color: "#5B3DF5", order: 2, parentId: salony.id },
+    data: { name: "Głogów", color: "#5B3DF5", icon: "📍", order: 2, parentId: salony.id },
   });
 
   // === Not Bad Stuff (CZERWONY, nie zielony!) ===
   const nbs = await prisma.context.create({
-    data: { name: "Not Bad Stuff", color: "#DC2626", order: 1 },
+    data: { name: "Not Bad Stuff", color: "#DC2626", icon: "🧴", order: 1, description: "Marka kosmetykow" },
   });
   await prisma.context.create({
-    data: { name: "Produkcja", color: "#DC2626", order: 0, parentId: nbs.id },
+    data: { name: "Produkcja", color: "#DC2626", icon: "🏭", order: 0, parentId: nbs.id },
   });
   await prisma.context.create({
-    data: { name: "Sprzedaż", color: "#DC2626", order: 1, parentId: nbs.id },
+    data: { name: "Sprzedaż", color: "#DC2626", icon: "🛒", order: 1, parentId: nbs.id },
   });
 
   // === Szkolenia (pomaranczowy) ===
   await prisma.context.create({
-    data: { name: "Szkolenia", color: "#F97316", order: 2 },
+    data: { name: "Szkolenia", color: "#F97316", icon: "🎓", order: 2, description: "Szkolenia fryzjerskie i biznesowe" },
   });
 
   // === Marka Osobista (koralowy) ===
   const marka = await prisma.context.create({
-    data: { name: "Marka Osobista", color: "#FF6B4A", order: 3 },
+    data: { name: "Marka Osobista", color: "#FF6B4A", icon: "🎤", order: 3, description: "Social media, live, content" },
   });
   await prisma.context.create({
-    data: { name: "Instagram", color: "#FF6B4A", order: 0, parentId: marka.id },
+    data: { name: "Instagram", color: "#FF6B4A", icon: "📸", order: 0, parentId: marka.id },
   });
   await prisma.context.create({
-    data: { name: "Live", color: "#FF6B4A", order: 1, parentId: marka.id },
+    data: { name: "Live", color: "#FF6B4A", icon: "🔴", order: 1, parentId: marka.id },
   });
   await prisma.context.create({
-    data: { name: "Wyczesany Ali", color: "#FF6B4A", order: 2, parentId: marka.id },
+    data: { name: "Wyczesany Ali", color: "#FF6B4A", icon: "🤖", order: 2, parentId: marka.id },
   });
   await prisma.context.create({
-    data: { name: "Naffy", color: "#FF6B4A", order: 3, parentId: marka.id },
+    data: { name: "Naffy", color: "#FF6B4A", icon: "💅", order: 3, parentId: marka.id },
   });
 
   console.log("🌱 Seed: tworze testowy projekt w Legnickiej...");
@@ -217,10 +220,34 @@ async function main() {
     },
   });
 
+  // === Subtaski do taska "Zatwierdzic projekt oklejenia" ===
+  console.log("🌱 Seed: subtaski...");
+  await prisma.subtask.create({
+    data: { title: "Zebrac 3 warianty od grafika", done: true, order: 0, taskId: zatwierdz.id },
+  });
+  await prisma.subtask.create({
+    data: { title: "Porownac koszty materialu", done: false, order: 1, taskId: zatwierdz.id },
+  });
+  await prisma.subtask.create({
+    data: { title: "Wybrac finalny wariant z Mackiem", done: false, order: 2, taskId: zatwierdz.id },
+  });
+
+  // Subtaski do "Zamowic LED"
+  const ledTask = await prisma.task.findFirst({ where: { title: { contains: "LED" } } });
+  if (ledTask) {
+    await prisma.subtask.create({
+      data: { title: "Znalezc dostawce LED", done: true, order: 0, taskId: ledTask.id },
+    });
+    await prisma.subtask.create({
+      data: { title: "Wybrac font i rozmiar", done: false, order: 1, taskId: ledTask.id },
+    });
+  }
+
   // === Pomysly (do kontekstow, nie projektow) ===
   await prisma.idea.create({
     data: {
       content: "Moze zrobic konkurs dla klientow — sesja zdjeciowa za najlepsza stylizacje?",
+      description: "Klienci wrzucaja zdjecia na IG z hashtagiem, najlepsza stylizacja wygrywa darmowy zabieg. Dobre na engagement + UGC.",
       contextId: salony.id,
     },
   });
@@ -233,6 +260,7 @@ async function main() {
   await prisma.idea.create({
     data: {
       content: "Live z backstage'u przed otwarciem nowej kolekcji Not Bad Stuff",
+      description: "Pokazac proces produkcji, opakowania, testy — buduje autentycznosc marki.",
       contextId: nbs.id,
     },
   });
@@ -243,17 +271,35 @@ async function main() {
     },
   });
 
-  // === Problemy ===
+  // === Problemy z priorytetami ===
   await prisma.problem.create({
     data: {
       content: "Klimatyzacja w Legnickiej hałasuje — reklamacje klientow",
+      description: "Klienci skarza sie na szum, szczegolnie przy stanowisku 3. Serwisant byl, powiedzial ze wymiana sprężarki ~4000 zl.",
+      priority: 3,
       contextId: legnicka.id,
     },
   });
   await prisma.problem.create({
     data: {
       content: "Brak kogos do prowadzenia Instagrama Naffy na stale",
+      description: "Potrzebna osoba 2-3h/tydz. Budget do 800 zl/msc. Moze studentka?",
+      priority: 2,
       contextId: marka.id,
+    },
+  });
+  await prisma.problem.create({
+    data: {
+      content: "Spadek sprzedazy NBS w marcu — 15% mniej niz rok temu",
+      priority: 2,
+      contextId: nbs.id,
+    },
+  });
+  await prisma.problem.create({
+    data: {
+      content: "Drzwi w Luxferze nie domykaja sie do konca",
+      priority: 1,
+      contextId: (await prisma.context.findFirst({ where: { name: "Luxfera" } }))!.id,
     },
   });
 

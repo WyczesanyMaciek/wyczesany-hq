@@ -88,12 +88,15 @@ model UserContextAccess {
 // Hierarchia o dowolnej glebokosci (parent/children).
 // =====================================================
 model Context {
-  id        String   @id @default(cuid())
-  name      String
-  color     String   // hex, np. #5B3DF5
-  order     Int      @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(cuid())
+  name        String
+  color       String   // hex, np. #5B3DF5
+  icon        String?  // emoji, np. "💈"
+  description String?  // opis kontekstu
+  archived    Boolean  @default(false)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   // Self-relation: parent + children
   parentId String?
@@ -158,6 +161,7 @@ model Task {
   project   Project? @relation(fields: [projectId], references: [id])
 
   // Wlasne zasoby taska
+  subtasks    Subtask[]
   attachments TaskAttachment[]
   links       TaskLink[]
 }
@@ -192,9 +196,10 @@ model TaskLink {
 // Idea — surowiec. Pomysl ktory czeka na decyzje.
 // =====================================================
 model Idea {
-  id        String   @id @default(cuid())
-  content   String
-  createdAt DateTime @default(now())
+  id          String   @id @default(cuid())
+  content     String
+  description String?  // opis pod tytulem (limit 500 znakow w UI)
+  createdAt   DateTime @default(now())
 
   contextId String
   context   Context @relation(fields: [contextId], references: [id])
@@ -204,9 +209,11 @@ model Idea {
 // Problem — surowiec. Bloker albo trudnosc do przemyslenia.
 // =====================================================
 model Problem {
-  id        String   @id @default(cuid())
-  content   String
-  createdAt DateTime @default(now())
+  id          String   @id @default(cuid())
+  content     String
+  description String?  // opis pod tytulem
+  priority    Int      @default(0) // 0=Brak, 1=Niski, 2=Normalny, 3=Pilny
+  createdAt   DateTime @default(now())
 
   contextId String
   context   Context @relation(fields: [contextId], references: [id])
@@ -245,4 +252,18 @@ model Link {
 
   projectId String?
   project   Project? @relation(fields: [projectId], references: [id])
+}
+
+// =====================================================
+// Subtask — checklista wewnatrz taska.
+// =====================================================
+model Subtask {
+  id        String   @id @default(cuid())
+  title     String
+  done      Boolean  @default(false)
+  order     Int      @default(0)
+  taskId    String
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
