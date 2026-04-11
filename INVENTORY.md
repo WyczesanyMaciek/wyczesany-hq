@@ -1,81 +1,128 @@
-# Inwentaryzacja warstwy wizualnej — BEFORE
+# Inwentaryzacja warstwy wizualnej — AFTER
 
-## Inline styles per plik
+## Podsumowanie refaktoru
 
-| Plik | Inline styles |
-|------|:---:|
-| project-view.tsx | 53 |
-| task-detail-panel.tsx | 42 |
-| linear-new-project.tsx | 22 |
-| sidebar.tsx | 19 |
-| search-dialog.tsx | 16 |
-| project-card.tsx | 10 |
-| linear-dashboard.tsx | 5 |
-| linear-add-task.tsx | 5 |
-| user-menu.tsx | 4 |
-| linear-add-item.tsx | 4 |
-| task-checkbox.tsx | 3 |
-| task-row.tsx | 2 |
-| tasks-section.tsx | 2 |
-| rail.tsx | 1 |
-| projects-section.tsx | 1 |
-| problems-section.tsx | 1 |
-| **TOTAL** | **~190** |
+| Metryka | BEFORE | AFTER |
+|---------|--------|-------|
+| Inline styles total | ~190 | ~61 |
+| Stare klasy (lsec, chip-row, etc.) | 35+ | 0 |
+| Unikalne klasy t-* | ~20 (czesciowe) | 80+ (kompletne) |
+| Pliki z zerowymi inline styles | 4 | 10 |
 
-## Stare klasy (non t-*)
+## Inline styles — stan po refaktorze
 
-| Klasa | Uzycia |
-|-------|:---:|
-| lsec | 5 |
-| lsec-head | 5 |
-| cnt | 4 |
-| txt | 2 |
-| meta | 2 |
-| ln | 2 |
-| grip | 2 |
-| chip-row | 2 |
-| add | 2 |
-| url | 1 |
-| tile add | 1 |
-| pill-ctx | 1 |
-| llinks | 1 |
-| lbar | 1 |
-| icn p / icn i | 2 |
-| ic | 1 |
-| files | 1 |
-| crumb | 1 |
+Wszystkie pozostale inline styles to **dynamiczne wartosci** (kolor kontekstu, width postep,
+opacity DnD, position relative, minHeight, resize, flex). Nie da sie ich wyniesc do CSS.
 
-## t-* klasy juz w uzyciu
+| Plik | Inline | Powod |
+|------|:---:|-------|
+| search-dialog.tsx | 16 | Nie w scope refaktoru (shadcn) |
+| project-view.tsx | 14 | Dynamic colors, position, opacity, flex, minHeight |
+| task-detail-panel.tsx | 10 | Dynamic bg/color na chipach statusu |
+| sidebar.tsx | 5 | paddingLeft depth, overflow, flex |
+| user-menu.tsx | 4 | Nie w scope (drobny komponent) |
+| task-checkbox.tsx | 3 | Dynamic width/height (compact mode), lineHeight |
+| project-card.tsx | 3 | Dynamic progress width, context color, flex |
+| linear-new-project.tsx | 3 | flex, resize |
+| linear-dashboard.tsx | 2 | marginLeft auto, dynamic color |
+| task-row.tsx | 1 | DnD transform/transition/opacity |
 
-Czesciowo wdrozone: t-rail, t-sidebar, t-task-row, t-project-card, t-panel, t-badge, t-section-header/title/counter, t-btn-primary/secondary, t-field-row/label/value, t-panel-tabs/tab.
+## Pliki z zerowymi inline styles
 
-## Brakujace t-* klasy w komponentach
+- rail.tsx
+- linear-add-task.tsx
+- linear-add-item.tsx
+- chip-actions.tsx
+- tasks-section.tsx
+- projects-section.tsx
+- ideas-section.tsx
+- problems-section.tsx
+- dialog.tsx
+- button.tsx
 
-- sidebar.tsx: brand header, footer, search kbd — inline styles
-- tasks-section.tsx: wrapper div — inline styles
-- ideas-section.tsx: chip-row, icn, txt, meta — stare klasy
-- problems-section.tsx: chip-row, icn, txt, meta — stare klasy
-- project-card.tsx: grip, progress wrapper — inline styles
-- task-detail-panel.tsx: chipy statusu, buttony, form fields — inline styles
-- project-view.tsx: lsec, lsec-head, cnt, lbar, crumb — stare klasy + inline
-- linear-new-project.tsx: modal — inline styles
-- linear-add-task.tsx: input wrapper — inline styles
-- linear-add-item.tsx: input wrapper — inline styles
-- chip-actions.tsx: actions div — no t-* class
-- task-checkbox.tsx: caly komponent — inline styles
+## Kompletna mapa klas t-*
 
-## globals.css — stare reguly do usuniecia
+### Layout
+- `.t-app` `.t-main-grid` `.t-main-content` `.t-spacer` `.t-flex-spacer`
 
-- .eyebrow (zastapiony przez t-sidebar-section / t-section-title)
-- .ds-card, .ds-card:hover
-- .ds-btn, .ds-btn:active, .ds-btn-sm, .ds-btn-md, .ds-btn-primary/secondary/ghost
-- .ds-badge
-- .ds-input, .ds-input::placeholder, .ds-input:hover, .ds-input:focus
-- .brutal-card, .brutal-btn, .brutal-btn-primary
+### Rail
+- `.t-rail` `.t-rail-icon` `.t-rail-icon--active`
 
-## Cel refaktoru
+### Sidebar
+- `.t-sidebar` `.t-sidebar-brand` `.t-sidebar-brand-label` `.t-sidebar-brand-title`
+- `.t-sidebar-section` `.t-sidebar-item` `.t-sidebar-item--active` `.t-sidebar-item-count`
+- `.t-sidebar-item-link` `.t-sidebar-item-text` `.t-sidebar-nav` `.t-sidebar-user-border`
+- `.t-sidebar-footer` `.t-sidebar-footer-link` `.t-sidebar-footer-link--active` `.t-sidebar-build`
+- `.t-search` `.t-search-kbd` `.t-nav-list` `.t-chevron-btn` `.t-chevron-btn--has-children`
+- `.t-context-dot`
 
-- Zero inline styles (wyjatki: dynamiczne color, width, paddingLeft, opacity, transform/transition z DnD)
-- Zero starych klas (lsec, lbar, chip-row, etc.)
-- Kazdy komponent uzywa t-* klas z tasker-ds.css
-- globals.css = tylko tokeny, resety, Tailwind, import tasker-ds.css
+### Content
+- `.t-content` `.t-content-header` `.t-breadcrumb`
+
+### Section
+- `.t-section` `.t-section--padded` `.t-section-header` `.t-section-title`
+- `.t-section-counter` `.t-section-action`
+
+### Task Row
+- `.t-task-row` `.t-task-row--done` `.t-task-row--selected`
+- `.t-task-checkbox` `.t-task-checkbox--done`
+- `.t-priority-dot` `.t-priority-dot--critical/--high/--medium/--low`
+- `.t-task-title` `.t-task-title--done`
+- `.t-task-date` `.t-task-date--overdue`
+- `.t-avatar` `.t-edit-inline`
+
+### Badge
+- `.t-badge` `.t-badge--todo/--progress/--blocked/--done` `.t-badge-dot`
+
+### Project Card
+- `.t-project-card` `.t-project-header` `.t-project-name` `.t-project-meta`
+- `.t-project-grip` `.t-project-grip--hidden` `.t-project-tasks`
+- `.t-context-badge` `.t-progress-bar` `.t-progress-fill` `.t-progress-text`
+- `.t-collapse-icon` `.t-context-pill`
+
+### Panel
+- `.t-panel` `.t-panel-tabs` `.t-panel-tab` `.t-panel-tab--active`
+- `.t-panel-header` `.t-panel-title` `.t-panel-title--editable` `.t-panel-breadcrumb`
+- `.t-field-row` `.t-field-label` `.t-field-value`
+- `.t-panel-section` `.t-panel-section-header`
+- `.t-panel-chips` `.t-panel-chip` `.t-panel-chip-dot`
+- `.t-panel-actions` `.t-panel-edit-input` `.t-panel-edit-input--title/--sm`
+- `.t-panel-dropdown` `.t-panel-dropdown-item`
+- `.t-panel-notes` `.t-panel-file-grid` `.t-panel-file-tile`
+- `.t-panel-link-list` `.t-panel-link-row` `.t-panel-link` `.t-panel-link-host`
+- `.t-panel-inline-form` `.t-panel-inline-form--att` `.t-panel-form-actions`
+
+### Buttons
+- `.t-btn-primary` `.t-btn-secondary` `.t-btn-ghost` `.t-btn-sm` `.t-btn-add-text`
+
+### Inline Add
+- `.t-add-task` `.t-add-item` `.t-inline-form` `.t-inline-input` `.t-inline-hint` `.t-inline-error`
+
+### Chips (ideas/problems)
+- `.t-chip-row` `.t-chip-icon` `.t-chip-content` `.t-chip-meta`
+- `.t-chip-actions` `.t-chip-action-btn`
+
+### Ideas/Problems
+- `.t-idea-row` `.t-problem-row`
+
+### Notes
+- `.t-note-card` `.t-note-card-text` `.t-note-card-textarea` `.t-note-delete`
+
+### Project View
+- `.t-project-bar` `.t-project-bar-back` `.t-project-bar-crumb` `.t-project-bar-sep`
+- `.t-project-view-header` `.t-project-view-title` `.t-project-view-desc` `.t-project-view-meta`
+- `.t-status-btn` `.t-status-dropdown` `.t-status-dropdown-item` `.t-status-dropdown-item--active`
+
+### Modal
+- `.t-modal-overlay` `.t-modal` `.t-modal-title` `.t-modal-body`
+- `.t-modal-field` `.t-modal-field-label` `.t-modal-field-row`
+- `.t-modal-input` `.t-modal-footer`
+
+### Misc
+- `.t-task-list-wrapper` `.t-drop-zone` `.t-drop-zone--active` `.t-empty-state`
+- `.t-placeholder`
+
+## Zrodla prawdy
+
+- **tasker-ds.css** — jedyny plik ze stylami komponentow
+- **globals.css** — tokeny (:root), @theme inline, @layer base, import tasker-ds.css
