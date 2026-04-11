@@ -351,7 +351,7 @@ export function TaskDetailPanel({
             >
               {task.assigneeId ? (
                 <>
-                  <span className="av">{task.assigneeId}</span>
+                  <span className="t-avatar" style={{ width: 20, height: 20, fontSize: 9 }}>{task.assigneeId.slice(0, 2).toUpperCase()}</span>
                   {task.assigneeId}
                 </>
               ) : (
