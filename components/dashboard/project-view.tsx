@@ -86,27 +86,19 @@ function NotesSection({
   };
 
   return (
-    <div className="lsec">
-      <div className="lsec-head">
+    <div className="t-section">
+      <div className="t-section-header">
         <FileText size={14} style={{ opacity: 0.5 }} />
-        <span>Notatki</span>
-        <span className="cnt">{notes.length}</span>
+        <h3 className="t-section-title">Notatki</h3>
+        <span className="t-section-counter">{notes.length}</span>
       </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 8, padding: "0 16px" }}>
+      <div className="t-section--padded" style={{ display: "flex", flexDirection: "column", gap: 8 }}>
         {notes.map((n) => (
-          <div
-            key={n.id}
-            style={{
-              padding: "10px 12px",
-              background: "var(--l-bg-soft, #fafafa)",
-              borderRadius: 6,
-              border: "1px solid var(--l-line, #e5e5e5)",
-              position: "relative",
-            }}
-          >
+          <div key={n.id} className="t-note-card">
             {editingId === n.id ? (
               <textarea
                 autoFocus
+                className="t-note-card-textarea"
                 defaultValue={n.content}
                 disabled={pending}
                 onBlur={(e) => {
@@ -117,66 +109,27 @@ function NotesSection({
                 onKeyDown={(e) => {
                   if (e.key === "Escape") setEditingId(null);
                 }}
-                style={{
-                  width: "100%",
-                  minHeight: 60,
-                  font: "inherit",
-                  fontSize: 13,
-                  padding: 0,
-                  border: 0,
-                  background: "transparent",
-                  resize: "vertical",
-                  outline: "none",
-                }}
               />
             ) : (
               <div
+                className="t-note-card-text"
                 onClick={() => setEditingId(n.id)}
-                style={{
-                  cursor: "text",
-                  whiteSpace: "pre-wrap",
-                  fontSize: 13,
-                  lineHeight: 1.5,
-                }}
               >
                 {n.content}
               </div>
             )}
             <button
+              className="t-note-delete"
               onClick={() => handleDelete(n.id)}
               disabled={pending}
               title="Usun notatke"
-              style={{
-                position: "absolute",
-                top: 6,
-                right: 6,
-                padding: "2px 6px",
-                border: "1px solid var(--l-line, #e5e5e5)",
-                background: "#fff",
-                borderRadius: 4,
-                cursor: "pointer",
-                color: "var(--l-muted, #888)",
-                font: "inherit",
-                fontSize: 11,
-                opacity: 0.6,
-              }}
             >
               ×
             </button>
           </div>
         ))}
         {adding ? (
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 6,
-              padding: 8,
-              border: "1px solid var(--l-line, #e5e5e5)",
-              borderRadius: 6,
-              background: "var(--l-bg-soft, #fafafa)",
-            }}
-          >
+          <div className="t-panel-inline-form">
             <textarea
               autoFocus
               placeholder="Tresc notatki..."
@@ -189,65 +142,27 @@ function NotesSection({
                   setNewContent("");
                 }
               }}
-              style={{
-                width: "100%",
-                minHeight: 60,
-                font: "inherit",
-                fontSize: 13,
-                padding: "6px 8px",
-                border: "1px solid var(--l-line, #e5e5e5)",
-                borderRadius: 4,
-                background: "#fff",
-                resize: "vertical",
-              }}
+              className="t-panel-edit-input"
+              style={{ minHeight: 60, resize: "vertical" }}
             />
-            <div style={{ display: "flex", gap: 6 }}>
+            <div className="t-panel-form-actions">
               <button
+                className="t-btn-primary"
                 onClick={handleAdd}
                 disabled={pending || !newContent.trim()}
-                style={{
-                  padding: "4px 10px",
-                  background: "var(--accent)",
-                  color: "#fff",
-                  border: 0,
-                  borderRadius: 4,
-                  cursor: "pointer",
-                  font: "inherit",
-                  fontSize: 13,
-                }}
               >
                 Dodaj
               </button>
               <button
+                className="t-btn-secondary"
                 onClick={() => { setAdding(false); setNewContent(""); }}
-                style={{
-                  padding: "4px 10px",
-                  background: "#fff",
-                  border: "1px solid var(--l-line, #e5e5e5)",
-                  borderRadius: 4,
-                  cursor: "pointer",
-                  font: "inherit",
-                  fontSize: 13,
-                }}
               >
                 Anuluj
               </button>
             </div>
           </div>
         ) : (
-          <button
-            onClick={() => setAdding(true)}
-            style={{
-              background: "transparent",
-              border: 0,
-              font: "inherit",
-              fontSize: 13,
-              cursor: "pointer",
-              textAlign: "left",
-              padding: "4px 0",
-              color: "var(--l-muted, #888)",
-            }}
-          >
+          <button className="t-btn-add-text" onClick={() => setAdding(true)}>
             + Dodaj notatke
           </button>
         )}
@@ -292,58 +207,34 @@ function LinksSection({
   };
 
   return (
-    <div className="lsec">
-      <div className="lsec-head">
+    <div className="t-section">
+      <div className="t-section-header">
         <Link2 size={14} style={{ opacity: 0.5 }} />
-        <span>Linki</span>
-        <span className="cnt">{links.length}</span>
+        <h3 className="t-section-title">Linki</h3>
+        <span className="t-section-counter">{links.length}</span>
       </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 4, padding: "0 16px" }}>
+      <div className="t-section--padded" style={{ display: "flex", flexDirection: "column", gap: 4 }}>
         {links.map((l) => {
           let host = "";
           try { host = new URL(l.url).hostname.replace("www.", ""); }
           catch { host = l.url; }
           return (
-            <div
-              key={l.id}
-              style={{ display: "flex", alignItems: "center", gap: 6 }}
-            >
+            <div key={l.id} className="t-panel-link-row">
               <a
                 href={l.url}
                 target="_blank"
                 rel="noreferrer"
-                className="ln"
-                style={{
-                  flex: 1,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 6,
-                  padding: "6px 0",
-                  fontSize: 13,
-                  color: "var(--accent)",
-                  textDecoration: "none",
-                }}
+                className="t-panel-link"
               >
                 <span style={{ opacity: 0.5 }}>🔗</span>
                 {l.label}
-                <span style={{ color: "var(--l-muted, #888)", fontSize: 11 }}>
-                  {host}
-                </span>
+                <span className="t-panel-link-host">{host}</span>
               </a>
               <button
+                className="t-btn-sm"
                 onClick={() => handleDelete(l.id)}
                 disabled={pending}
                 title="Usun link"
-                style={{
-                  padding: "2px 6px",
-                  border: "1px solid var(--l-line, #e5e5e5)",
-                  background: "#fff",
-                  borderRadius: 4,
-                  cursor: "pointer",
-                  color: "var(--l-muted, #888)",
-                  font: "inherit",
-                  fontSize: 11,
-                }}
               >
                 ×
               </button>
@@ -351,31 +242,14 @@ function LinksSection({
           );
         })}
         {adding ? (
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 4,
-              padding: 8,
-              border: "1px solid var(--l-line, #e5e5e5)",
-              borderRadius: 6,
-              background: "var(--l-bg-soft, #fafafa)",
-            }}
-          >
+          <div className="t-panel-inline-form">
             <input
               autoFocus
               placeholder="Etykieta (np. Figma)"
               value={label}
               onChange={(e) => setLabel(e.target.value)}
               disabled={pending}
-              style={{
-                font: "inherit",
-                fontSize: 13,
-                padding: "4px 6px",
-                border: "1px solid var(--l-line, #e5e5e5)",
-                borderRadius: 4,
-                background: "#fff",
-              }}
+              className="t-panel-edit-input"
             />
             <input
               placeholder="https://..."
@@ -390,62 +264,26 @@ function LinksSection({
                   setUrl("");
                 }
               }}
-              style={{
-                font: "inherit",
-                fontSize: 13,
-                padding: "4px 6px",
-                border: "1px solid var(--l-line, #e5e5e5)",
-                borderRadius: 4,
-                background: "#fff",
-              }}
+              className="t-panel-edit-input"
             />
-            <div style={{ display: "flex", gap: 6 }}>
+            <div className="t-panel-form-actions">
               <button
+                className="t-btn-primary"
                 onClick={handleAdd}
                 disabled={pending || !label.trim() || !url.trim()}
-                style={{
-                  padding: "4px 10px",
-                  background: "var(--accent)",
-                  color: "#fff",
-                  border: 0,
-                  borderRadius: 4,
-                  cursor: "pointer",
-                  font: "inherit",
-                  fontSize: 13,
-                }}
               >
                 Dodaj
               </button>
               <button
+                className="t-btn-secondary"
                 onClick={() => { setAdding(false); setLabel(""); setUrl(""); }}
-                style={{
-                  padding: "4px 10px",
-                  background: "#fff",
-                  border: "1px solid var(--l-line, #e5e5e5)",
-                  borderRadius: 4,
-                  cursor: "pointer",
-                  font: "inherit",
-                  fontSize: 13,
-                }}
               >
                 Anuluj
               </button>
             </div>
           </div>
         ) : (
-          <button
-            onClick={() => setAdding(true)}
-            style={{
-              background: "transparent",
-              border: 0,
-              font: "inherit",
-              fontSize: 13,
-              cursor: "pointer",
-              textAlign: "left",
-              padding: "4px 0",
-              color: "var(--l-muted, #888)",
-            }}
-          >
+          <button className="t-btn-add-text" onClick={() => setAdding(true)}>
             + Dodaj link
           </button>
         )}
@@ -554,128 +392,60 @@ export function ProjectView({ project }: { project: ProjectDetail }) {
       collisionDetection={closestCorners}
       onDragEnd={handleDragEnd}
     >
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 320px",
-          minHeight: "100vh",
-        }}
-      >
+      <div className="t-main-grid">
         {/* ============ SRODEK ============ */}
-        <main style={{ overflow: "auto", background: "#ffffff" }}>
+        <main className="t-main-content">
           {/* Top bar */}
-          <div className="lbar">
-            <span className="crumb" style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <Link
-                href={`/c/${project.context.id}`}
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 4,
-                  color: "var(--l-muted, #888)",
-                  textDecoration: "none",
-                  fontSize: 13,
-                }}
-                title="Wróć do kontekstu"
-              >
-                <ArrowLeft size={14} />
-              </Link>
-              {project.breadcrumb.map((b, i) => (
-                <span key={b.id}>
-                  {i > 0 && <span style={{ margin: "0 2px", opacity: 0.4 }}>/</span>}
-                  <Link
-                    href={`/c/${b.id}`}
-                    style={{ color: "var(--l-muted, #888)", textDecoration: "none", fontSize: 13 }}
-                  >
-                    {b.name}
-                  </Link>
-                </span>
-              ))}
-              <span style={{ margin: "0 2px", opacity: 0.4 }}>/</span>
-              <b style={{ fontSize: 14 }}>{project.name}</b>
-            </span>
+          <div className="t-project-bar">
+            <Link
+              href={`/c/${project.context.id}`}
+              className="t-project-bar-back"
+              title="Wróć do kontekstu"
+            >
+              <ArrowLeft size={14} />
+            </Link>
+            {project.breadcrumb.map((b, i) => (
+              <span key={b.id}>
+                {i > 0 && <span className="t-project-bar-sep">/</span>}
+                <Link href={`/c/${b.id}`} className="t-project-bar-crumb">
+                  {b.name}
+                </Link>
+              </span>
+            ))}
+            <span className="t-project-bar-sep">/</span>
+            <b style={{ fontSize: 14 }}>{project.name}</b>
           </div>
 
           {/* Header projektu */}
-          <div style={{ padding: "20px 24px 16px" }}>
-            <h2 style={{
-              fontSize: 22,
-              fontWeight: 800,
-              margin: "0 0 8px",
-              color: "var(--l-fg, #1f1f2e)",
-            }}>
-              {project.name}
-            </h2>
+          <div className="t-project-view-header">
+            <h2 className="t-project-view-title">{project.name}</h2>
 
             {project.description && (
-              <p style={{
-                fontSize: 14,
-                color: "var(--l-muted, #888)",
-                margin: "0 0 12px",
-                lineHeight: 1.5,
-              }}>
-                {project.description}
-              </p>
+              <p className="t-project-view-desc">{project.description}</p>
             )}
 
             {/* Meta row */}
-            <div style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 12,
-              flexWrap: "wrap",
-              fontSize: 13,
-            }}>
+            <div className="t-project-view-meta">
               {/* Status */}
               <div style={{ position: "relative" }}>
                 <button
+                  className="t-status-btn"
                   onClick={() => setEditingStatus((v) => !v)}
                   style={{
-                    padding: "3px 10px",
-                    borderRadius: 4,
-                    border: "1px solid var(--l-line, #e5e5e5)",
                     background: `${STATUS_COLORS[project.status] ?? "#64748b"}15`,
                     color: STATUS_COLORS[project.status] ?? "#64748b",
-                    fontWeight: 600,
-                    font: "inherit",
-                    fontSize: 12,
-                    cursor: "pointer",
                   }}
                 >
                   {STATUS_LABELS[project.status] ?? project.status}
                 </button>
                 {editingStatus && (
-                  <div style={{
-                    position: "absolute",
-                    top: "100%",
-                    left: 0,
-                    marginTop: 4,
-                    background: "#fff",
-                    border: "1px solid var(--l-line, #e5e5e5)",
-                    borderRadius: 6,
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-                    minWidth: 140,
-                    zIndex: 10,
-                  }}>
+                  <div className="t-status-dropdown">
                     {Object.entries(STATUS_LABELS).map(([key, label]) => (
                       <button
                         key={key}
+                        className={`t-status-dropdown-item${key === project.status ? " t-status-dropdown-item--active" : ""}`}
                         onClick={() => handleStatusChange(key)}
-                        style={{
-                          display: "block",
-                          width: "100%",
-                          padding: "6px 10px",
-                          textAlign: "left",
-                          background: key === project.status ? "var(--l-hover, #f5f5f5)" : "transparent",
-                          border: 0,
-                          font: "inherit",
-                          fontSize: 12,
-                          cursor: "pointer",
-                          color: STATUS_COLORS[key],
-                          fontWeight: key === project.status ? 600 : 400,
-                        }}
-                        onMouseEnter={(e) => { e.currentTarget.style.background = "var(--l-hover, #f5f5f5)"; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.background = key === project.status ? "var(--l-hover, #f5f5f5)" : "transparent"; }}
+                        style={{ color: STATUS_COLORS[key] }}
                       >
                         {label}
                       </button>
@@ -686,47 +456,31 @@ export function ProjectView({ project }: { project: ProjectDetail }) {
 
               {/* Kontekst */}
               <span
-                style={{
-                  padding: "3px 8px",
-                  borderRadius: 4,
-                  background: `${color}22`,
-                  color,
-                  fontWeight: 600,
-                  fontSize: 12,
-                }}
+                className="t-context-pill"
+                style={{ background: `${color}22`, color }}
               >
                 ● {project.context.name}
               </span>
 
               {/* Deadline */}
               {due && (
-                <span style={{
-                  fontSize: 12,
-                  color: due.late ? "#b91c1c" : "var(--l-muted, #888)",
-                  fontWeight: due.late ? 600 : 400,
-                }}>
+                <span className={`t-task-date${due.late ? " t-task-date--overdue" : ""}`}>
                   {due.text}
                 </span>
               )}
 
               {/* Progress */}
-              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <div style={{
-                  width: 80,
-                  height: 4,
-                  borderRadius: 2,
-                  background: "var(--l-line, #e5e5e5)",
-                  overflow: "hidden",
-                }}>
-                  <div style={{
-                    width: `${percent}%`,
-                    height: "100%",
-                    background: percent === 100 ? "#16a34a" : color,
-                    borderRadius: 2,
-                    transition: "width 200ms",
-                  }} />
+              <div className="t-project-meta">
+                <div className="t-progress-bar">
+                  <div
+                    className="t-progress-fill"
+                    style={{
+                      width: `${percent}%`,
+                      background: percent === 100 ? "#16a34a" : color,
+                    }}
+                  />
                 </div>
-                <span style={{ fontSize: 12, color: "var(--l-muted, #888)" }}>
+                <span className="t-progress-text">
                   {project.taskDone}/{project.taskTotal}
                 </span>
               </div>
@@ -734,21 +488,17 @@ export function ProjectView({ project }: { project: ProjectDetail }) {
           </div>
 
           {/* ---- Sekcja: Zadania ---- */}
-          <div className="lsec">
-            <div className="lsec-head">
-              <span>Zadania</span>
-              <span className="cnt">{activeTasks.length}</span>
+          <div className="t-section">
+            <div className="t-section-header">
+              <h3 className="t-section-title">Zadania</h3>
+              <span className="t-section-counter">{activeTasks.length}</span>
             </div>
             <SortableContext
               items={taskItemIds}
               strategy={verticalListSortingStrategy}
             >
               {activeTasks.length === 0 && doneTasks.length === 0 ? (
-                <div style={{
-                  padding: "12px 16px",
-                  color: "var(--l-muted, #888)",
-                  fontSize: 13,
-                }}>
+                <div className="t-placeholder">
                   Brak zadan — dodaj pierwsze ponizej
                 </div>
               ) : (
@@ -781,22 +531,17 @@ export function ProjectView({ project }: { project: ProjectDetail }) {
           <LinksSection links={project.links} projectId={project.id} />
 
           {/* ---- Placeholder: Historia rozmow ---- */}
-          <div className="lsec">
-            <div className="lsec-head">
+          <div className="t-section">
+            <div className="t-section-header">
               <MessageSquare size={14} style={{ opacity: 0.5 }} />
-              <span>Historia rozmów</span>
+              <h3 className="t-section-title">Historia rozmów</h3>
             </div>
-            <div style={{
-              padding: "16px",
-              color: "var(--l-muted, #888)",
-              fontSize: 13,
-              fontStyle: "italic",
-            }}>
+            <div className="t-placeholder">
               Wbudowany czat z Claude — pojawi sie w Etapie 10.
             </div>
           </div>
 
-          <div style={{ height: 40 }} />
+          <div className="t-spacer" />
         </main>
 
         {/* ============ PRAWY PANEL ============ */}
@@ -826,14 +571,14 @@ function DoneTasksSection({
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="lsec">
+    <div className="t-section">
       <div
-        className="lsec-head"
+        className="t-section-header"
         onClick={() => setExpanded((v) => !v)}
         style={{ cursor: "pointer" }}
       >
-        <span>{expanded ? "▾" : "▸"} Zrobione</span>
-        <span className="cnt">{tasks.length}</span>
+        <h3 className="t-section-title">{expanded ? "▾" : "▸"} Zrobione</h3>
+        <span className="t-section-counter">{tasks.length}</span>
       </div>
       {expanded &&
         tasks.map((t) => (
