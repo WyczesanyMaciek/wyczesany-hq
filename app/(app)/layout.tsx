@@ -4,7 +4,6 @@
 
 import { unstable_cache } from "next/cache";
 import { Sidebar } from "@/components/sidebar/sidebar";
-import { Rail } from "@/components/sidebar/rail";
 import { AppShell } from "@/components/app-shell";
 import { getContextTree, getContextsFlat } from "@/lib/queries/contexts";
 import { auth, signOut } from "@/auth";
@@ -56,7 +55,6 @@ export default async function AppLayout({
       projects={projects.map((p) => ({ id: p.id, name: p.name }))}
     >
       <div className="flex min-h-screen">
-        <Rail />
         <Sidebar
           tree={tree}
           user={session?.user}

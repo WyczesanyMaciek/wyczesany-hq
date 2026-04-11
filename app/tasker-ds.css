@@ -48,7 +48,7 @@
 
 /* ---------- SIDEBAR ---------- */
 .t-sidebar {
-  width: 240px;
+  width: 280px;
   flex-shrink: 0;
   background: var(--bg-sidebar);
   border-right: 1.5px solid var(--border-default);
@@ -60,6 +60,38 @@
   font-size: 13px;
   color: var(--text-primary);
   overflow-y: auto;
+}
+
+.t-sidebar-nav-icons {
+  display: flex;
+  gap: 4px;
+  padding: 8px 16px;
+}
+
+.t-sidebar-nav-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 120ms ease;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  text-decoration: none;
+}
+
+.t-sidebar-nav-icon:hover {
+  background: var(--bg-sidebar-hover);
+  color: var(--text-primary);
+}
+
+.t-sidebar-nav-icon--active {
+  background: var(--accent-light);
+  color: var(--accent);
 }
 
 .t-sidebar-section {

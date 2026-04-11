@@ -14,7 +14,6 @@ test.describe('Smoke Tests', () => {
     await page.goto('/')
     await expect(page).toHaveTitle(/Wyczesany/)
     await expect(page.locator('.t-sidebar')).toBeVisible()
-    await expect(page.locator('.t-rail')).toBeVisible()
   })
 
   test('dashboard kontekstu ładuje się', async ({ page }) => {
@@ -49,9 +48,9 @@ test.describe('Smoke Tests', () => {
     expect(await items.count()).toBeGreaterThan(0)
   })
 
-  test('rail ma ikony', async ({ page }) => {
+  test('sidebar ma ikony nawigacji', async ({ page }) => {
     await page.goto('/')
-    const icons = page.locator('.t-rail-icon')
+    const icons = page.locator('.t-sidebar-nav-icon')
     await expect(icons.first()).toBeVisible()
     expect(await icons.count()).toBeGreaterThanOrEqual(3)
   })
