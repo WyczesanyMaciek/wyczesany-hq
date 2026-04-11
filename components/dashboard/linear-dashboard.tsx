@@ -195,27 +195,21 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
       collisionDetection={closestCorners}
       onDragEnd={handleDragEnd}
     >
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 320px",
-          minHeight: "100vh",
-        }}
-      >
+      <div className="t-main-grid">
         {/* ============ SRODEK ============ */}
-        <main style={{ overflow: "auto", background: "#ffffff" }}>
+        <main className="t-main-content">
           {/* Top bar */}
           <div className="t-content-header">
             <span className="t-breadcrumb">
               Konteksty / <b>{title}</b>
               <span
-                className="pill-ctx"
+                className="t-context-pill"
                 style={{ background: `${color}22`, color }}
               >
                 ● {title}
               </span>
             </span>
-            <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
+            <div style={{ marginLeft: "auto", display: "flex", gap: 8 }} >
               <button className="t-btn-secondary">Filtry</button>
               {data.current ? (
                 <LinearNewProjectButton
@@ -248,8 +242,7 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
 
           <ProblemsSection problems={data.problems} contextId={currentId} />
 
-          {/* odstep na dole */}
-          <div style={{ height: 40 }} />
+          <div className="t-spacer" />
         </main>
 
         {/* ============ PRAWY PANEL ============ */}
