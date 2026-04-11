@@ -1,15 +1,18 @@
 import type { NextConfig } from "next";
-import { execSync } from "node:child_process";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 
 // Wyczesany HQ — build info.
-// Numer buildu = liczba commitow na main. Automatycznie rosnie.
-// Format w UI: "Build #095 · 17:42"
+// Numer buildu z build-meta.json (inkrementowany w pre-commit hook).
+// Czas buildu generowany dynamicznie.
+// Format w UI: "Build #137 · 19:42"
 
 function getBuildNumber(): string {
   try {
-    const count = execSync("git rev-list --count HEAD", { encoding: "utf-8" }).trim();
-    const num = parseInt(count, 10);
-    if (Number.isNaN(num)) return "000";
+    const raw = readFileSync(resolve(process.cwd(), "build-meta.json"), "utf-8");
+    const meta = JSON.parse(raw);
+    const num = meta.number;
+    if (typeof num !== "number" || Number.isNaN(num)) return "000";
     return String(num).padStart(3, "0");
   } catch {
     return "000";
