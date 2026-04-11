@@ -208,7 +208,7 @@ h2 { font-size: 1.47rem; }   /* 22px */
 h3 { font-size: 1.2rem; }    /* 18px */
 h4 { font-size: 1.07rem; }   /* 16px */
 
-/* Stare ds-*/brutal-*/linear-app reguly USUNIETE — zastapione przez t-* klasy w tasker-ds.css */
+/* Stare ds- brutal- linear-app reguly USUNIETE — zastapione przez t-* klasy w tasker-ds.css */
 /* NIGDY dark mode — blok .dark celowo usuniety. */
 
 @layer base {
