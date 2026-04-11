@@ -208,7 +208,84 @@ h2 { font-size: 1.47rem; }   /* 22px */
 h3 { font-size: 1.2rem; }    /* 18px */
 h4 { font-size: 1.07rem; }   /* 16px */
 
-/* Stare ds-*/brutal-*/linear-app reguly USUNIETE — zastapione przez t-* klasy w tasker-ds.css */
+/* Eyebrow — section label */
+.eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+/* DS v1 Card */
+.ds-card {
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-base);
+}
+.ds-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
+}
+
+/* DS v1 Buttons */
+.ds-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+  font-family: inherit;
+}
+.ds-btn:active { transform: scale(0.97); }
+.ds-btn-sm { padding: 6px 12px; font-size: 12px; border-radius: var(--radius-sm); }
+.ds-btn-md { padding: 8px 16px; font-size: 13px; border-radius: var(--radius-sm); }
+.ds-btn-primary { background: var(--accent); color: #fff; }
+.ds-btn-primary:hover { background: var(--accent-hover); box-shadow: var(--shadow-sm); }
+.ds-btn-secondary { background: var(--bg-surface); color: var(--text-primary); border: 1.5px solid var(--border-default); }
+.ds-btn-secondary:hover { background: var(--bg-surface-hover); border-color: var(--border-strong); }
+.ds-btn-ghost { background: transparent; color: var(--text-secondary); }
+.ds-btn-ghost:hover { background: var(--bg-surface-hover); color: var(--text-primary); }
+
+/* DS v1 Badge */
+.ds-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 9999px;
+}
+
+/* DS v1 Input */
+.ds-input {
+  width: 100%;
+  padding: 9px 14px;
+  font-family: inherit;
+  font-size: 15px;
+  color: var(--text-primary);
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  outline: none;
+  transition: all var(--transition-fast);
+}
+.ds-input::placeholder { color: var(--text-tertiary); }
+.ds-input:hover { border-color: var(--border-strong); }
+.ds-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light); }
+
+/* Backward compat — stare brutal classes mapuja na nowe */
+.brutal-card { background: var(--bg-surface); border: 1.5px solid var(--border-default); border-radius: var(--radius-lg); }
+.brutal-btn { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: var(--bg-surface); border: 1.5px solid var(--border-default); border-radius: var(--radius-sm); font-weight: 700; cursor: pointer; }
+.brutal-btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* Stare .linear-app reguły usunięte — zastąpione przez t-* klasy w tasker-ds.css */
+
 /* NIGDY dark mode — blok .dark celowo usuniety. */
 
 @layer base {
