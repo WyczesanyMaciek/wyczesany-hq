@@ -623,3 +623,818 @@
 .t-search:hover {
   border-color: var(--border-default);
 }
+
+/* ---------- SIDEBAR BRAND ---------- */
+.t-sidebar-brand {
+  display: block;
+  padding: 14px 16px;
+  border-bottom: 1.5px solid var(--border-default);
+  text-decoration: none;
+  color: inherit;
+}
+
+.t-sidebar-brand-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-tertiary);
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.t-sidebar-brand-title {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* ---------- SIDEBAR FOOTER ---------- */
+.t-sidebar-footer {
+  border-top: 1.5px solid var(--border-default);
+  padding: 6px 0;
+}
+
+.t-sidebar-footer-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition: all 120ms ease;
+}
+
+.t-sidebar-footer-link:hover {
+  color: var(--text-primary);
+  background: var(--bg-sidebar-hover);
+}
+
+.t-sidebar-footer-link--active {
+  color: var(--accent);
+  background: var(--accent-light);
+}
+
+.t-sidebar-build {
+  padding: 6px 16px 4px;
+  font-size: 11px;
+  color: var(--text-tertiary);
+  font-family: ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.t-sidebar-build b {
+  color: #64748b;
+}
+
+/* ---------- SEARCH KBD ---------- */
+.t-search-kbd {
+  font-size: 10px;
+  padding: 1px 4px;
+  border: 1px solid var(--border-default);
+  border-radius: 3px;
+  background: var(--bg-muted);
+  color: var(--text-tertiary);
+}
+
+/* ---------- NAV LIST ---------- */
+.t-nav-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* ---------- SIDEBAR NAV ---------- */
+.t-sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 0;
+}
+
+/* ---------- SIDEBAR USER BORDER ---------- */
+.t-sidebar-user-border {
+  border-top: 1.5px solid var(--border-default);
+}
+
+/* ---------- CHEVRON TOGGLE ---------- */
+.t-chevron-btn {
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-tertiary);
+  padding: 0;
+}
+
+.t-chevron-btn--has-children {
+  cursor: pointer;
+}
+
+/* ---------- SIDEBAR ITEM LINK ---------- */
+.t-sidebar-item-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+  text-decoration: none;
+  color: inherit;
+}
+
+.t-context-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.t-sidebar-item-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---------- CHIP ROW (ideas/problems) ---------- */
+.t-chip-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 120ms ease;
+  margin-bottom: 2px;
+}
+
+.t-chip-row:hover {
+  background: var(--bg-surface-hover);
+}
+
+.t-chip-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.t-chip-content {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.t-chip-meta {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+.t-chip-actions {
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.t-chip-row:hover .t-chip-actions {
+  opacity: 1;
+}
+
+.t-chip-action-btn {
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-default);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 120ms ease;
+}
+
+.t-chip-action-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ---------- TASK LIST WRAPPER ---------- */
+.t-task-list-wrapper {
+  margin: 0 12px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  padding: 4px 6px;
+}
+
+/* ---------- DROP ZONE (empty state) ---------- */
+.t-drop-zone {
+  padding: 8px 10px;
+  color: var(--text-tertiary);
+  font-size: 12.5px;
+  border-radius: 4px;
+  border: 1px dashed transparent;
+  background: transparent;
+  transition: all 150ms;
+  min-height: 32px;
+}
+
+.t-drop-zone--active {
+  border-color: var(--accent);
+  background: var(--accent-subtle);
+}
+
+/* ---------- EMPTY STATE ---------- */
+.t-empty-state {
+  margin: 6px 12px;
+  color: var(--text-tertiary);
+  font-size: 12.5px;
+}
+
+/* ---------- COLLAPSE TOGGLE ---------- */
+.t-collapse-icon {
+  color: var(--text-tertiary);
+  font-size: 11px;
+  width: 14px;
+  text-align: center;
+}
+
+/* ---------- PROJECT TASKS CONTAINER ---------- */
+.t-project-tasks {
+  border-top: 1px solid var(--border-subtle);
+  padding: 4px 8px 8px;
+}
+
+/* ---------- PROJECT GRIP ---------- */
+.t-project-grip {
+  cursor: grab;
+  display: flex;
+  align-items: center;
+  color: var(--text-tertiary);
+}
+
+.t-project-grip--hidden {
+  opacity: 0;
+  width: 14px;
+}
+
+/* ---------- PROJECT META ROW ---------- */
+.t-project-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* ---------- PROJECT NAME LINK ---------- */
+.t-project-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.t-project-name:hover {
+  text-decoration: underline;
+}
+
+/* ---------- INLINE FORM ---------- */
+.t-inline-form {
+  padding: 6px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.t-inline-input {
+  font: inherit;
+  padding: 6px 10px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface);
+  outline: none;
+  width: 100%;
+}
+
+.t-inline-hint {
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+.t-inline-error {
+  color: var(--status-danger);
+  font-size: 12px;
+}
+
+/* ---------- PANEL STATUS CHIPS ---------- */
+.t-panel-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.t-panel-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 9999px;
+}
+
+.t-panel-chip-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+
+/* ---------- PANEL ACTIONS ---------- */
+.t-panel-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* ---------- PANEL EDIT INPUT ---------- */
+.t-panel-edit-input {
+  font: inherit;
+  padding: 2px 6px;
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  background: var(--bg-surface);
+  outline: none;
+}
+
+.t-panel-edit-input--title {
+  width: 100%;
+  font-size: 18px;
+  font-weight: 800;
+  padding: 4px 8px;
+  border-width: 1.5px;
+  border-radius: var(--radius-sm);
+}
+
+.t-panel-edit-input--sm {
+  max-width: 160px;
+}
+
+/* ---------- PANEL DROPDOWN ---------- */
+.t-panel-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lg);
+  min-width: 180px;
+  max-height: 240px;
+  overflow: auto;
+  z-index: 10;
+}
+
+.t-panel-dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 6px 10px;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+
+.t-panel-dropdown-item:hover {
+  background: var(--bg-surface-hover);
+}
+
+/* ---------- PANEL NOTES TEXTAREA ---------- */
+.t-panel-notes {
+  width: 100%;
+  min-height: 60px;
+  font: inherit;
+  font-size: 13px;
+  padding: 10px 20px;
+  border: none;
+  background: transparent;
+  resize: vertical;
+  outline: none;
+  color: var(--text-primary);
+}
+
+/* ---------- PANEL FILE TILE ---------- */
+.t-panel-file-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 20px;
+}
+
+.t-panel-file-tile {
+  padding: 8px 12px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface);
+  cursor: pointer;
+  font-size: 12px;
+  text-align: center;
+  transition: all 120ms ease;
+}
+
+.t-panel-file-tile:hover {
+  border-color: var(--accent);
+}
+
+/* ---------- PANEL LINK ROW ---------- */
+.t-panel-link-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 20px;
+}
+
+.t-panel-link-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.t-panel-link {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0;
+  font-size: 13px;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.t-panel-link:hover {
+  text-decoration: underline;
+}
+
+.t-panel-link-host {
+  color: var(--text-tertiary);
+  font-size: 11px;
+}
+
+/* ---------- INLINE FORM (panel/notes/links) ---------- */
+.t-panel-inline-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  background: var(--bg-muted);
+}
+
+.t-panel-inline-form--att {
+  margin-top: 8px;
+  padding: 8px;
+  gap: 6px;
+}
+
+.t-panel-form-actions {
+  display: flex;
+  gap: 6px;
+}
+
+/* ---------- SMALL BUTTON (remove link, etc.) ---------- */
+.t-btn-sm {
+  padding: 2px 6px;
+  border: 1px solid var(--border-default);
+  background: var(--bg-surface);
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--text-tertiary);
+  font: inherit;
+  font-size: 11px;
+  transition: all 120ms ease;
+}
+
+.t-btn-sm:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ---------- ADD LINK BUTTON ---------- */
+.t-btn-add-text {
+  background: transparent;
+  border: 0;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  text-align: left;
+  padding: 4px 0;
+  color: var(--text-tertiary);
+  transition: color 120ms ease;
+}
+
+.t-btn-add-text:hover {
+  color: var(--accent);
+}
+
+/* ---------- SECTION (lsec replacement) ---------- */
+/* Already have .t-section, but add padding for project-view sections */
+.t-section--padded {
+  padding: 0 16px;
+}
+
+/* ---------- NOTE CARD ---------- */
+.t-note-card {
+  padding: 10px 12px;
+  background: var(--bg-muted);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-default);
+  position: relative;
+}
+
+.t-note-card-text {
+  cursor: text;
+  white-space: pre-wrap;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.t-note-card-textarea {
+  width: 100%;
+  min-height: 60px;
+  font: inherit;
+  font-size: 13px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  resize: vertical;
+  outline: none;
+}
+
+.t-note-delete {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  padding: 2px 6px;
+  border: 1px solid var(--border-default);
+  background: var(--bg-surface);
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--text-tertiary);
+  font: inherit;
+  font-size: 11px;
+  opacity: 0.6;
+  transition: opacity 120ms ease;
+}
+
+.t-note-delete:hover {
+  opacity: 1;
+}
+
+/* ---------- PROJECT VIEW BAR ---------- */
+.t-project-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-bottom: 1.5px solid var(--border-default);
+  position: sticky;
+  top: 0;
+  background: var(--bg-surface);
+  z-index: 5;
+  font-size: 13px;
+}
+
+.t-project-bar-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-tertiary);
+  text-decoration: none;
+  font-size: 13px;
+}
+
+.t-project-bar-sep {
+  margin: 0 2px;
+  opacity: 0.4;
+}
+
+.t-project-bar-crumb {
+  color: var(--text-tertiary);
+  text-decoration: none;
+  font-size: 13px;
+}
+
+/* ---------- PROJECT VIEW HEADER ---------- */
+.t-project-view-header {
+  padding: 20px 24px 16px;
+}
+
+.t-project-view-title {
+  font-size: 22px;
+  font-weight: 800;
+  margin: 0 0 8px;
+  color: var(--text-primary);
+}
+
+.t-project-view-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0 0 12px;
+  line-height: 1.5;
+}
+
+.t-project-view-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 13px;
+}
+
+/* ---------- STATUS BUTTON ---------- */
+.t-status-btn {
+  padding: 3px 10px;
+  border-radius: 4px;
+  border: 1px solid var(--border-default);
+  font-weight: 600;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 120ms ease;
+}
+
+.t-status-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lg);
+  min-width: 140px;
+  z-index: 10;
+}
+
+.t-status-dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 6px 10px;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+
+.t-status-dropdown-item:hover {
+  background: var(--bg-surface-hover);
+}
+
+.t-status-dropdown-item--active {
+  background: var(--bg-surface-hover);
+  font-weight: 600;
+}
+
+/* ---------- CONTEXT PILL ---------- */
+.t-context-pill {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+/* ---------- MODAL ---------- */
+.t-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(15, 23, 42, 0.25);
+}
+
+.t-modal {
+  width: 100%;
+  max-width: 480px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  box-shadow: var(--shadow-xl);
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.t-modal-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.t-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.t-modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.t-modal-field-label {
+  color: var(--text-tertiary);
+  font-size: 12px;
+}
+
+.t-modal-field-row {
+  display: flex;
+  gap: 10px;
+}
+
+.t-modal-input {
+  font: inherit;
+  padding: 6px 10px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface);
+  outline: none;
+  transition: border-color 120ms ease;
+}
+
+.t-modal-input:focus {
+  border-color: var(--accent);
+}
+
+.t-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+/* ---------- APP LAYOUT ---------- */
+.t-app {
+  display: flex;
+  min-height: 100vh;
+}
+
+.t-main-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  min-height: 100vh;
+  flex: 1;
+}
+
+.t-main-content {
+  overflow: auto;
+  background: var(--bg-surface);
+}
+
+/* ---------- SPACER ---------- */
+.t-spacer { height: 40px; }
+.t-flex-spacer { flex: 1; }
+
+/* ---------- PLACEHOLDER ---------- */
+.t-placeholder {
+  padding: 16px;
+  color: var(--text-tertiary);
+  font-size: 13px;
+  font-style: italic;
+}
+
+/* ---------- EDIT INLINE (task title) ---------- */
+.t-edit-inline {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border: 1.5px solid var(--accent);
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface);
+  min-width: 0;
+  font-family: inherit;
+  outline: none;
+}
+
+/* ---------- PANEL TITLE EDITABLE ---------- */
+.t-panel-title--editable {
+  cursor: text;
+}
