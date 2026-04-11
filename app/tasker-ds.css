@@ -196,9 +196,9 @@
   grid-template-columns: 18px 8px 1fr 80px 60px 28px;
   gap: 0 10px;
   align-items: center;
-  padding: 8px 16px;
+  padding: 10px 16px;
   border: 1.5px solid transparent;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   transition: all 120ms ease;
   cursor: pointer;
   background: var(--bg-surface);
@@ -564,6 +564,8 @@
   display: flex;
   align-items: center;
   gap: 4px;
+  width: 100%;
+  text-align: left;
 }
 
 .t-add-task:hover,
@@ -616,7 +618,6 @@
   cursor: pointer;
   transition: all 120ms ease;
   font-family: inherit;
-  border: none;
   width: calc(100% - 16px);
 }
 
