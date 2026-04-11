@@ -44,15 +44,7 @@ export function TasksSection({
         <h3 className="t-section-title">Luźne taski</h3>
         <span className="t-section-counter">{looseTasks.length}</span>
       </div>
-      <div
-        style={{
-          margin: "0 12px",
-          border: "1px solid #e5e7eb",
-          borderRadius: 8,
-          background: "#fff",
-          padding: "4px 6px",
-        }}
-      >
+      <div className="t-task-list-wrapper">
         <SortableContext
           items={looseSortItems}
           strategy={verticalListSortingStrategy}
@@ -90,16 +82,7 @@ function LooseDropZone({ readOnly }: { readOnly: boolean }) {
   return (
     <div
       ref={setNodeRef}
-      style={{
-        padding: "8px 10px",
-        color: "#94a3b8",
-        fontSize: 12.5,
-        borderRadius: 4,
-        border: isOver ? "1px dashed var(--accent)" : "1px dashed transparent",
-        background: isOver ? "rgba(99,102,241,0.05)" : "transparent",
-        transition: "all 150ms",
-        minHeight: 32,
-      }}
+      className={`t-drop-zone${isOver ? " t-drop-zone--active" : ""}`}
     >
       {isOver ? "Upusc tutaj" : "Brak luznych taskow"}
     </div>

@@ -53,7 +53,7 @@ export function ProjectsSection({
         ) : null}
       </div>
       {projects.length === 0 ? (
-        <div style={{ margin: "6px 12px", color: "#94a3b8", fontSize: 12.5 }}>
+        <div className="t-empty-state">
           Brak projektów
         </div>
       ) : (

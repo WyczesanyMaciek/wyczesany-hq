@@ -51,9 +51,10 @@ export function ChipActions({
   );
 
   return (
-    <div className="actions" onClick={(e) => e.stopPropagation()}>
+    <div className="t-chip-actions" onClick={(e) => e.stopPropagation()}>
       <button
         type="button"
+        className="t-chip-action-btn"
         onClick={onDelete}
         disabled={pending}
         title="Wyrzuc"
@@ -62,6 +63,7 @@ export function ChipActions({
       </button>
       <button
         type="button"
+        className="t-chip-action-btn"
         onClick={onToTask}
         disabled={pending}
         title="Zrob z tego luzny task"
@@ -70,6 +72,7 @@ export function ChipActions({
       </button>
       <button
         type="button"
+        className="t-chip-action-btn"
         onClick={onToProject}
         disabled={pending}
         title="Rozpisz na projekt"

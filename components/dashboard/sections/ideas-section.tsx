@@ -34,11 +34,11 @@ export function IdeasSection({
       <motion.div variants={listContainer} initial="hidden" animate="show">
         {ideas.map((i) => (
           <motion.div key={i.id} variants={listItem}>
-            <div className="chip-row">
-              <span className="icn i">💡</span>
-              <div className="txt">
+            <div className="t-chip-row">
+              <span className="t-chip-icon">💡</span>
+              <div className="t-chip-content">
                 {i.content}
-                <div className="meta">{i.context.name}</div>
+                <div className="t-chip-meta">{i.context.name}</div>
               </div>
               {!readOnly && <ChipActions kind="idea" id={i.id} />}
             </div>
