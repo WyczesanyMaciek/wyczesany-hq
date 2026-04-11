@@ -47,9 +47,19 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
   const [, startTransition] = useTransition();
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
-  const [filterStatus, setFilterStatus] = useState<"all" | "todo" | "done">("all");
+  const [filterStatuses, setFilterStatuses] = useState<Set<string>>(new Set());
+  const [filterPriorities, setFilterPriorities] = useState<Set<number>>(new Set());
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const currentId = data.current?.id ?? null;
+
+  const toggleFilter = <T,>(set: Set<T>, val: T, setter: (s: Set<T>) => void) => {
+    const next = new Set(set);
+    if (next.has(val)) next.delete(val); else next.add(val);
+    setter(next);
+  };
+
+  const hasActiveFilters = filterStatuses.size > 0 || filterPriorities.size > 0;
+  const clearFilters = () => { setFilterStatuses(new Set()); setFilterPriorities(new Set()); };
 
   // Optimistic state dla DnD — synchronizowany z `data` na zmiany servera
   const [projects, setProjects] = useState(data.projects);
@@ -59,12 +69,17 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
     setLooseTasks(data.looseTasks);
   }, [data]);
 
-  // Filtrowanie tasków po statusie
-  const filterTask = useCallback((t: { done: boolean }) => {
-    if (filterStatus === "all") return true;
-    if (filterStatus === "done") return t.done;
-    return !t.done; // "todo"
-  }, [filterStatus]);
+  // Filtrowanie tasków po statusie i priorytecie
+  const filterTask = useCallback((t: { done: boolean; priority: number }) => {
+    if (filterStatuses.size > 0) {
+      const status = t.done ? "done" : "todo";
+      if (!filterStatuses.has(status)) return false;
+    }
+    if (filterPriorities.size > 0) {
+      if (!filterPriorities.has(t.priority)) return false;
+    }
+    return true;
+  }, [filterStatuses, filterPriorities]);
 
   const filteredProjects = useMemo(() =>
     projects.map(p => ({ ...p, tasks: p.tasks.filter(filterTask) })),
@@ -225,19 +240,35 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
               </span>
             </span>
             <div className="t-header-actions">
+              {hasActiveFilters && (
+                <button className="t-btn-ghost" onClick={clearFilters} style={{ fontSize: 12 }}>
+                  ✕ Wyczyść
+                </button>
+              )}
               <div style={{ position: "relative" }}>
                 <button className="t-btn-secondary" onClick={() => setShowFilterMenu(v => !v)}>
-                  Filtry{filterStatus !== "all" ? ` · ${filterStatus === "todo" ? "Do zrobienia" : "Zrobione"}` : ""}
+                  Filtry{hasActiveFilters ? ` (${filterStatuses.size + filterPriorities.size})` : ""}
                 </button>
                 {showFilterMenu && (
-                  <div className="t-panel-dropdown" style={{ right: 0, left: "auto" }}>
-                    {(["all", "todo", "done"] as const).map(s => (
+                  <div className="t-panel-dropdown" style={{ right: 0, left: "auto", minWidth: 200 }}>
+                    <div className="t-filter-group-label">Status</div>
+                    {([["todo", "Do zrobienia"], ["done", "Zrobione"]] as const).map(([val, label]) => (
                       <button
-                        key={s}
-                        className={`t-panel-dropdown-item${filterStatus === s ? " t-panel-dropdown-item--active" : ""}`}
-                        onClick={() => { setFilterStatus(s); setShowFilterMenu(false); }}
+                        key={val}
+                        className={`t-panel-dropdown-item${filterStatuses.has(val) ? " t-panel-dropdown-item--active" : ""}`}
+                        onClick={() => toggleFilter(filterStatuses, val, setFilterStatuses)}
                       >
-                        {s === "all" ? "Wszystkie" : s === "todo" ? "Do zrobienia" : "Zrobione"}
+                        {filterStatuses.has(val) ? "☑" : "☐"} {label}
+                      </button>
+                    ))}
+                    <div className="t-filter-group-label">Priorytet</div>
+                    {([[3, "Pilny"], [2, "Wysoki"], [1, "Średni"], [0, "Niski"]] as const).map(([val, label]) => (
+                      <button
+                        key={val}
+                        className={`t-panel-dropdown-item${filterPriorities.has(val) ? " t-panel-dropdown-item--active" : ""}`}
+                        onClick={() => toggleFilter(filterPriorities, val, setFilterPriorities)}
+                      >
+                        {filterPriorities.has(val) ? "☑" : "☐"} {label}
                       </button>
                     ))}
                   </div>
