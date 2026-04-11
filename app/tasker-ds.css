@@ -1439,3 +1439,222 @@
 .t-panel-title--editable {
   cursor: text;
 }
+
+/* ---------- QUICK ADD MODAL ---------- */
+.t-quickadd-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 15vh;
+  background: rgba(31, 31, 46, 0.15);
+  backdrop-filter: blur(2px);
+}
+
+.t-quickadd {
+  width: 100%;
+  max-width: 520px;
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;
+}
+
+.t-quickadd-input {
+  width: 100%;
+  padding: 16px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: inherit;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text-primary);
+}
+
+.t-quickadd-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.t-quickadd-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 20px 16px;
+  align-items: center;
+}
+
+.t-quickadd-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--border-default);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 120ms ease;
+}
+
+.t-quickadd-chip:hover {
+  border-color: var(--border-strong);
+}
+
+.t-quickadd-chip--active {
+  background: var(--accent-light);
+  color: var(--accent);
+  border-color: transparent;
+}
+
+.t-quickadd-select {
+  font: inherit;
+  font-size: 13px;
+  padding: 4px 8px;
+  border: 1.5px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  outline: none;
+  cursor: pointer;
+  transition: border-color 120ms ease;
+}
+
+.t-quickadd-select:focus {
+  border-color: var(--accent);
+}
+
+.t-quickadd-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 12px 20px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.t-quickadd-hint {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-right: auto;
+}
+
+.t-quickadd-sep {
+  width: 1px;
+  height: 16px;
+  background: var(--border-default);
+  margin: 0 4px;
+}
+
+/* ---------- SUBTASK LIST ---------- */
+.t-subtask-list {
+  padding: 0;
+}
+
+.t-subtask-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 20px;
+  transition: background 120ms ease;
+}
+
+.t-subtask-item:hover {
+  background: var(--bg-surface-hover);
+}
+
+.t-subtask-checkbox {
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: transparent;
+  flex-shrink: 0;
+  padding: 0;
+  transition: all 120ms ease;
+}
+
+.t-subtask-checkbox--done {
+  background: var(--status-success);
+  border-color: var(--status-success);
+}
+
+.t-subtask-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  flex: 1;
+  min-width: 0;
+}
+
+.t-subtask-title--done {
+  text-decoration: line-through;
+  color: var(--text-tertiary);
+}
+
+.t-subtask-delete {
+  opacity: 0;
+  padding: 2px;
+  border: none;
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 120ms ease;
+}
+
+.t-subtask-item:hover .t-subtask-delete {
+  opacity: 1;
+}
+
+.t-subtask-delete:hover {
+  color: var(--status-danger);
+}
+
+.t-subtask-add {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  transition: all 120ms ease;
+}
+
+.t-subtask-add:hover {
+  background: var(--accent-subtle);
+}
+
+.t-subtask-input {
+  flex: 1;
+  font: inherit;
+  font-size: 13px;
+  padding: 2px 6px;
+  border: 1.5px solid var(--accent);
+  border-radius: 4px;
+  background: var(--bg-surface);
+  outline: none;
+  min-width: 0;
+}
+
+.t-subtask-progress {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  margin-left: auto;
+}

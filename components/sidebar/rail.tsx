@@ -4,18 +4,20 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, FolderOpen, CheckSquare, Search, Settings } from "lucide-react";
-import { useOpenSearch } from "@/components/app-shell";
+import { Home, FolderOpen, CheckSquare, Search, Settings, Plus } from "lucide-react";
+import { useOpenSearch, useOpenQuickAdd } from "@/components/app-shell";
 
 export function Rail() {
   const pathname = usePathname();
   const onSearch = useOpenSearch();
+  const onQuickAdd = useOpenQuickAdd();
 
   return (
     <div className="t-rail">
       <RailIcon href="/" active={pathname === "/"} icon={<Home size={18} />} label="Dashboard" />
       <RailIcon href="/c" active={pathname.startsWith("/c/")} icon={<FolderOpen size={18} />} label="Konteksty" />
       <RailIcon href="/tasks" active={pathname === "/tasks"} icon={<CheckSquare size={18} />} label="Moje zadania" />
+      <RailButton onClick={onQuickAdd ?? undefined} icon={<Plus size={18} />} label="Dodaj (N)" />
       <RailButton onClick={onSearch ?? undefined} icon={<Search size={18} />} label="Szukaj (/)" />
 
       <div className="t-flex-spacer" />
