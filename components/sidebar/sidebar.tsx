@@ -8,7 +8,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ChevronRight, Search, Settings, Terminal, Home, FolderOpen, CheckSquare, Plus } from "lucide-react";
+import { ChevronRight, Search, Settings, Terminal, Home, FolderOpen, CheckSquare, Plus, Scissors } from "lucide-react";
 import type { ContextNode } from "@/lib/queries/contexts";
 import { springSnappy } from "@/lib/motion";
 import { useOpenSearch, useOpenQuickAdd } from "@/components/app-shell";
@@ -92,6 +92,9 @@ export function Sidebar({
         <button onClick={onSearch ?? undefined} title="Szukaj (/)" className="t-sidebar-nav-icon">
           <Search size={16} />
         </button>
+        <Link href="/tools/hair-simulator" title="Symulator cięcia" className={`t-sidebar-nav-icon${pathname.startsWith("/tools/hair-simulator") ? " t-sidebar-nav-icon--active" : ""}`}>
+          <Scissors size={16} />
+        </Link>
         <Link href="/settings" title="Ustawienia" className={`t-sidebar-nav-icon${pathname.startsWith("/settings") ? " t-sidebar-nav-icon--active" : ""}`}>
           <Settings size={16} />
         </Link>
