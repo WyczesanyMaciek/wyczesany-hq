@@ -47,6 +47,8 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
   const [, startTransition] = useTransition();
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+  const [filterStatus, setFilterStatus] = useState<"all" | "todo" | "done">("all");
+  const [showFilterMenu, setShowFilterMenu] = useState(false);
   const currentId = data.current?.id ?? null;
 
   // Optimistic state dla DnD — synchronizowany z `data` na zmiany servera
@@ -56,6 +58,19 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
     setProjects(data.projects);
     setLooseTasks(data.looseTasks);
   }, [data]);
+
+  // Filtrowanie tasków po statusie
+  const filterTask = useCallback((t: { done: boolean }) => {
+    if (filterStatus === "all") return true;
+    if (filterStatus === "done") return t.done;
+    return !t.done; // "todo"
+  }, [filterStatus]);
+
+  const filteredProjects = useMemo(() =>
+    projects.map(p => ({ ...p, tasks: p.tasks.filter(filterTask) })),
+    [projects, filterTask]
+  );
+  const filteredLoose = useMemo(() => looseTasks.filter(filterTask), [looseTasks, filterTask]);
 
   const toggleCollapse = (id: string) => {
     setCollapsed((prev) => {
@@ -210,7 +225,24 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
               </span>
             </span>
             <div className="t-header-actions">
-              <button className="t-btn-secondary">Filtry</button>
+              <div style={{ position: "relative" }}>
+                <button className="t-btn-secondary" onClick={() => setShowFilterMenu(v => !v)}>
+                  Filtry{filterStatus !== "all" ? ` · ${filterStatus === "todo" ? "Do zrobienia" : "Zrobione"}` : ""}
+                </button>
+                {showFilterMenu && (
+                  <div className="t-panel-dropdown" style={{ right: 0, left: "auto" }}>
+                    {(["all", "todo", "done"] as const).map(s => (
+                      <button
+                        key={s}
+                        className={`t-panel-dropdown-item${filterStatus === s ? " t-panel-dropdown-item--active" : ""}`}
+                        onClick={() => { setFilterStatus(s); setShowFilterMenu(false); }}
+                      >
+                        {s === "all" ? "Wszystkie" : s === "todo" ? "Do zrobienia" : "Zrobione"}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
               {data.current ? (
                 <LinearNewProjectButton
                   contextId={data.current.id}
@@ -221,7 +253,7 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
           </div>
 
           <ProjectsSection
-            projects={projects}
+            projects={filteredProjects}
             selectedTaskId={selectedTaskId}
             onSelectTask={setSelectedTaskId}
             collapsed={collapsed}
@@ -231,7 +263,7 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
           />
 
           <TasksSection
-            looseTasks={looseTasks}
+            looseTasks={filteredLoose}
             selectedTaskId={selectedTaskId}
             onSelectTask={setSelectedTaskId}
             contextId={currentId}
