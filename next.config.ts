@@ -1,15 +1,14 @@
 import type { NextConfig } from "next";
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { execSync } from "node:child_process";
 
 // Wyczesany HQ — build info.
-// Numer buildu z pliku BUILD_NUMBER (inkrementowany przy commitach).
-// Format w UI: "Build070 · 15:48"
+// Numer buildu = liczba commitow na main. Automatycznie rosnie.
+// Format w UI: "Build #095 · 17:42"
 
-function readBuildNumber(): string {
+function getBuildNumber(): string {
   try {
-    const raw = readFileSync(resolve(process.cwd(), "BUILD_NUMBER"), "utf-8").trim();
-    const num = parseInt(raw, 10);
+    const count = execSync("git rev-list --count HEAD", { encoding: "utf-8" }).trim();
+    const num = parseInt(count, 10);
     if (Number.isNaN(num)) return "000";
     return String(num).padStart(3, "0");
   } catch {
@@ -20,11 +19,12 @@ function readBuildNumber(): string {
 const buildTime = new Date().toLocaleTimeString("pl-PL", {
   hour: "2-digit",
   minute: "2-digit",
+  timeZone: "Europe/Warsaw",
 });
 
 const nextConfig: NextConfig = {
   env: {
-    NEXT_PUBLIC_BUILD_NUMBER: readBuildNumber(),
+    NEXT_PUBLIC_BUILD_NUMBER: getBuildNumber(),
     NEXT_PUBLIC_BUILD_TIME: buildTime,
   },
 };

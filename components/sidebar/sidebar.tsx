@@ -111,7 +111,7 @@ export function Sidebar({
           Logi
         </FooterLink>
         <div className="t-sidebar-build">
-          <b>Build {process.env.NEXT_PUBLIC_BUILD_NUMBER}</b>{" "}
+          <b>Build #{process.env.NEXT_PUBLIC_BUILD_NUMBER}</b>{" "}
           · {process.env.NEXT_PUBLIC_BUILD_TIME}
         </div>
       </div>
