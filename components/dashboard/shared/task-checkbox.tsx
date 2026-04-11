@@ -26,22 +26,8 @@ export function TaskCheckbox({
       type="button"
       onClick={onToggle}
       disabled={disabled}
-      style={{
-        width: size,
-        height: size,
-        borderRadius: 4,
-        border: done
-          ? "2px solid var(--status-success)"
-          : "2px solid var(--border-strong)",
-        background: done ? "var(--status-success)" : "var(--bg-surface)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        cursor: disabled ? "default" : "pointer",
-        flexShrink: 0,
-        padding: 0,
-        transition: "all 120ms ease",
-      }}
+      className={`t-task-checkbox${done ? " t-task-checkbox--done" : ""}`}
+      style={{ width: size, height: size }}
       role="checkbox"
       aria-checked={done}
       aria-label={done ? "Cofnij zakonczenie" : "Oznacz jako zrobione"}
