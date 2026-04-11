@@ -1,128 +1,101 @@
-# Inwentaryzacja warstwy wizualnej — AFTER
+# Inwentaryzacja — stan po mega-prompt
 
-## Podsumowanie refaktoru
+## Metryki
 
-| Metryka | BEFORE | AFTER |
-|---------|--------|-------|
-| Inline styles total | ~190 | ~61 |
-| Stare klasy (lsec, chip-row, etc.) | 35+ | 0 |
-| Unikalne klasy t-* | ~20 (czesciowe) | 80+ (kompletne) |
-| Pliki z zerowymi inline styles | 4 | 10 |
+| Metryka | Phase 2 (before) | Mega-prompt (after) |
+|---------|:-:|:-:|
+| Inline styles | ~61 | ~66 (nowe komponenty) |
+| Stare klasy (lsec, etc.) | 0 | 0 |
+| Unikalne klasy t-* w CSS | ~100 | 214 |
+| MCP tools | 10 | 18 |
+| Prisma models | 11 | 12 (+Subtask) |
+| Server actions | ~25 | ~40 |
+| Queries | 4 | 7 |
 
-## Inline styles — stan po refaktorze
+## Nowe komponenty
 
-Wszystkie pozostale inline styles to **dynamiczne wartosci** (kolor kontekstu, width postep,
-opacity DnD, position relative, minHeight, resize, flex). Nie da sie ich wyniesc do CSS.
+| Komponent | Plik | Opis |
+|-----------|------|------|
+| QuickAddModal | `components/dashboard/quick-add-modal.tsx` | N shortcut, 4 typy, kontekst/projekt select |
+| SubtaskList | `components/dashboard/shared/subtask-list.tsx` | Checklista krokow w panelu bocznym |
 
-| Plik | Inline | Powod |
-|------|:---:|-------|
-| search-dialog.tsx | 16 | Nie w scope refaktoru (shadcn) |
-| project-view.tsx | 14 | Dynamic colors, position, opacity, flex, minHeight |
-| task-detail-panel.tsx | 10 | Dynamic bg/color na chipach statusu |
-| sidebar.tsx | 5 | paddingLeft depth, overflow, flex |
-| user-menu.tsx | 4 | Nie w scope (drobny komponent) |
-| task-checkbox.tsx | 3 | Dynamic width/height (compact mode), lineHeight |
-| project-card.tsx | 3 | Dynamic progress width, context color, flex |
-| linear-new-project.tsx | 3 | flex, resize |
-| linear-dashboard.tsx | 2 | marginLeft auto, dynamic color |
-| task-row.tsx | 1 | DnD transform/transition/opacity |
+## Nowe server actions (Etap 2)
 
-## Pliki z zerowymi inline styles
+- `addSubtask`, `toggleSubtask`, `deleteSubtask`, `updateSubtaskTitle`, `reorderSubtasks`
+- `updateIdea` (content, description)
+- `updateProblem` (content, description, priority)
+- `archiveContext`, `unarchiveContext`
 
-- rail.tsx
-- linear-add-task.tsx
-- linear-add-item.tsx
-- chip-actions.tsx
-- tasks-section.tsx
-- projects-section.tsx
-- ideas-section.tsx
-- problems-section.tsx
-- dialog.tsx
-- button.tsx
+## Nowe queries (Etap 2)
 
-## Kompletna mapa klas t-*
+- `getOverdueTasks()` — deadline <= today, not done
+- `getMyTasks(assignee?)` — pogrupowane po kontekscie
+- `getUrgentProblems()` — priority >= 2
 
-### Layout
-- `.t-app` `.t-main-grid` `.t-main-content` `.t-spacer` `.t-flex-spacer`
+## Nowe MCP tools (Etap 9)
 
-### Rail
-- `.t-rail` `.t-rail-icon` `.t-rail-icon--active`
+| Tool | Typ | Opis |
+|------|-----|------|
+| get_overdue | READ | Przeterminowane taski |
+| get_urgent_problems | READ | Problemy pilne (prio >= 2) |
+| search | READ | Full-text po taskach/projektach/ideach/problemach |
+| get_project | READ | Pelne szczegoly projektu z subtaskami |
+| update_task | WRITE | Zmiana title/priority/deadline/assignee/notes/done |
+| add_subtask | WRITE | Dodaj krok do taska |
+| toggle_subtask | WRITE | Przelacz status subtasku |
+| convert_idea | WRITE | Konwertuj pomysl na task/projekt |
 
-### Sidebar
-- `.t-sidebar` `.t-sidebar-brand` `.t-sidebar-brand-label` `.t-sidebar-brand-title`
-- `.t-sidebar-section` `.t-sidebar-item` `.t-sidebar-item--active` `.t-sidebar-item-count`
-- `.t-sidebar-item-link` `.t-sidebar-item-text` `.t-sidebar-nav` `.t-sidebar-user-border`
-- `.t-sidebar-footer` `.t-sidebar-footer-link` `.t-sidebar-footer-link--active` `.t-sidebar-build`
-- `.t-search` `.t-search-kbd` `.t-nav-list` `.t-chevron-btn` `.t-chevron-btn--has-children`
-- `.t-context-dot`
+## Prisma schema changes
 
-### Content
-- `.t-content` `.t-content-header` `.t-breadcrumb`
+- **Context:** +icon (String?), +description (String?), +archived (Boolean)
+- **Idea:** +description (String?)
+- **Problem:** +description (String?), +priority (Int, 0-3)
+- **Task:** +subtasks relation
+- **Subtask:** nowy model (id, title, done, order, taskId)
 
-### Section
-- `.t-section` `.t-section--padded` `.t-section-header` `.t-section-title`
-- `.t-section-counter` `.t-section-action`
+## CSS nowe klasy
 
-### Task Row
-- `.t-task-row` `.t-task-row--done` `.t-task-row--selected`
-- `.t-task-checkbox` `.t-task-checkbox--done`
-- `.t-priority-dot` `.t-priority-dot--critical/--high/--medium/--low`
-- `.t-task-title` `.t-task-title--done`
-- `.t-task-date` `.t-task-date--overdue`
-- `.t-avatar` `.t-edit-inline`
+### Quick Add
+t-quickadd-backdrop, t-quickadd, t-quickadd-input, t-quickadd-options,
+t-quickadd-chip, t-quickadd-chip--active, t-quickadd-select, t-quickadd-footer,
+t-quickadd-hint, t-quickadd-sep
 
-### Badge
-- `.t-badge` `.t-badge--todo/--progress/--blocked/--done` `.t-badge-dot`
+### Subtask
+t-subtask-list, t-subtask-item, t-subtask-checkbox, t-subtask-checkbox--done,
+t-subtask-title, t-subtask-title--done, t-subtask-delete, t-subtask-add,
+t-subtask-input, t-subtask-progress
 
-### Project Card
-- `.t-project-card` `.t-project-header` `.t-project-name` `.t-project-meta`
-- `.t-project-grip` `.t-project-grip--hidden` `.t-project-tasks`
-- `.t-context-badge` `.t-progress-bar` `.t-progress-fill` `.t-progress-text`
-- `.t-collapse-icon` `.t-context-pill`
+### Global Dashboard
+t-global-dashboard, t-dashboard-section, t-dashboard-section-title,
+t-counter-bar, t-counter-card, t-counter-value, t-counter-label,
+t-context-grid, t-context-card, t-context-card-icon, t-context-card-body,
+t-context-card-name, t-context-card-count, t-overdue-badge
 
-### Panel
-- `.t-panel` `.t-panel-tabs` `.t-panel-tab` `.t-panel-tab--active`
-- `.t-panel-header` `.t-panel-title` `.t-panel-title--editable` `.t-panel-breadcrumb`
-- `.t-field-row` `.t-field-label` `.t-field-value`
-- `.t-panel-section` `.t-panel-section-header`
-- `.t-panel-chips` `.t-panel-chip` `.t-panel-chip-dot`
-- `.t-panel-actions` `.t-panel-edit-input` `.t-panel-edit-input--title/--sm`
-- `.t-panel-dropdown` `.t-panel-dropdown-item`
-- `.t-panel-notes` `.t-panel-file-grid` `.t-panel-file-tile`
-- `.t-panel-link-list` `.t-panel-link-row` `.t-panel-link` `.t-panel-link-host`
-- `.t-panel-inline-form` `.t-panel-inline-form--att` `.t-panel-form-actions`
+### Empty states / Skeletons
+t-empty-state--centered, t-empty-icon, t-empty-text,
+t-skeleton, t-skeleton-row, t-skeleton-card
 
-### Buttons
-- `.t-btn-primary` `.t-btn-secondary` `.t-btn-ghost` `.t-btn-sm` `.t-btn-add-text`
+### Animacje
+t-btn-primary:active, t-btn-secondary:active, t-btn-ghost:active (scale 0.97)
 
-### Inline Add
-- `.t-add-task` `.t-add-item` `.t-inline-form` `.t-inline-input` `.t-inline-hint` `.t-inline-error`
+## Changelog mega-prompt
 
-### Chips (ideas/problems)
-- `.t-chip-row` `.t-chip-icon` `.t-chip-content` `.t-chip-meta`
-- `.t-chip-actions` `.t-chip-action-btn`
+### Dodane (features)
+1. **Prisma: Subtask model** + nowe pola (icon, description, priority, archived)
+2. **Server actions:** subtasks CRUD, updateIdea/Problem, archiveContext
+3. **Queries:** getOverdueTasks, getMyTasks, getUrgentProblems
+4. **Quick Add Modal** z klawiszem N, 4 typy, kontekst/projekt select
+5. **Subtask Checklist** w panelu bocznym (toggle, edit, add, delete)
+6. **Button active feedback** (scale 0.97)
+7. **Global Dashboard** z sekcjami: Dzisiaj, Liczniki, Problemy pilne, Konteksty
+8. **MCP Server:** 8 nowych tools (total: 18)
+9. **Empty states + loading skeletons** (CSS + project section)
+10. **Rail:** Plus button dla Quick Add
 
-### Ideas/Problems
-- `.t-idea-row` `.t-problem-row`
-
-### Notes
-- `.t-note-card` `.t-note-card-text` `.t-note-card-textarea` `.t-note-delete`
-
-### Project View
-- `.t-project-bar` `.t-project-bar-back` `.t-project-bar-crumb` `.t-project-bar-sep`
-- `.t-project-view-header` `.t-project-view-title` `.t-project-view-desc` `.t-project-view-meta`
-- `.t-status-btn` `.t-status-dropdown` `.t-status-dropdown-item` `.t-status-dropdown-item--active`
-
-### Modal
-- `.t-modal-overlay` `.t-modal` `.t-modal-title` `.t-modal-body`
-- `.t-modal-field` `.t-modal-field-label` `.t-modal-field-row`
-- `.t-modal-input` `.t-modal-footer`
-
-### Misc
-- `.t-task-list-wrapper` `.t-drop-zone` `.t-drop-zone--active` `.t-empty-state`
-- `.t-placeholder`
-
-## Zrodla prawdy
-
-- **tasker-ds.css** — jedyny plik ze stylami komponentow
-- **globals.css** — tokeny (:root), @theme inline, @layer base, import tasker-ds.css
+### Wymaga dalszej pracy
+- Etap 5: Idea/Problem panel (rozbudowa panelu bocznego o typy)
+- Etap 7: Keyboard shortcuts hook (poza N i /, ktore juz dzialaja)
+- Etap 10: FilterBar z URL params
+- Etap 12: Settings page cleanup
+- Collapsible sections z Framer Motion
+- DnD na subtaskach
