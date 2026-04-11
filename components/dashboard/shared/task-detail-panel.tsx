@@ -425,9 +425,6 @@ export function TaskDetailPanel({
         </div>
       </div>
 
-      {/* Subtaski */}
-      <SubtaskList taskId={task.id} subtasks={task.subtasks} />
-
       {/* Notatki — ukryte jesli puste, z przyciskiem dodaj */}
       {task.notes ? (
         <>

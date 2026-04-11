@@ -241,7 +241,7 @@
 /* ---------- TASK ROW ---------- */
 .t-task-row {
   display: grid;
-  grid-template-columns: 18px 8px 1fr 80px 60px 28px;
+  grid-template-columns: 14px 18px 8px 1fr 80px 60px 28px;
   gap: 0 10px;
   align-items: center;
   padding: 10px 16px;
@@ -283,6 +283,86 @@
   background: transparent;
   flex-shrink: 0;
   padding: 0;
+}
+
+.t-subtask-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--text-tertiary);
+  font-family: inherit;
+}
+
+.t-subtask-toggle:hover {
+  color: var(--text-primary);
+}
+
+.t-inline-subtasks {
+  padding: 2px 0 6px 42px;
+}
+
+.t-inline-subtask {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.t-inline-subtask-tree {
+  color: var(--border-strong);
+  font-size: 11px;
+  width: 12px;
+  flex-shrink: 0;
+}
+
+.t-inline-subtask-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.t-inline-subtask-title--done {
+  text-decoration: line-through;
+  color: var(--text-tertiary);
+}
+
+.t-inline-subtask-add {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 0 0 18px;
+  font-family: inherit;
+}
+
+.t-inline-subtask-add:hover {
+  text-decoration: underline;
+}
+
+.t-inline-subtask-input {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-primary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  padding: 4px 8px;
+  margin-left: 18px;
+  margin-top: 4px;
+  width: calc(100% - 18px);
+  font-family: inherit;
+  outline: none;
+}
+
+.t-inline-subtask-input:focus {
+  border-color: var(--accent);
 }
 
 .t-task-row:hover .t-task-checkbox {
