@@ -7,6 +7,7 @@ export type ContextNode = {
   id: string;
   name: string;
   color: string;
+  icon: string | null;
   parentId: string | null;
   order: number;
   children: ContextNode[];
@@ -26,6 +27,7 @@ type Raw = {
   id: string;
   name: string;
   color: string;
+  icon: string | null;
   parentId: string | null;
   order: number;
   _count: {
@@ -66,6 +68,7 @@ export async function getContextTree(): Promise<ContextNode[]> {
       id: r.id,
       name: r.name,
       color: r.color,
+      icon: r.icon,
       parentId: r.parentId,
       order: r.order,
       children: [],

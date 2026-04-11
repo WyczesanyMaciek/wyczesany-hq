@@ -169,7 +169,11 @@ function ContextTreeNode({
           href={`/c/${node.id}`}
           className="t-sidebar-item-link"
         >
-          <span className="t-context-dot" style={{ background: node.color }} />
+          {node.icon ? (
+            <span className="t-sidebar-item-icon">{node.icon}</span>
+          ) : (
+            <span className="t-context-dot" style={{ background: node.color }} />
+          )}
           <span className="t-sidebar-item-text">
             {node.name}
           </span>
