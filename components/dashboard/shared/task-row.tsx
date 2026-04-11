@@ -112,12 +112,7 @@ export const TaskRow = memo(function TaskRow({
             if (e.key === "Enter") e.currentTarget.blur();
             else if (e.key === "Escape") setEditingName(false);
           }}
-          style={{
-            fontSize: 14, fontWeight: 600, padding: "2px 6px",
-            border: "1.5px solid var(--accent)", borderRadius: 6,
-            background: "var(--bg-surface)", minWidth: 0,
-            fontFamily: "inherit", outline: "none",
-          }}
+          className="t-edit-inline"
         />
       ) : (
         <span
