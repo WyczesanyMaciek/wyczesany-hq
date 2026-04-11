@@ -166,21 +166,21 @@ export const TaskRow = memo(function TaskRow({
           </span>
         )}
 
-        {/* 4: Status badge */}
+        {/* 4: Avatar (zaraz po tytule — kto odpowiada) */}
+        <div className="t-avatar">
+          {task.assigneeId ? task.assigneeId.slice(0, 2).toUpperCase() : ""}
+        </div>
+
+        {/* 5: Status badge */}
         <span className={badgeClass(task.done)}>
           <span className="t-badge-dot" />
           {task.done ? "Zrobione" : "Do zrobienia"}
         </span>
 
-        {/* 5: Date */}
+        {/* 6: Date */}
         <span className={`t-task-date${due?.late ? " t-task-date--overdue" : ""}`}>
           {due?.text ?? "—"}
         </span>
-
-        {/* 6: Avatar */}
-        <div className="t-avatar">
-          {task.assigneeId ? task.assigneeId.slice(0, 2).toUpperCase() : ""}
-        </div>
       </div>
 
       {/* Inline subtaski */}
