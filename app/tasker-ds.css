@@ -241,7 +241,7 @@
 /* ---------- TASK ROW ---------- */
 .t-task-row {
   display: grid;
-  grid-template-columns: 14px 18px 8px 1fr auto auto auto;
+  grid-template-columns: 14px 18px 8px minmax(120px, max-content) auto auto auto;
   gap: 0 8px;
   align-items: center;
   padding: 8px 16px;
