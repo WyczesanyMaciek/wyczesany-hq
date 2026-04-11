@@ -25,6 +25,7 @@ import {
   removeTaskAttachment,
 } from "@/app/(app)/c/[id]/actions";
 import { toDateInput, formatDue, formatDateLong, prioLabel } from "./format";
+import { SubtaskList } from "./subtask-list";
 
 export function TaskDetailPanel({
   task,
@@ -423,6 +424,9 @@ export function TaskDetailPanel({
           )}
         </div>
       </div>
+
+      {/* Subtaski */}
+      <SubtaskList taskId={task.id} subtasks={task.subtasks} />
 
       {/* Notatki — ukryte jesli puste, z przyciskiem dodaj */}
       {task.notes ? (
