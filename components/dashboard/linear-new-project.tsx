@@ -84,15 +84,7 @@ export function LinearNewProjectButton({
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="add"
-          style={{
-            background: "transparent",
-            border: 0,
-            font: "inherit",
-            cursor: "pointer",
-            color: "var(--accent)",
-            fontWeight: 600,
-          }}
+          className="t-section-action"
         >
           + dodaj projekt
         </button>
@@ -107,49 +99,13 @@ export function LinearNewProjectButton({
       )}
 
       {open ? (
-        <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            zIndex: 50,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: 24,
-            background: "rgba(15, 23, 42, 0.25)",
-          }}
-          onClick={close}
-        >
-          <div
-            style={{
-              width: "100%",
-              maxWidth: 480,
-              background: "#fff",
-              border: "1px solid var(--l-line)",
-              borderRadius: 10,
-              padding: 20,
-              boxShadow: "0 12px 40px rgba(0,0,0,0.15)",
-              fontFamily: "inherit",
-              fontSize: 13,
-              color: "var(--l-ink)",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div
-              style={{
-                fontSize: 15,
-                fontWeight: 600,
-                marginBottom: 16,
-              }}
-            >
-              Nowy projekt
-            </div>
+        <div className="t-modal-overlay" onClick={close}>
+          <div className="t-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="t-modal-title">Nowy projekt</div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                <span style={{ color: "var(--l-muted)", fontSize: 12 }}>
-                  Nazwa
-                </span>
+            <div className="t-modal-body">
+              <label className="t-modal-field">
+                <span className="t-modal-field-label">Nazwa</span>
                 <input
                   ref={nameRef}
                   type="text"
@@ -163,90 +119,42 @@ export function LinearNewProjectButton({
                   }}
                   placeholder="np. Remont Legnicka"
                   disabled={pending}
-                  style={{
-                    font: "inherit",
-                    padding: "6px 10px",
-                    border: "1px solid var(--l-line)",
-                    borderRadius: 6,
-                    background: "#fff",
-                    outline: "none",
-                  }}
+                  className="t-modal-input"
                 />
               </label>
 
-              <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                <span style={{ color: "var(--l-muted)", fontSize: 12 }}>
-                  Opis (opcjonalnie)
-                </span>
+              <label className="t-modal-field">
+                <span className="t-modal-field-label">Opis (opcjonalnie)</span>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="O co chodzi..."
                   rows={3}
                   disabled={pending}
-                  style={{
-                    font: "inherit",
-                    padding: "6px 10px",
-                    border: "1px solid var(--l-line)",
-                    borderRadius: 6,
-                    background: "#fff",
-                    resize: "vertical",
-                    outline: "none",
-                  }}
+                  className="t-modal-input"
+                  style={{ resize: "vertical" }}
                 />
               </label>
 
-              <div style={{ display: "flex", gap: 10 }}>
-                <label
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 4,
-                    flex: 1,
-                  }}
-                >
-                  <span style={{ color: "var(--l-muted)", fontSize: 12 }}>
-                    Deadline
-                  </span>
+              <div className="t-modal-field-row">
+                <label className="t-modal-field" style={{ flex: 1 }}>
+                  <span className="t-modal-field-label">Deadline</span>
                   <input
                     type="date"
                     value={deadline}
                     onChange={(e) => setDeadline(e.target.value)}
                     disabled={pending}
-                    style={{
-                      font: "inherit",
-                      padding: "6px 10px",
-                      border: "1px solid var(--l-line)",
-                      borderRadius: 6,
-                      background: "#fff",
-                      outline: "none",
-                    }}
+                    className="t-modal-input"
                   />
                 </label>
 
-                <label
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 4,
-                    flex: 1,
-                  }}
-                >
-                  <span style={{ color: "var(--l-muted)", fontSize: 12 }}>
-                    Status
-                  </span>
+                <label className="t-modal-field" style={{ flex: 1 }}>
+                  <span className="t-modal-field-label">Status</span>
                   <select
                     value={status}
                     onChange={(e) => setStatus(e.target.value)}
                     disabled={pending}
-                    style={{
-                      font: "inherit",
-                      padding: "6px 10px",
-                      border: "1px solid var(--l-line)",
-                      borderRadius: 6,
-                      background: "#fff",
-                      outline: "none",
-                    }}
+                    className="t-modal-input"
                   >
                     {STATUSES.map((s) => (
                       <option key={s.value} value={s.value}>
@@ -258,47 +166,24 @@ export function LinearNewProjectButton({
               </div>
 
               {error ? (
-                <div style={{ color: "#b91c1c", fontSize: 12 }}>{error}</div>
+                <div className="t-inline-error">{error}</div>
               ) : null}
             </div>
 
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "flex-end",
-                gap: 8,
-                marginTop: 18,
-              }}
-            >
+            <div className="t-modal-footer">
               <button
                 type="button"
+                className="t-btn-secondary"
                 onClick={close}
                 disabled={pending}
-                style={{
-                  font: "inherit",
-                  padding: "6px 12px",
-                  border: "1px solid var(--l-line)",
-                  background: "#fff",
-                  borderRadius: 6,
-                  cursor: "pointer",
-                }}
               >
                 Anuluj
               </button>
               <button
                 type="button"
+                className="t-btn-primary"
                 onClick={submit}
                 disabled={pending || !name.trim()}
-                style={{
-                  font: "inherit",
-                  padding: "6px 14px",
-                  border: 0,
-                  background: "var(--accent)",
-                  color: "#fff",
-                  borderRadius: 6,
-                  cursor: "pointer",
-                  fontWeight: 500,
-                }}
               >
                 {pending ? "Zapisuje..." : "Stworz projekt"}
               </button>
