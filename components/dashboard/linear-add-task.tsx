@@ -61,7 +61,6 @@ export function LinearAddTask(props: Props) {
           setTimeout(() => inputRef.current?.focus(), 0);
         }}
         className="t-add-task"
-        style={{ width: "100%", textAlign: "left" }}
       >
         {label}
       </button>
@@ -69,14 +68,7 @@ export function LinearAddTask(props: Props) {
   }
 
   return (
-    <div
-      style={{
-        padding: "6px 10px",
-        display: "flex",
-        flexDirection: "column",
-        gap: 4,
-      }}
-    >
+    <div className="t-inline-form">
       <input
         ref={inputRef}
         type="text"
@@ -97,22 +89,14 @@ export function LinearAddTask(props: Props) {
           }
         }}
         onBlur={() => {
-          // Gdy pusty -> zamknij; jesli cos wpisane i nie submitowane -> zostaw otwarte
           if (!title.trim()) close();
         }}
-        style={{
-          font: "inherit",
-          padding: "6px 10px",
-          border: "1px solid var(--accent)",
-          borderRadius: 6,
-          background: "#fff",
-          outline: "none",
-        }}
+        className="t-inline-input"
       />
       {error ? (
-        <div style={{ color: "#b91c1c", fontSize: 12 }}>{error}</div>
+        <div className="t-inline-error">{error}</div>
       ) : null}
-      <div style={{ fontSize: 11, color: "var(--l-muted)" }}>
+      <div className="t-inline-hint">
         Enter zapisze · Esc anuluje
       </div>
     </div>

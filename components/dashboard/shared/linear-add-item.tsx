@@ -68,15 +68,7 @@ export function LinearAddItem({
   }
 
   return (
-    <div
-      style={{
-        padding: "6px 0",
-        display: "flex",
-        flexDirection: "column",
-        gap: 4,
-        width: "100%",
-      }}
-    >
+    <div className="t-inline-form">
       <input
         ref={inputRef}
         type="text"
@@ -99,20 +91,12 @@ export function LinearAddItem({
         onBlur={() => {
           if (!content.trim()) close();
         }}
-        style={{
-          font: "inherit",
-          padding: "6px 10px",
-          border: "1px solid var(--accent)",
-          borderRadius: 6,
-          background: "#fff",
-          outline: "none",
-          width: "100%",
-        }}
+        className="t-inline-input"
       />
       {error ? (
-        <div style={{ color: "#b91c1c", fontSize: 12 }}>{error}</div>
+        <div className="t-inline-error">{error}</div>
       ) : null}
-      <div style={{ fontSize: 11, color: "var(--l-muted)" }}>
+      <div className="t-inline-hint">
         Enter zapisze · Esc anuluje
       </div>
     </div>
