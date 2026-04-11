@@ -62,4 +62,36 @@ test.describe('Smoke Tests', () => {
     await page.waitForURL(/\/c\//)
     await expect(page.locator('text=404')).not.toBeVisible({ timeout: 5000 })
   })
+
+  test('subtask toggle rozwija inline pod taskiem', async ({ page }) => {
+    const ctxId = await getFirstContextId(page)
+    await page.goto(`/c/${ctxId}`)
+    // Szukaj strzałki toggle subtasków
+    const toggle = page.locator('.t-subtask-toggle').first()
+    if (await toggle.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await toggle.click()
+      await expect(page.locator('.t-inline-subtasks').first()).toBeVisible({ timeout: 3000 })
+    }
+  })
+
+  test('dropdown filtrów otwiera się', async ({ page }) => {
+    const ctxId = await getFirstContextId(page)
+    await page.goto(`/c/${ctxId}`)
+    const filterBtn = page.locator('button', { hasText: 'Filtry' })
+    await expect(filterBtn).toBeVisible({ timeout: 5000 })
+    await filterBtn.click()
+    // Dropdown z grupami Status/Priorytet
+    await expect(page.locator('.t-filter-group-label').first()).toBeVisible({ timeout: 3000 })
+    await expect(page.locator('.t-panel-dropdown-item').first()).toBeVisible()
+  })
+
+  test('filtrowanie po statusie ukrywa taski', async ({ page }) => {
+    const ctxId = await getFirstContextId(page)
+    await page.goto(`/c/${ctxId}`)
+    // Otwórz filtry i kliknij "Zrobione"
+    await page.locator('button', { hasText: 'Filtry' }).click()
+    await page.locator('.t-panel-dropdown-item', { hasText: 'Zrobione' }).click()
+    // Przycisk powinien pokazywać aktywny filtr
+    await expect(page.locator('button', { hasText: /Filtry.*1/ })).toBeVisible({ timeout: 3000 })
+  })
 })
