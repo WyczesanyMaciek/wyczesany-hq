@@ -30,13 +30,22 @@ export function Sidebar({
   const onQuickAdd = useOpenQuickAdd();
   const activeId = pathname.startsWith("/c/") ? pathname.split("/")[2] : null;
 
-  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  // Default: wszystkie konteksty z dziecmi sa rozwinięte
+  const allWithChildren = new Set<string>();
+  const collectWithChildren = (nodes: ContextNode[]) => {
+    for (const n of nodes) {
+      if (n.children.length > 0) {
+        allWithChildren.add(n.id);
+        collectWithChildren(n.children);
+      }
+    }
+  };
+  collectWithChildren(tree);
+
+  const [expanded, setExpanded] = useState<Set<string>>(allWithChildren);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // Hydracja expanded state z localStorage — legit effect dla
-    // synchronizacji z zewnetrznym storage. Eslint reguly set-state-in-effect
-    // sa zbyt restrykcyjne dla tego use-case'u.
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       // eslint-disable-next-line react-hooks/set-state-in-effect
