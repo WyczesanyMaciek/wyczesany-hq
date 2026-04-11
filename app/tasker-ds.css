@@ -120,13 +120,21 @@
 .t-content-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 10px;
-  padding: 12px 20px;
-  border-bottom: 1.5px solid var(--border-default);
+  padding: 12px 24px;
+  border: 1.5px solid var(--border-default);
+  border-radius: var(--radius-md);
   position: sticky;
   top: 0;
   background: var(--bg-surface);
   z-index: 5;
+  margin-bottom: 16px;
+}
+
+.t-header-actions {
+  display: flex;
+  gap: 8px;
 }
 
 .t-breadcrumb {
@@ -209,6 +217,7 @@
   background: var(--bg-surface-hover);
   border-color: var(--border-default);
   box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
 }
 
 .t-task-row--done {
@@ -391,7 +400,7 @@
 
 /* ---------- SIDE PANEL ---------- */
 .t-panel {
-  width: 340px;
+  width: 320px;
   flex-shrink: 0;
   background: var(--bg-surface);
   border-left: 1.5px solid var(--border-default);
@@ -779,14 +788,17 @@
   align-items: flex-start;
   gap: 10px;
   padding: 10px 16px;
-  border-radius: var(--radius-sm);
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-md);
   cursor: pointer;
-  transition: background 120ms ease;
+  transition: all 120ms ease;
+  background: var(--bg-surface);
   margin-bottom: 2px;
 }
 
 .t-chip-row:hover {
-  background: var(--bg-surface-hover);
+  border-color: var(--border-default);
+  box-shadow: var(--shadow-sm);
 }
 
 .t-chip-icon {
@@ -1412,15 +1424,15 @@
 
 .t-main-grid {
   display: grid;
-  grid-template-columns: 1fr 320px;
+  grid-template-columns: 1fr auto;
   min-height: 100vh;
   flex: 1;
 }
 
 .t-main-content {
   overflow: auto;
-  background: var(--bg-surface);
-  padding: 0 32px 32px;
+  background: var(--bg-base);
+  padding: 0 24px 32px;
 }
 
 /* ---------- SPACER ---------- */
