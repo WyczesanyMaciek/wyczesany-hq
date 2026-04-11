@@ -302,16 +302,23 @@
 }
 
 .t-inline-subtasks {
-  padding: 2px 0 6px 42px;
+  padding: 2px 0 8px 44px;
+  position: relative;
 }
 
 .t-inline-subtask {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 3px 0;
-  font-size: 12px;
+  padding: 4px 8px;
+  font-size: 13px;
+  border-radius: var(--radius-sm);
+  position: relative;
   color: var(--text-secondary);
+}
+
+.t-inline-subtask:hover {
+  background: var(--bg-surface-hover);
 }
 
 .t-inline-subtask-tree {
@@ -322,7 +329,7 @@
 }
 
 .t-inline-subtask-title {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
   color: var(--text-secondary);
 }
@@ -1719,9 +1726,9 @@
 }
 
 .t-subtask-checkbox {
-  width: 16px;
-  height: 16px;
-  border: 1.5px solid var(--border-strong);
+  width: 15px;
+  height: 15px;
+  border: 1.5px solid var(--border-default);
   border-radius: 3px;
   display: flex;
   align-items: center;
