@@ -56,7 +56,7 @@ export function TaskDetailPanel({
   if (!task) {
     return (
       <div className="t-panel">
-        <div style={{ padding: "60px 20px", textAlign: "center", color: "var(--text-tertiary)", fontSize: 13 }}>Kliknij zadanie żeby zobaczyć szczegóły</div>
+        <div className="t-placeholder" style={{ padding: "60px 20px", textAlign: "center" }}>Kliknij zadanie żeby zobaczyć szczegóły</div>
       </div>
     );
   }
@@ -198,64 +198,57 @@ export function TaskDetailPanel({
                 setEditing(null);
               }
             }}
-            style={{
-              width: "100%",
-              font: "inherit",
-              fontSize: 18,
-              fontWeight: 800,
-              padding: "4px 8px",
-              border: "1.5px solid var(--accent)",
-              borderRadius: "var(--radius-sm)",
-              background: "var(--bg-surface)",
-              outline: "none",
-            }}
+            className="t-panel-edit-input t-panel-edit-input--title"
           />
         ) : (
           <h4
             onClick={() => setEditing("title")}
-            style={{ cursor: "text" }}
+            className="t-panel-title--editable"
             title="Kliknij zeby edytowac"
           >
             {task.title}
           </h4>
         )}
-        {/* Chipy statusu pod tytulem — DS v1 */}
-        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 10 }}>
-          <span style={{
-            display: "inline-flex", alignItems: "center", gap: 4,
-            padding: "2px 8px", fontSize: 11, fontWeight: 700,
-            borderRadius: "9999px",
-            background: task.done ? "var(--status-success-light)" : "var(--bg-muted)",
-            color: task.done ? "#00856B" : "var(--text-secondary)",
-          }}>
-            <span style={{ width: 5, height: 5, borderRadius: "50%", background: task.done ? "var(--status-success)" : "var(--text-tertiary)" }} />
+        {/* Chipy statusu pod tytulem */}
+        <div className="t-panel-chips">
+          <span
+            className="t-panel-chip"
+            style={{
+              background: task.done ? "var(--status-success-light)" : "var(--bg-muted)",
+              color: task.done ? "#00856B" : "var(--text-secondary)",
+            }}
+          >
+            <span
+              className="t-panel-chip-dot"
+              style={{ background: task.done ? "var(--status-success)" : "var(--text-tertiary)" }}
+            />
             {task.done ? "Zrobione" : "Do zrobienia"}
           </span>
           {task.priority > 0 && (
-            <span style={{
-              display: "inline-flex", alignItems: "center", gap: 4,
-              padding: "2px 8px", fontSize: 11, fontWeight: 700,
-              borderRadius: "9999px",
-              background: task.priority >= 3 ? "var(--status-danger-light)" : task.priority === 2 ? "var(--status-warning-light)" : "var(--status-info-light)",
-              color: task.priority >= 3 ? "#C0533A" : task.priority === 2 ? "#B8860B" : "#3A8FD6",
-            }}>
-              <span style={{ width: 5, height: 5, borderRadius: "50%", background: task.priority >= 3 ? "var(--status-danger)" : task.priority === 2 ? "var(--status-warning)" : "var(--status-info, #74B9FF)" }} />
+            <span
+              className="t-panel-chip"
+              style={{
+                background: task.priority >= 3 ? "var(--status-danger-light)" : task.priority === 2 ? "var(--status-warning-light)" : "var(--status-info-light)",
+                color: task.priority >= 3 ? "#C0533A" : task.priority === 2 ? "#B8860B" : "#3A8FD6",
+              }}
+            >
+              <span
+                className="t-panel-chip-dot"
+                style={{ background: task.priority >= 3 ? "var(--status-danger)" : task.priority === 2 ? "var(--status-warning)" : "var(--status-info)" }}
+              />
               {prioLabel(task.priority)}
             </span>
           )}
           {task.assigneeId && (
-            <span style={{
-              display: "inline-flex", alignItems: "center", gap: 4,
-              padding: "2px 8px", fontSize: 11, fontWeight: 700,
-              borderRadius: "9999px",
-              background: "var(--accent-light)",
-              color: "var(--accent)",
-            }}>
+            <span
+              className="t-panel-chip"
+              style={{ background: "var(--accent-light)", color: "var(--accent)" }}
+            >
               {task.assigneeId}
             </span>
           )}
         </div>
-        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+        <div className="t-panel-actions">
           <button
             className="t-btn-primary"
             onClick={handleToggle}
@@ -264,12 +257,13 @@ export function TaskDetailPanel({
             ✓ {task.done ? "Zrobione" : "Oznacz jako zrobione"}
           </button>
           {task.projectId ? (
-            <button onClick={handleRelease} disabled={pending}>
+            <button className="t-btn-ghost" onClick={handleRelease} disabled={pending}>
               ↶ Zwolnij z projektu
             </button>
           ) : (
             <div style={{ position: "relative", display: "inline-block" }}>
               <button
+                className="t-btn-ghost"
                 onClick={() => setShowProjectMenu((v) => !v)}
                 disabled={pending || projects.length === 0}
                 title={projects.length === 0 ? "Brak projektow" : "Wybierz projekt"}
@@ -277,43 +271,13 @@ export function TaskDetailPanel({
                 → Do projektu
               </button>
               {showProjectMenu && projects.length > 0 ? (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "100%",
-                    left: 0,
-                    marginTop: 4,
-                    background: "#fff",
-                    border: "1px solid var(--l-line)",
-                    borderRadius: 6,
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-                    minWidth: 180,
-                    maxHeight: 240,
-                    overflow: "auto",
-                    zIndex: 10,
-                  }}
-                >
+                <div className="t-panel-dropdown">
                   {projects.map((p) => (
                     <button
                       key={p.id}
+                      className="t-panel-dropdown-item"
                       onClick={() => handleMoveToProject(p.id)}
                       disabled={pending}
-                      style={{
-                        display: "block",
-                        width: "100%",
-                        padding: "6px 10px",
-                        textAlign: "left",
-                        background: "transparent",
-                        border: 0,
-                        font: "inherit",
-                        cursor: "pointer",
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.background = "var(--l-hover)";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = "transparent";
-                      }}
                     >
                       {p.name}
                     </button>
@@ -323,6 +287,7 @@ export function TaskDetailPanel({
             </div>
           )}
           <button
+            className="t-btn-ghost"
             onClick={handleDelete}
             disabled={pending}
             title="Usun task"
@@ -376,20 +341,12 @@ export function TaskDetailPanel({
                 if (e.key === "Enter") e.currentTarget.blur();
                 else if (e.key === "Escape") setEditing(null);
               }}
-              style={{
-                font: "inherit",
-                padding: "2px 6px",
-                border: "1px solid var(--accent)",
-                borderRadius: 4,
-                background: "#fff",
-                maxWidth: 160,
-              }}
+              className="t-panel-edit-input t-panel-edit-input--sm"
             />
           ) : (
             <span
-              className="t-field-value"
+              className="t-field-value t-panel-title--editable"
               onClick={() => setEditing("assignee")}
-              style={{ cursor: "text" }}
               title="Kliknij zeby edytowac"
             >
               {task.assigneeId ? (
@@ -412,7 +369,7 @@ export function TaskDetailPanel({
               defaultValue={toDateInput(task.deadline)}
               disabled={pending}
               onBlur={(e) => {
-                const v = e.currentTarget.value; // "" albo YYYY-MM-DD
+                const v = e.currentTarget.value;
                 const current = toDateInput(task.deadline);
                 if (v !== current) {
                   saveField({ deadline: v ? v : null });
@@ -423,24 +380,12 @@ export function TaskDetailPanel({
               onKeyDown={(e) => {
                 if (e.key === "Escape") setEditing(null);
               }}
-              style={{
-                font: "inherit",
-                padding: "2px 6px",
-                border: "1px solid var(--accent)",
-                borderRadius: 4,
-                background: "#fff",
-              }}
+              className="t-panel-edit-input"
             />
           ) : (
             <span
-              className="t-field-value"
+              className={`t-field-value t-panel-title--editable${due?.late ? " t-task-date--overdue" : ""}`}
               onClick={() => setEditing("deadline")}
-              style={{
-                cursor: "text",
-                ...(due?.late
-                  ? { color: "#b91c1c", fontWeight: 600 }
-                  : undefined),
-              }}
               title="Kliknij zeby edytowac"
             >
               {task.deadline ? formatDateLong(task.deadline) : "—"}
@@ -460,13 +405,7 @@ export function TaskDetailPanel({
                 if (v !== task.priority) saveField({ priority: v });
                 else setEditing(null);
               }}
-              style={{
-                font: "inherit",
-                padding: "2px 6px",
-                border: "1px solid var(--accent)",
-                borderRadius: 4,
-                background: "#fff",
-              }}
+              className="t-panel-edit-input"
             >
               <option value="0">Brak</option>
               <option value="1">Niski</option>
@@ -475,9 +414,8 @@ export function TaskDetailPanel({
             </select>
           ) : (
             <span
-              className="t-field-value"
+              className="t-field-value t-panel-title--editable"
               onClick={() => setEditing("priority")}
-              style={{ cursor: "pointer" }}
               title="Kliknij zeby zmienic"
             >
               {prioLabel(task.priority)}
@@ -491,7 +429,7 @@ export function TaskDetailPanel({
         <>
           <div className="t-panel-section-header">Notatki</div>
           <textarea
-            className="t-panel-section"
+            className="t-panel-notes"
             defaultValue={task.notes}
             disabled={pending}
             onBlur={(e) => {
@@ -505,13 +443,7 @@ export function TaskDetailPanel({
       ) : (
         <div className="t-panel-section-header">
           <span>Notatki</span>
-          <button
-            onClick={() => saveField({ notes: " " })}
-            style={{
-              fontSize: 12, color: "var(--accent)", fontWeight: 600,
-              cursor: "pointer", background: "none", border: "none", fontFamily: "inherit",
-            }}
-          >
+          <button className="t-btn-add-text" onClick={() => saveField({ notes: " " })}>
             + Dodaj
           </button>
         </div>
@@ -521,14 +453,13 @@ export function TaskDetailPanel({
       {task.attachments.length > 0 ? (
         <>
           <div className="t-panel-section-header">Pliki i zdjęcia</div>
-          <div className="files">
+          <div className="t-panel-file-grid">
             {task.attachments.map((a) => (
               <div
                 key={a.id}
-                className={`tile ${a.kind === "video" ? "vid" : "img"}`}
+                className="t-panel-file-tile"
                 onClick={() => handleRemoveAttachment(a.id)}
                 title="Kliknij zeby usunac"
-                style={{ cursor: "pointer", position: "relative" }}
               >
                 {a.kind === "video" ? "▶" : a.kind === "file" ? "📄" : "IMG"}
                 <br />
@@ -536,9 +467,8 @@ export function TaskDetailPanel({
               </div>
             ))}
             <div
-              className="tile add"
+              className="t-panel-file-tile"
               onClick={() => setAddingAttachment(true)}
-              style={{ cursor: "pointer" }}
             >
               + dodaj
             </div>
@@ -546,31 +476,14 @@ export function TaskDetailPanel({
         </>
       ) : null}
       {addingAttachment ? (
-        <div
-          style={{
-            marginTop: 8,
-            padding: 8,
-            display: "flex",
-            flexDirection: "column",
-            gap: 6,
-            border: "1px solid var(--l-line)",
-            borderRadius: 6,
-            background: "var(--l-bg-soft)",
-          }}
-        >
+        <div className="t-panel-inline-form t-panel-inline-form--att">
           <select
             value={attKind}
             onChange={(e) =>
               setAttKind(e.target.value as "image" | "video" | "file")
             }
             disabled={pending}
-            style={{
-              font: "inherit",
-              padding: "4px 6px",
-              border: "1px solid var(--l-line)",
-              borderRadius: 4,
-              background: "#fff",
-            }}
+            className="t-panel-edit-input"
           >
             <option value="image">Zdjecie</option>
             <option value="video">Wideo</option>
@@ -581,13 +494,7 @@ export function TaskDetailPanel({
             value={attName}
             onChange={(e) => setAttName(e.target.value)}
             disabled={pending}
-            style={{
-              font: "inherit",
-              padding: "4px 6px",
-              border: "1px solid var(--l-line)",
-              borderRadius: 4,
-              background: "#fff",
-            }}
+            className="t-panel-edit-input"
           />
           <input
             placeholder="URL"
@@ -602,43 +509,22 @@ export function TaskDetailPanel({
                 setAttUrl("");
               }
             }}
-            style={{
-              font: "inherit",
-              padding: "4px 6px",
-              border: "1px solid var(--l-line)",
-              borderRadius: 4,
-              background: "#fff",
-            }}
+            className="t-panel-edit-input"
           />
-          <div style={{ display: "flex", gap: 6 }}>
+          <div className="t-panel-form-actions">
             <button
+              className="t-btn-primary"
               onClick={handleAddAttachment}
               disabled={pending || !attName.trim() || !attUrl.trim()}
-              style={{
-                padding: "4px 10px",
-                background: "var(--accent)",
-                color: "#fff",
-                border: 0,
-                borderRadius: 4,
-                cursor: "pointer",
-                font: "inherit",
-              }}
             >
               Dodaj
             </button>
             <button
+              className="t-btn-secondary"
               onClick={() => {
                 setAddingAttachment(false);
                 setAttName("");
                 setAttUrl("");
-              }}
-              style={{
-                padding: "4px 10px",
-                background: "#fff",
-                border: "1px solid var(--l-line)",
-                borderRadius: 4,
-                cursor: "pointer",
-                font: "inherit",
               }}
             >
               Anuluj
@@ -653,160 +539,95 @@ export function TaskDetailPanel({
       ) : (
         <div className="t-panel-section-header">
           <span>Linki</span>
-          <button
-            onClick={() => setAddingLink(true)}
-            style={{
-              fontSize: 12, color: "var(--accent)", fontWeight: 600,
-              cursor: "pointer", background: "none", border: "none", fontFamily: "inherit",
-            }}
-          >
+          <button className="t-btn-add-text" onClick={() => setAddingLink(true)}>
             + Dodaj
           </button>
         </div>
       )}
-      <div className="llinks" style={{ display: task.links.length > 0 || addingLink ? undefined : "none" }}>
-        {task.links.map((l) => {
-          let host = "";
-          try {
-            host = new URL(l.url).hostname.replace("www.", "");
-          } catch {
-            host = l.url;
-          }
-          return (
-            <div
-              key={l.id}
-              style={{ display: "flex", alignItems: "center", gap: 4 }}
-            >
-              <a
-                href={l.url}
-                target="_blank"
-                rel="noreferrer"
-                className="ln"
-                style={{ flex: 1 }}
-              >
-                <span className="ic">🔗</span>
-                {l.label}
-                <span className="url">{host}</span>
-              </a>
-              <button
-                onClick={() => handleRemoveLink(l.id)}
+      {(task.links.length > 0 || addingLink) && (
+        <div className="t-panel-link-list">
+          {task.links.map((l) => {
+            let host = "";
+            try {
+              host = new URL(l.url).hostname.replace("www.", "");
+            } catch {
+              host = l.url;
+            }
+            return (
+              <div key={l.id} className="t-panel-link-row">
+                <a
+                  href={l.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="t-panel-link"
+                >
+                  <span style={{ opacity: 0.5 }}>🔗</span>
+                  {l.label}
+                  <span className="t-panel-link-host">{host}</span>
+                </a>
+                <button
+                  className="t-btn-sm"
+                  onClick={() => handleRemoveLink(l.id)}
+                  disabled={pending}
+                  title="Usun link"
+                >
+                  ×
+                </button>
+              </div>
+            );
+          })}
+          {addingLink ? (
+            <div className="t-panel-inline-form">
+              <input
+                autoFocus
+                placeholder="Etykieta (np. Figma)"
+                value={linkLabel}
+                onChange={(e) => setLinkLabel(e.target.value)}
                 disabled={pending}
-                title="Usun link"
-                style={{
-                  padding: "2px 6px",
-                  border: "1px solid var(--l-line)",
-                  background: "#fff",
-                  borderRadius: 4,
-                  cursor: "pointer",
-                  color: "var(--l-muted)",
-                  font: "inherit",
+                className="t-panel-edit-input"
+              />
+              <input
+                placeholder="https://..."
+                value={linkUrl}
+                onChange={(e) => setLinkUrl(e.target.value)}
+                disabled={pending}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleAddLink();
+                  else if (e.key === "Escape") {
+                    setAddingLink(false);
+                    setLinkLabel("");
+                    setLinkUrl("");
+                  }
                 }}
-              >
-                ×
-              </button>
+                className="t-panel-edit-input"
+              />
+              <div className="t-panel-form-actions">
+                <button
+                  className="t-btn-primary"
+                  onClick={handleAddLink}
+                  disabled={pending || !linkLabel.trim() || !linkUrl.trim()}
+                >
+                  Dodaj
+                </button>
+                <button
+                  className="t-btn-secondary"
+                  onClick={() => {
+                    setAddingLink(false);
+                    setLinkLabel("");
+                    setLinkUrl("");
+                  }}
+                >
+                  Anuluj
+                </button>
+              </div>
             </div>
-          );
-        })}
-        {addingLink ? (
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 4,
-              padding: 6,
-              border: "1px solid var(--l-line)",
-              borderRadius: 6,
-              background: "var(--l-bg-soft)",
-            }}
-          >
-            <input
-              autoFocus
-              placeholder="Etykieta (np. Figma)"
-              value={linkLabel}
-              onChange={(e) => setLinkLabel(e.target.value)}
-              disabled={pending}
-              style={{
-                font: "inherit",
-                padding: "4px 6px",
-                border: "1px solid var(--l-line)",
-                borderRadius: 4,
-                background: "#fff",
-              }}
-            />
-            <input
-              placeholder="https://..."
-              value={linkUrl}
-              onChange={(e) => setLinkUrl(e.target.value)}
-              disabled={pending}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleAddLink();
-                else if (e.key === "Escape") {
-                  setAddingLink(false);
-                  setLinkLabel("");
-                  setLinkUrl("");
-                }
-              }}
-              style={{
-                font: "inherit",
-                padding: "4px 6px",
-                border: "1px solid var(--l-line)",
-                borderRadius: 4,
-                background: "#fff",
-              }}
-            />
-            <div style={{ display: "flex", gap: 6 }}>
-              <button
-                onClick={handleAddLink}
-                disabled={pending || !linkLabel.trim() || !linkUrl.trim()}
-                style={{
-                  padding: "4px 10px",
-                  background: "var(--accent)",
-                  color: "#fff",
-                  border: 0,
-                  borderRadius: 4,
-                  cursor: "pointer",
-                  font: "inherit",
-                }}
-              >
-                Dodaj
-              </button>
-              <button
-                onClick={() => {
-                  setAddingLink(false);
-                  setLinkLabel("");
-                  setLinkUrl("");
-                }}
-                style={{
-                  padding: "4px 10px",
-                  background: "#fff",
-                  border: "1px solid var(--l-line)",
-                  borderRadius: 4,
-                  cursor: "pointer",
-                  font: "inherit",
-                }}
-              >
-                Anuluj
-              </button>
-            </div>
-          </div>
-        ) : (
-          <button
-            onClick={() => setAddingLink(true)}
-            className="add"
-            style={{
-              background: "transparent",
-              border: 0,
-              font: "inherit",
-              cursor: "pointer",
-              textAlign: "left",
-              padding: 0,
-              color: "var(--l-muted)",
-            }}
-          >
-            + Dodaj link
-          </button>
-        )}
-      </div>
+          ) : (
+            <button className="t-btn-add-text" onClick={() => setAddingLink(true)}>
+              + Dodaj link
+            </button>
+          )}
+        </div>
+      )}
       </MotionWrap>
     </div>
   );
