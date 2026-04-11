@@ -5,7 +5,13 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod/v4";
 import { getContextTree } from "@/lib/queries/contexts";
-import { getContextDashboard, getGlobalStats } from "@/lib/queries/dashboard";
+import {
+  getContextDashboard,
+  getGlobalStats,
+  getOverdueTasks,
+  getUrgentProblems,
+  getProjectDetail,
+} from "@/lib/queries/dashboard";
 import { prisma } from "@/lib/db";
 
 export function createMcpServer() {
@@ -300,6 +306,250 @@ export function createMcpServer() {
       return {
         content: [{ type: "text" as const, text: JSON.stringify({ id: project.id, name: project.name }) }],
       };
+    }
+  );
+
+  // ---- 11. get_overdue ----
+  server.registerTool(
+    "get_overdue",
+    {
+      title: "Get Overdue Tasks",
+      description: "Returns all overdue tasks (deadline < now, not done).",
+    },
+    async () => {
+      const tasks = await getOverdueTasks();
+      return {
+        content: [{ type: "text" as const, text: JSON.stringify(tasks, null, 2) }],
+      };
+    }
+  );
+
+  // ---- 12. get_urgent_problems ----
+  server.registerTool(
+    "get_urgent_problems",
+    {
+      title: "Get Urgent Problems",
+      description: "Returns problems with priority >= 2 across all contexts.",
+    },
+    async () => {
+      const problems = await getUrgentProblems();
+      return {
+        content: [{ type: "text" as const, text: JSON.stringify(problems, null, 2) }],
+      };
+    }
+  );
+
+  // ---- 13. search ----
+  server.registerTool(
+    "search",
+    {
+      title: "Search",
+      description: "Full-text search across tasks, projects, ideas, and problems by title/content.",
+      inputSchema: {
+        query: z.string().describe("Search query"),
+      },
+    },
+    async ({ query }) => {
+      const q = `%${query}%`;
+      const [tasks, projects, ideas, problems] = await Promise.all([
+        prisma.task.findMany({
+          where: { title: { contains: query, mode: "insensitive" } },
+          take: 20,
+          select: { id: true, title: true, done: true, contextId: true, projectId: true },
+        }),
+        prisma.project.findMany({
+          where: {
+            OR: [
+              { name: { contains: query, mode: "insensitive" } },
+              { description: { contains: query, mode: "insensitive" } },
+            ],
+          },
+          take: 10,
+          select: { id: true, name: true, status: true, contextId: true },
+        }),
+        prisma.idea.findMany({
+          where: { content: { contains: query, mode: "insensitive" } },
+          take: 10,
+          select: { id: true, content: true, contextId: true },
+        }),
+        prisma.problem.findMany({
+          where: { content: { contains: query, mode: "insensitive" } },
+          take: 10,
+          select: { id: true, content: true, priority: true, contextId: true },
+        }),
+      ]);
+      return {
+        content: [{ type: "text" as const, text: JSON.stringify({ tasks, projects, ideas, problems }, null, 2) }],
+      };
+    }
+  );
+
+  // ---- 14. get_project ----
+  server.registerTool(
+    "get_project",
+    {
+      title: "Get Project Detail",
+      description: "Returns full project details: tasks, subtasks, notes, links.",
+      inputSchema: {
+        projectId: z.string().describe("Project ID"),
+      },
+    },
+    async ({ projectId }) => {
+      const data = await getProjectDetail(projectId);
+      if (!data) {
+        return { content: [{ type: "text" as const, text: "Project not found." }], isError: true };
+      }
+      return {
+        content: [{ type: "text" as const, text: JSON.stringify(data, null, 2) }],
+      };
+    }
+  );
+
+  // ---- 15. update_task ----
+  server.registerTool(
+    "update_task",
+    {
+      title: "Update Task",
+      description: "Update task fields: title, priority, deadline, assignee, notes, done status.",
+      inputSchema: {
+        taskId: z.string().describe("Task ID"),
+        title: z.string().optional().describe("New title"),
+        priority: z.number().min(0).max(3).optional().describe("Priority: 0-3"),
+        deadline: z.string().optional().describe("Deadline YYYY-MM-DD or empty to clear"),
+        assignee: z.string().optional().describe("Assignee ID/name"),
+        notes: z.string().optional().describe("Notes text"),
+        done: z.boolean().optional().describe("Done status"),
+      },
+    },
+    async ({ taskId, title, priority, deadline, assignee, notes, done }) => {
+      const task = await prisma.task.findUnique({ where: { id: taskId } });
+      if (!task) {
+        return { content: [{ type: "text" as const, text: "Task not found." }], isError: true };
+      }
+      const data: Record<string, unknown> = {};
+      if (title !== undefined) data.title = title;
+      if (priority !== undefined) data.priority = priority;
+      if (deadline !== undefined) data.deadline = deadline ? new Date(deadline) : null;
+      if (assignee !== undefined) data.assigneeId = assignee || null;
+      if (notes !== undefined) data.notes = notes || null;
+      if (done !== undefined) data.done = done;
+
+      const updated = await prisma.task.update({ where: { id: taskId }, data });
+      return {
+        content: [{ type: "text" as const, text: JSON.stringify({ id: updated.id, title: updated.title, done: updated.done }) }],
+      };
+    }
+  );
+
+  // ---- 16. add_subtask ----
+  server.registerTool(
+    "add_subtask",
+    {
+      title: "Add Subtask",
+      description: "Add a step (subtask) to a task.",
+      inputSchema: {
+        taskId: z.string().describe("Task ID"),
+        title: z.string().describe("Subtask title"),
+      },
+    },
+    async ({ taskId, title }) => {
+      const task = await prisma.task.findUnique({ where: { id: taskId } });
+      if (!task) {
+        return { content: [{ type: "text" as const, text: "Task not found." }], isError: true };
+      }
+      const last = await prisma.subtask.findFirst({
+        where: { taskId },
+        orderBy: { order: "desc" },
+        select: { order: true },
+      });
+      const subtask = await prisma.subtask.create({
+        data: { title, taskId, order: (last?.order ?? -1) + 1 },
+      });
+      return {
+        content: [{ type: "text" as const, text: JSON.stringify({ id: subtask.id, title: subtask.title }) }],
+      };
+    }
+  );
+
+  // ---- 17. toggle_subtask ----
+  server.registerTool(
+    "toggle_subtask",
+    {
+      title: "Toggle Subtask",
+      description: "Toggle subtask done/undone.",
+      inputSchema: {
+        subtaskId: z.string().describe("Subtask ID"),
+      },
+    },
+    async ({ subtaskId }) => {
+      const s = await prisma.subtask.findUnique({ where: { id: subtaskId }, select: { done: true } });
+      if (!s) {
+        return { content: [{ type: "text" as const, text: "Subtask not found." }], isError: true };
+      }
+      const updated = await prisma.subtask.update({
+        where: { id: subtaskId },
+        data: { done: !s.done },
+        select: { id: true, done: true },
+      });
+      return {
+        content: [{ type: "text" as const, text: JSON.stringify(updated) }],
+      };
+    }
+  );
+
+  // ---- 18. convert_idea ----
+  server.registerTool(
+    "convert_idea",
+    {
+      title: "Convert Idea",
+      description: "Convert an idea to a task or project.",
+      inputSchema: {
+        ideaId: z.string().describe("Idea ID"),
+        targetType: z.enum(["task", "project"]).describe("Convert to task or project"),
+        projectId: z.string().optional().describe("Project ID (when converting to task in a project)"),
+      },
+    },
+    async ({ ideaId, targetType, projectId }) => {
+      const idea = await prisma.idea.findUnique({ where: { id: ideaId } });
+      if (!idea) {
+        return { content: [{ type: "text" as const, text: "Idea not found." }], isError: true };
+      }
+
+      if (targetType === "task") {
+        const title = idea.content.split("\n")[0].slice(0, 200).trim() || "Nowy task";
+        let resolvedContextId = idea.contextId;
+        let resolvedProjectId = projectId ?? null;
+        if (resolvedProjectId) {
+          const proj = await prisma.project.findUnique({ where: { id: resolvedProjectId }, select: { contextId: true } });
+          if (proj) resolvedContextId = proj.contextId;
+        }
+        const last = await prisma.task.findFirst({
+          where: resolvedProjectId ? { projectId: resolvedProjectId } : { contextId: resolvedContextId, projectId: null },
+          orderBy: { order: "desc" },
+          select: { order: true },
+        });
+        const [task] = await prisma.$transaction([
+          prisma.task.create({
+            data: { title, contextId: resolvedContextId, projectId: resolvedProjectId, order: (last?.order ?? -1) + 1 },
+          }),
+          prisma.idea.delete({ where: { id: ideaId } }),
+        ]);
+        return { content: [{ type: "text" as const, text: JSON.stringify({ taskId: task.id }) }] };
+      } else {
+        const name = idea.content.split("\n")[0].slice(0, 120).trim() || "Nowy projekt";
+        const last = await prisma.project.findFirst({
+          where: { contextId: idea.contextId },
+          orderBy: { order: "desc" },
+          select: { order: true },
+        });
+        const [project] = await prisma.$transaction([
+          prisma.project.create({
+            data: { name, description: idea.content, contextId: idea.contextId, order: (last?.order ?? -1) + 1 },
+          }),
+          prisma.idea.delete({ where: { id: ideaId } }),
+        ]);
+        return { content: [{ type: "text" as const, text: JSON.stringify({ projectId: project.id }) }] };
+      }
     }
   );
 
