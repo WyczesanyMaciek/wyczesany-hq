@@ -18,7 +18,7 @@ export function Rail() {
       <RailIcon href="/tasks" active={pathname === "/tasks"} icon={<CheckSquare size={18} />} label="Moje zadania" />
       <RailButton onClick={onSearch ?? undefined} icon={<Search size={18} />} label="Szukaj (/)" />
 
-      <div style={{ flex: 1 }} />
+      <div className="t-flex-spacer" />
 
       <RailIcon href="/settings" active={pathname.startsWith("/settings")} icon={<Settings size={18} />} label="Ustawienia" />
     </div>
