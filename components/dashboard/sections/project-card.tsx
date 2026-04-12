@@ -2,13 +2,15 @@
 
 // ProjectCard — DS v1 klasy t-project-card, t-project-header, etc.
 
-import { memo, useMemo } from "react";
+import { memo, useMemo, useState, useTransition } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useDroppable } from "@dnd-kit/core";
 import { useSortable, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical } from "lucide-react";
 import type { DashboardData } from "@/lib/queries/dashboard";
+import { updateProjectDetails } from "@/app/(app)/c/[id]/actions";
 import { LinearAddTask } from "../linear-add-task";
 import { TaskRow } from "../shared/task-row";
 import { formatDue } from "../shared/format";
@@ -30,6 +32,10 @@ export const ProjectCard = memo(function ProjectCard({
   readOnly?: boolean;
   showContextBadge?: boolean;
 }) {
+  const router = useRouter();
+  const [, startTransition] = useTransition();
+  const [editingName, setEditingName] = useState(false);
+
   const percent =
     project.taskTotal > 0
       ? Math.round((project.taskDone / project.taskTotal) * 100)
@@ -50,12 +56,23 @@ export const ProjectCard = memo(function ProjectCard({
     [project.tasks]
   );
 
+  const handleSaveName = (v: string) => {
+    const name = v.trim();
+    setEditingName(false);
+    if (!name || name === project.name) return;
+    startTransition(async () => {
+      await updateProjectDetails(project.id, { name });
+      router.refresh();
+    });
+  };
+
   return (
     <div ref={setNodeRef} style={dndStyle} {...attributes} className="t-project-card">
       <div
         className="t-project-header"
         onClick={(e) => {
           if ((e.target as HTMLElement).closest(".grip")) return;
+          if (editingName) return;
           onToggle();
         }}
       >
@@ -72,20 +89,43 @@ export const ProjectCard = memo(function ProjectCard({
           </span>
         )}
         <div style={{ flex: 1, minWidth: 0 }}>
-          <Link
-            href={`/c/${project.context.id}/p/${project.id}`}
-            onClick={(e) => e.stopPropagation()}
-            className="t-project-name"
-          >
-            {project.name}
-          </Link>{" "}
-          {showContextBadge && (
-            <span
-              className="t-context-badge"
-              style={{ background: `${project.context.color}22`, color: project.context.color }}
-            >
-              {project.context.name}
-            </span>
+          {editingName ? (
+            <input
+              autoFocus
+              defaultValue={project.name}
+              onClick={(e) => e.stopPropagation()}
+              onBlur={(e) => handleSaveName(e.currentTarget.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") e.currentTarget.blur();
+                else if (e.key === "Escape") setEditingName(false);
+              }}
+              className="t-edit-inline t-edit-inline--project"
+            />
+          ) : (
+            <>
+              <Link
+                href={`/c/${project.context.id}/p/${project.id}`}
+                onClick={(e) => e.stopPropagation()}
+                onDoubleClick={(e) => {
+                  if (readOnly) return;
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setEditingName(true);
+                }}
+                className="t-project-name"
+                title={readOnly ? project.name : "Dwuklik żeby edytować"}
+              >
+                {project.name}
+              </Link>{" "}
+              {showContextBadge && (
+                <span
+                  className="t-context-badge"
+                  style={{ background: `${project.context.color}22`, color: project.context.color }}
+                >
+                  {project.context.name}
+                </span>
+              )}
+            </>
           )}
         </div>
         <div className="t-project-meta">

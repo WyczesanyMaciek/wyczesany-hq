@@ -7,10 +7,10 @@ import { memo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { ChevronRight, GripVertical } from "lucide-react";
+import { ChevronRight, GripVertical, Plus } from "lucide-react";
 import type { DashboardTask } from "@/lib/queries/dashboard";
 import { toggleTask, updateTaskDetails } from "@/app/(app)/c/[id]/actions";
-import { toggleSubtask, addSubtask } from "@/app/(app)/c/[id]/actions";
+import { toggleSubtask, addSubtask, updateSubtaskTitle } from "@/app/(app)/c/[id]/actions";
 import { formatDue } from "./format";
 
 function prioDotClass(p: number) {
@@ -115,14 +115,23 @@ export const TaskRow = memo(function TaskRow({
           </span>
         )}
 
-        {/* 2: Chevron (subtask expand) */}
+        {/* 2: Chevron (subtask expand) / + (add subtask on hover) */}
         {hasSubtasks ? (
           <button
             type="button"
             className="t-subtask-toggle"
+            title="Rozwiń subtaski"
             onClick={(e) => { e.stopPropagation(); setSubtasksOpen(!subtasksOpen); }}
           >
             <ChevronRight size={12} style={{ transform: subtasksOpen ? "rotate(90deg)" : "none", transition: "transform 120ms ease" }} />
+          </button>
+        ) : !readOnly ? (
+          <button
+            type="button"
+            className="t-subtask-add-chevron"
+            onClick={(e) => { e.stopPropagation(); setSubtasksOpen(true); setAddingSubtask(true); }}
+          >
+            <Plus size={14} />
           </button>
         ) : <span />}
 
@@ -210,14 +219,6 @@ export const TaskRow = memo(function TaskRow({
             <span className="t-subtask-count" onClick={(e) => { e.stopPropagation(); setSubtasksOpen(!subtasksOpen); }}>
               {task.subtasks.filter(s => s.done).length}/{task.subtasks.length}
             </span>
-          ) : !readOnly ? (
-            <button
-              type="button"
-              className="t-subtask-hover-add"
-              onClick={(e) => { e.stopPropagation(); setSubtasksOpen(true); setAddingSubtask(true); }}
-            >
-              + subtask
-            </button>
           ) : (
             <span className="t-task-empty">—</span>
           )}
@@ -228,18 +229,14 @@ export const TaskRow = memo(function TaskRow({
       {subtasksOpen && (hasSubtasks || addingSubtask) && (
         <div className="t-inline-subtasks">
           {task.subtasks.map((s, i) => (
-            <div key={s.id} className="t-inline-subtask">
-              <span className="t-inline-subtask-tree">{i === task.subtasks.length - 1 ? "└" : "├"}</span>
-              <button
-                type="button"
-                className={`t-subtask-checkbox${s.done ? " t-subtask-checkbox--done" : ""}`}
-                onClick={() => handleToggleSubtask(s.id)}
-                disabled={pending}
-              />
-              <span className={`t-inline-subtask-title${s.done ? " t-inline-subtask-title--done" : ""}`}>
-                {s.title}
-              </span>
-            </div>
+            <SubtaskRow
+              key={s.id}
+              subtask={s}
+              isLast={i === task.subtasks.length - 1}
+              onToggle={() => handleToggleSubtask(s.id)}
+              pending={pending}
+              readOnly={readOnly}
+            />
           ))}
           {!readOnly && !addingSubtask && (
             <button className="t-inline-subtask-add" onClick={() => setAddingSubtask(true)}>
@@ -263,3 +260,64 @@ export const TaskRow = memo(function TaskRow({
     </div>
   );
 });
+
+function SubtaskRow({
+  subtask,
+  isLast,
+  onToggle,
+  pending,
+  readOnly,
+}: {
+  subtask: { id: string; title: string; done: boolean };
+  isLast: boolean;
+  onToggle: () => void;
+  pending: boolean;
+  readOnly: boolean;
+}) {
+  const router = useRouter();
+  const [editing, setEditing] = useState(false);
+  const [, startTransition] = useTransition();
+
+  const handleSave = (v: string) => {
+    const title = v.trim();
+    setEditing(false);
+    if (!title || title === subtask.title) return;
+    startTransition(async () => {
+      await updateSubtaskTitle(subtask.id, title);
+      router.refresh();
+    });
+  };
+
+  return (
+    <div className="t-inline-subtask">
+      <span className="t-inline-subtask-tree">{isLast ? "└" : "├"}</span>
+      <button
+        type="button"
+        className={`t-subtask-checkbox${subtask.done ? " t-subtask-checkbox--done" : ""}`}
+        onClick={onToggle}
+        disabled={pending}
+      />
+      {editing ? (
+        <input
+          autoFocus
+          defaultValue={subtask.title}
+          onClick={(e) => e.stopPropagation()}
+          onBlur={(e) => handleSave(e.currentTarget.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") e.currentTarget.blur();
+            else if (e.key === "Escape") setEditing(false);
+          }}
+          className="t-edit-inline t-edit-inline--subtask"
+        />
+      ) : (
+        <span
+          className={`t-inline-subtask-title${subtask.done ? " t-inline-subtask-title--done" : ""}`}
+          onDoubleClick={() => { if (!readOnly) setEditing(true); }}
+          title={readOnly ? subtask.title : "Dwuklik żeby edytować"}
+        >
+          {subtask.title}
+        </span>
+      )}
+    </div>
+  );
+}
