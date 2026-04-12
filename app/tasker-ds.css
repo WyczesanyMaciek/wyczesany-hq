@@ -241,16 +241,50 @@
 /* ---------- TASK ROW ---------- */
 .t-task-row {
   display: grid;
-  grid-template-columns: 14px 14px 18px 8px minmax(120px, max-content) auto auto auto auto;
-  gap: 0 8px;
+  grid-template-columns: 24px 20px 24px 1fr 60px 120px 80px 50px;
+  gap: 0;
   align-items: center;
-  padding: 8px 16px;
+  padding: 6px 8px;
+  min-height: 40px;
   border: 1.5px solid transparent;
   border-radius: var(--radius-md);
   transition: all 120ms ease;
   cursor: pointer;
   background: var(--bg-surface);
   margin-bottom: 1px;
+}
+
+.t-task-row > * {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.t-task-name {
+  justify-content: flex-start !important;
+  gap: 6px;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.t-task-name .t-task-title,
+.t-task-name .t-edit-inline {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.t-task-col-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.t-task-empty {
+  color: var(--text-secondary);
+  opacity: 0.4;
+  font-size: 13px;
 }
 
 .t-task-row:hover {

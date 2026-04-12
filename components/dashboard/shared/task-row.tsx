@@ -1,7 +1,7 @@
 "use client";
 
-// TaskRow — DS v1 CSS classes (t-task-row, t-task-checkbox, etc.)
-// Zero inline styles na layoutowych elementach. Dynamiczne wartości przez style={}.
+// TaskRow — CSS Grid z fixed kolumnami (spec: tasker-task-row-grid.md)
+// Grid: grip(24) chevron(20) checkbox(24) name(1fr) assignee(60) status(120) date(80) subtasks(50)
 
 import { memo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
@@ -101,7 +101,7 @@ export const TaskRow = memo(function TaskRow({
         className={rowClass}
         onClick={() => { if (!editingName) onSelect(task.id); }}
       >
-        {/* Grip handle DnD */}
+        {/* 1: Grip handle */}
         {readOnly ? (
           <span className="t-task-grip--hidden" />
         ) : (
@@ -115,7 +115,7 @@ export const TaskRow = memo(function TaskRow({
           </span>
         )}
 
-        {/* Subtask expand arrow */}
+        {/* 2: Chevron (subtask expand) */}
         {hasSubtasks ? (
           <button
             type="button"
@@ -126,7 +126,7 @@ export const TaskRow = memo(function TaskRow({
           </button>
         ) : <span />}
 
-        {/* 1: Checkbox */}
+        {/* 3: Checkbox */}
         <button
           type="button"
           className={`t-task-checkbox${task.done ? " t-task-checkbox--done" : ""}`}
@@ -141,75 +141,87 @@ export const TaskRow = memo(function TaskRow({
           )}
         </button>
 
-        {/* 2: Priority dot */}
-        <div className={prioDotClass(task.priority)} />
-
-        {/* 3: Title */}
-        {editingName ? (
-          <input
-            autoFocus
-            defaultValue={task.title}
-            disabled={pending}
-            onClick={(e) => e.stopPropagation()}
-            onBlur={(e) => handleSaveName(e.currentTarget.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") e.currentTarget.blur();
-              else if (e.key === "Escape") setEditingName(false);
-            }}
-            className="t-edit-inline"
-          />
-        ) : (
-          <span
-            className={`t-task-title${task.done ? " t-task-title--done" : ""}`}
-            onDoubleClick={(e) => {
-              if (readOnly) return;
-              e.stopPropagation();
-              setEditingName(true);
-            }}
-            title={readOnly ? task.title : "Dwuklik zeby edytowac"}
-          >
-            {task.title}
-            {showContextBadge && (
-              <span
-                className="t-context-badge"
-                style={{ background: `${task.context.color}22`, color: task.context.color, marginLeft: 6 }}
-              >
-                {task.context.name}
-              </span>
-            )}
-          </span>
-        )}
-
-        {/* 4: Avatar (zaraz po tytule — kto odpowiada) */}
-        <div className="t-avatar">
-          {task.assigneeId ? task.assigneeId.slice(0, 2).toUpperCase() : ""}
+        {/* 4: Nazwa + priority dot */}
+        <div className="t-task-name">
+          <div className={prioDotClass(task.priority)} />
+          {editingName ? (
+            <input
+              autoFocus
+              defaultValue={task.title}
+              disabled={pending}
+              onClick={(e) => e.stopPropagation()}
+              onBlur={(e) => handleSaveName(e.currentTarget.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") e.currentTarget.blur();
+                else if (e.key === "Escape") setEditingName(false);
+              }}
+              className="t-edit-inline"
+            />
+          ) : (
+            <span
+              className={`t-task-title${task.done ? " t-task-title--done" : ""}`}
+              onDoubleClick={(e) => {
+                if (readOnly) return;
+                e.stopPropagation();
+                setEditingName(true);
+              }}
+              title={readOnly ? task.title : "Dwuklik zeby edytowac"}
+            >
+              {task.title}
+              {showContextBadge && (
+                <span
+                  className="t-context-badge"
+                  style={{ background: `${task.context.color}22`, color: task.context.color, marginLeft: 6 }}
+                >
+                  {task.context.name}
+                </span>
+              )}
+            </span>
+          )}
         </div>
 
-        {/* 5: Status badge */}
-        <span className={badgeClass(task.done)}>
-          <span className="t-badge-dot" />
-          {task.done ? "Zrobione" : "Do zrobienia"}
-        </span>
+        {/* 5: Assignee */}
+        <div className="t-task-col-center">
+          {task.assigneeId ? (
+            <div className="t-avatar">{task.assigneeId.slice(0, 2).toUpperCase()}</div>
+          ) : (
+            <span className="t-task-empty">—</span>
+          )}
+        </div>
 
-        {/* 6: Date */}
-        <span className={`t-task-date${due?.late ? " t-task-date--overdue" : ""}`}>
-          {due?.text ?? "—"}
-        </span>
-
-        {/* 7: Subtask count / hover add */}
-        {hasSubtasks ? (
-          <span className="t-subtask-count" onClick={(e) => { e.stopPropagation(); setSubtasksOpen(!subtasksOpen); }}>
-            {task.subtasks.filter(s => s.done).length}/{task.subtasks.length}
+        {/* 6: Status */}
+        <div className="t-task-col-center">
+          <span className={badgeClass(task.done)}>
+            <span className="t-badge-dot" />
+            {task.done ? "Zrobione" : "Do zrobienia"}
           </span>
-        ) : !readOnly ? (
-          <button
-            type="button"
-            className="t-subtask-hover-add"
-            onClick={(e) => { e.stopPropagation(); setSubtasksOpen(true); setAddingSubtask(true); }}
-          >
-            + subtask
-          </button>
-        ) : <span />}
+        </div>
+
+        {/* 7: Date */}
+        <div className="t-task-col-center">
+          <span className={`t-task-date${due?.late ? " t-task-date--overdue" : ""}`}>
+            {due?.text ?? "—"}
+          </span>
+        </div>
+
+        {/* 8: Subtask count */}
+        <div className="t-task-col-center">
+          {hasSubtasks ? (
+            <span className="t-subtask-count" onClick={(e) => { e.stopPropagation(); setSubtasksOpen(!subtasksOpen); }}>
+              {task.subtasks.filter(s => s.done).length}/{task.subtasks.length}
+            </span>
+          ) : !readOnly ? (
+            <button
+              type="button"
+              className="t-subtask-hover-add"
+              onClick={(e) => { e.stopPropagation(); setSubtasksOpen(true); setAddingSubtask(true); }}
+            >
+              + subtask
+            </button>
+          ) : (
+            <span className="t-task-empty">—</span>
+          )}
+        </div>
       </div>
 
       {/* Inline subtaski */}
