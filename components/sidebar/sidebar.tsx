@@ -42,17 +42,11 @@ export function Sidebar({
   };
   collectWithChildren(tree);
 
+  // Zawsze startuj z rozwinietymi kontekstami ktore maja dzieci
   const [expanded, setExpanded] = useState<Set<string>>(allWithChildren);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      if (raw) setExpanded(new Set(JSON.parse(raw) as string[]));
-    } catch {
-      /* ignoruj */
-    }
     setMounted(true);
   }, []);
 
