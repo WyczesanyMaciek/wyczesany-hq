@@ -72,11 +72,20 @@ export function Sidebar({
 
   return (
     <aside className="t-sidebar">
-      {/* Brand header */}
-      <Link href="/" className="t-sidebar-brand">
-        <div className="t-sidebar-brand-label">Dashboard</div>
-        <div className="t-sidebar-brand-title">Wyczesany HQ</div>
-      </Link>
+      {/* Brand header + quick-add */}
+      <div className="t-sidebar-brand-row">
+        <Link href="/" className="t-sidebar-brand">
+          <div className="t-sidebar-brand-label">Dashboard</div>
+          <div className="t-sidebar-brand-title">Wyczesany HQ</div>
+        </Link>
+        <button
+          onClick={onQuickAdd ?? undefined}
+          title="Dodaj (N)"
+          className="t-sidebar-quick-add"
+        >
+          <Plus size={14} strokeWidth={2.5} />
+        </button>
+      </div>
 
 
       {/* Search button */}

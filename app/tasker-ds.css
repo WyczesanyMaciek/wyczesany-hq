@@ -781,12 +781,40 @@
 }
 
 /* ---------- SIDEBAR BRAND ---------- */
+.t-sidebar-brand-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 12px;
+  border-bottom: 1.5px solid var(--border-default);
+}
+
 .t-sidebar-brand {
   display: block;
   padding: 14px 16px;
-  border-bottom: 1.5px solid var(--border-default);
   text-decoration: none;
   color: inherit;
+  flex: 1;
+  min-width: 0;
+}
+
+.t-sidebar-quick-add {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: var(--accent);
+  color: #FFFFFF;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 120ms ease;
+}
+
+.t-sidebar-quick-add:hover {
+  background: var(--accent-hover);
 }
 
 .t-sidebar-brand-label {
