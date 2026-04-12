@@ -234,11 +234,11 @@ export async function getContextDashboard(
     }),
     prisma.idea.findMany({
       where: contextFilter,
-      orderBy: [{ createdAt: "desc" }],
+      orderBy: [{ order: "asc" }, { createdAt: "desc" }],
     }),
     prisma.problem.findMany({
       where: contextFilter,
-      orderBy: [{ createdAt: "desc" }],
+      orderBy: [{ order: "asc" }, { createdAt: "desc" }],
     }),
   ]);
 

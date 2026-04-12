@@ -32,6 +32,8 @@ import type { DashboardData, DashboardTask } from "@/lib/queries/dashboard";
 import {
   reorderTasks,
   reorderProjects,
+  reorderIdeas,
+  reorderProblems,
   moveTaskToProject,
   releaseTaskFromProject,
 } from "@/app/(app)/c/[id]/actions";
@@ -64,9 +66,13 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
   // Optimistic state dla DnD — synchronizowany z `data` na zmiany servera
   const [projects, setProjects] = useState(data.projects);
   const [looseTasks, setLooseTasks] = useState(data.looseTasks);
+  const [ideas, setIdeas] = useState(data.ideas);
+  const [problems, setProblems] = useState(data.problems);
   useEffect(() => {
     setProjects(data.projects);
     setLooseTasks(data.looseTasks);
+    setIdeas(data.ideas);
+    setProblems(data.problems);
   }, [data]);
 
   // Filtrowanie tasków po statusie i priorytecie
@@ -151,6 +157,34 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
       setProjects(next);
       startTransition(async () => {
         await reorderProjects(next.map((p) => p.id));
+        router.refresh();
+      });
+      return;
+    }
+
+    // --- Pomysly ---
+    if (activeStr.startsWith("idea:") && overStr.startsWith("idea:")) {
+      const fromIdx = ideas.findIndex((i) => `idea:${i.id}` === activeStr);
+      const toIdx = ideas.findIndex((i) => `idea:${i.id}` === overStr);
+      if (fromIdx < 0 || toIdx < 0) return;
+      const next = arrayMove(ideas, fromIdx, toIdx);
+      setIdeas(next);
+      startTransition(async () => {
+        await reorderIdeas(next.map((i) => i.id));
+        router.refresh();
+      });
+      return;
+    }
+
+    // --- Problemy ---
+    if (activeStr.startsWith("problem:") && overStr.startsWith("problem:")) {
+      const fromIdx = problems.findIndex((p) => `problem:${p.id}` === activeStr);
+      const toIdx = problems.findIndex((p) => `problem:${p.id}` === overStr);
+      if (fromIdx < 0 || toIdx < 0) return;
+      const next = arrayMove(problems, fromIdx, toIdx);
+      setProblems(next);
+      startTransition(async () => {
+        await reorderProblems(next.map((p) => p.id));
         router.refresh();
       });
       return;
@@ -301,9 +335,9 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
             currentContextId={currentId}
           />
 
-          <IdeasSection ideas={data.ideas} contextId={currentId} />
+          <IdeasSection ideas={ideas} contextId={currentId} />
 
-          <ProblemsSection problems={data.problems} contextId={currentId} />
+          <ProblemsSection problems={problems} contextId={currentId} />
 
           <div className="t-spacer" />
         </main>

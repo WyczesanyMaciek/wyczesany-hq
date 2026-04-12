@@ -961,3 +961,31 @@ export async function deleteProjectLink(linkId: string): Promise<Result> {
   revalidatePath("/", "page");
   return { ok: true };
 }
+
+// ---- REORDER POMYSLOW I PROBLEMOW ----
+
+export async function reorderIdeas(orderedIds: string[]): Promise<Result> {
+  if (!Array.isArray(orderedIds) || orderedIds.length === 0) {
+    return { ok: false, error: "Pusta lista." };
+  }
+  await prisma.$transaction(
+    orderedIds.map((id, idx) =>
+      prisma.idea.update({ where: { id }, data: { order: idx } })
+    )
+  );
+  revalidatePath("/", "page");
+  return { ok: true };
+}
+
+export async function reorderProblems(orderedIds: string[]): Promise<Result> {
+  if (!Array.isArray(orderedIds) || orderedIds.length === 0) {
+    return { ok: false, error: "Pusta lista." };
+  }
+  await prisma.$transaction(
+    orderedIds.map((id, idx) =>
+      prisma.problem.update({ where: { id }, data: { order: idx } })
+    )
+  );
+  revalidatePath("/", "page");
+  return { ok: true };
+}

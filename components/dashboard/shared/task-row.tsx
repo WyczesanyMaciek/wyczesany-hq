@@ -7,7 +7,7 @@ import { memo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, GripVertical } from "lucide-react";
 import type { DashboardTask } from "@/lib/queries/dashboard";
 import { toggleTask, updateTaskDetails } from "@/app/(app)/c/[id]/actions";
 import { toggleSubtask, addSubtask } from "@/app/(app)/c/[id]/actions";
@@ -45,7 +45,7 @@ export const TaskRow = memo(function TaskRow({
   const due = formatDue(task.deadline);
   const hasSubtasks = task.subtasks && task.subtasks.length > 0;
 
-  const { attributes, setNodeRef, transform, transition, isDragging } =
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: `task:${task.id}`, disabled: readOnly });
 
   const dndStyle: React.CSSProperties = {
@@ -101,6 +101,20 @@ export const TaskRow = memo(function TaskRow({
         className={rowClass}
         onClick={() => { if (!editingName) onSelect(task.id); }}
       >
+        {/* Grip handle DnD */}
+        {readOnly ? (
+          <span className="t-task-grip--hidden" />
+        ) : (
+          <span
+            className="t-task-grip"
+            {...listeners}
+            onClick={(e) => e.stopPropagation()}
+            aria-label="Przeciągnij task"
+          >
+            <GripVertical size={14} />
+          </span>
+        )}
+
         {/* Subtask expand arrow */}
         {hasSubtasks ? (
           <button
@@ -181,10 +195,25 @@ export const TaskRow = memo(function TaskRow({
         <span className={`t-task-date${due?.late ? " t-task-date--overdue" : ""}`}>
           {due?.text ?? "—"}
         </span>
+
+        {/* 7: Subtask count / hover add */}
+        {hasSubtasks ? (
+          <span className="t-subtask-count" onClick={(e) => { e.stopPropagation(); setSubtasksOpen(!subtasksOpen); }}>
+            {task.subtasks.filter(s => s.done).length}/{task.subtasks.length}
+          </span>
+        ) : !readOnly ? (
+          <button
+            type="button"
+            className="t-subtask-hover-add"
+            onClick={(e) => { e.stopPropagation(); setSubtasksOpen(true); setAddingSubtask(true); }}
+          >
+            + subtask
+          </button>
+        ) : <span />}
       </div>
 
       {/* Inline subtaski */}
-      {subtasksOpen && hasSubtasks && (
+      {subtasksOpen && (hasSubtasks || addingSubtask) && (
         <div className="t-inline-subtasks">
           {task.subtasks.map((s, i) => (
             <div key={s.id} className="t-inline-subtask">

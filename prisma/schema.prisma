@@ -199,6 +199,7 @@ model Idea {
   id          String   @id @default(cuid())
   content     String
   description String?  // opis pod tytulem (limit 500 znakow w UI)
+  order       Int      @default(0)
   createdAt   DateTime @default(now())
 
   contextId String
@@ -213,6 +214,7 @@ model Problem {
   content     String
   description String?  // opis pod tytulem
   priority    Int      @default(0) // 0=Brak, 1=Niski, 2=Normalny, 3=Pilny
+  order       Int      @default(0)
   createdAt   DateTime @default(now())
 
   contextId String
