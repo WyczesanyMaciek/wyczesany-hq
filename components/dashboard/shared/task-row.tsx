@@ -1,9 +1,10 @@
 "use client";
 
-// TaskRow — CSS Grid z fixed kolumnami (spec: tasker-task-row-grid.md)
-// Grid: grip(24) chevron(20) checkbox(24) name(1fr) assignee(60) status(120) date(80) subtasks(50)
+// TaskRow — CSS Grid 9 kolumn + popovery przez Portal
+// Bugi UI naprawione: z-index, 1 popover naraz, hover blokada, portal rendering
 
-import { memo, useState, useTransition, useEffect, useRef } from "react";
+import { memo, useState, useTransition, useEffect, useRef, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -29,6 +30,60 @@ function badgeClass(done: boolean) {
   return done ? "t-badge t-badge--done" : "t-badge t-badge--todo";
 }
 
+type PopoverType = "priority" | "assignee" | "status" | "date" | null;
+
+// Portal popover — renderowany do body, pozycjonowany absolutnie
+function Popover({
+  anchorRef,
+  children,
+  onClose,
+  className = "",
+}: {
+  anchorRef: React.RefObject<HTMLElement | null>;
+  children: React.ReactNode;
+  onClose: () => void;
+  className?: string;
+}) {
+  const popoverRef = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
+
+  useEffect(() => {
+    if (!anchorRef.current) return;
+    const rect = anchorRef.current.getBoundingClientRect();
+    setPos({
+      top: rect.bottom + 4,
+      left: rect.left + rect.width / 2,
+    });
+  }, [anchorRef]);
+
+  useEffect(() => {
+    const handle = (e: MouseEvent) => {
+      if (
+        popoverRef.current && !popoverRef.current.contains(e.target as Node) &&
+        anchorRef.current && !anchorRef.current.contains(e.target as Node)
+      ) {
+        onClose();
+      }
+    };
+    document.addEventListener("mousedown", handle);
+    return () => document.removeEventListener("mousedown", handle);
+  }, [onClose, anchorRef]);
+
+  if (!pos) return null;
+
+  return createPortal(
+    <div
+      ref={popoverRef}
+      className={`t-inline-popover ${className}`}
+      style={{ top: pos.top, left: pos.left, transform: "translateX(-50%)" }}
+      onClick={(e) => e.stopPropagation()}
+    >
+      {children}
+    </div>,
+    document.body
+  );
+}
+
 export const TaskRow = memo(function TaskRow({
   task,
   selected,
@@ -47,28 +102,22 @@ export const TaskRow = memo(function TaskRow({
   const [editingName, setEditingName] = useState(false);
   const [subtasksOpen, setSubtasksOpen] = useState(false);
   const [addingSubtask, setAddingSubtask] = useState(false);
-  const [showPrioMenu, setShowPrioMenu] = useState(false);
-  const [showStatusMenu, setShowStatusMenu] = useState(false);
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showAssigneeMenu, setShowAssigneeMenu] = useState(false);
-  const rowRef = useRef<HTMLDivElement>(null);
+  const [activePopover, setActivePopover] = useState<PopoverType>(null);
   const due = formatDue(task.deadline);
   const hasSubtasks = task.subtasks && task.subtasks.length > 0;
+  const hasPopover = activePopover !== null;
 
-  // Zamknij popovery przy klik poza wierszem
-  useEffect(() => {
-    if (!showPrioMenu && !showStatusMenu && !showDatePicker && !showAssigneeMenu) return;
-    const handle = (e: MouseEvent) => {
-      if (rowRef.current && !rowRef.current.contains(e.target as Node)) {
-        setShowPrioMenu(false);
-        setShowStatusMenu(false);
-        setShowDatePicker(false);
-        setShowAssigneeMenu(false);
-      }
-    };
-    document.addEventListener("mousedown", handle);
-    return () => document.removeEventListener("mousedown", handle);
-  }, [showPrioMenu, showStatusMenu, showDatePicker, showAssigneeMenu]);
+  // Anchory dla popoverów
+  const prioRef = useRef<HTMLButtonElement>(null);
+  const assigneeRef = useRef<HTMLButtonElement>(null);
+  const statusRef = useRef<HTMLButtonElement>(null);
+  const dateRef = useRef<HTMLButtonElement>(null);
+
+  const closePopover = useCallback(() => setActivePopover(null), []);
+
+  const togglePopover = (type: PopoverType) => {
+    setActivePopover(prev => prev === type ? null : type);
+  };
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: `task:${task.id}`, disabled: readOnly });
@@ -109,6 +158,7 @@ export const TaskRow = memo(function TaskRow({
     "t-task-row",
     task.done ? "t-task-row--done" : "",
     selected ? "t-task-row--selected" : "",
+    hasPopover ? "t-task-row--popover-open" : "",
   ].filter(Boolean).join(" ");
 
   const handleToggleSubtask = (subtaskId: string) => {
@@ -128,7 +178,7 @@ export const TaskRow = memo(function TaskRow({
   };
 
   return (
-    <div ref={(el) => { setNodeRef(el); (rowRef as React.MutableRefObject<HTMLDivElement | null>).current = el; }} style={dndStyle} {...attributes}>
+    <div ref={setNodeRef} style={dndStyle} {...attributes}>
       <div
         className={rowClass}
         onClick={() => { if (!editingName) onSelect(task.id); }}
@@ -147,7 +197,7 @@ export const TaskRow = memo(function TaskRow({
           </span>
         )}
 
-        {/* 2: Chevron (subtask expand) / + (add subtask on hover) */}
+        {/* 2: Chevron */}
         {hasSubtasks ? (
           <button
             type="button"
@@ -221,40 +271,25 @@ export const TaskRow = memo(function TaskRow({
         </div>
 
         {/* 5: Priority emoji */}
-        <div className="t-task-col-center" style={{ position: "relative" }}>
+        <div className="t-task-col-center">
           <button
+            ref={prioRef}
             type="button"
             className="t-task-inline-btn"
-            onClick={(e) => { e.stopPropagation(); if (!readOnly) setShowPrioMenu(v => !v); }}
+            onClick={(e) => { e.stopPropagation(); if (!readOnly) togglePopover("priority"); }}
             title={prioLabel(task.priority)}
           >
             {prioEmoji(task.priority)}
           </button>
-          {showPrioMenu && (
-            <div className="t-inline-popover" onClick={(e) => e.stopPropagation()}>
-              {([
-                [3, "🔥", "Pilne"],
-                [1, "🔘", "Normalne"],
-                [0, "🧊", "Niskie"],
-              ] as const).map(([val, emoji, label]) => (
-                <button
-                  key={val}
-                  className={`t-inline-popover-item${task.priority === val || (task.priority >= 3 && val === 3) || (task.priority >= 1 && task.priority < 3 && val === 1) ? " t-inline-popover-item--active" : ""}`}
-                  onClick={() => { saveField({ priority: val }); setShowPrioMenu(false); }}
-                >
-                  {emoji} {label}
-                </button>
-              ))}
-            </div>
-          )}
         </div>
 
         {/* 6: Assignee */}
-        <div className="t-task-col-center" style={{ position: "relative" }}>
+        <div className="t-task-col-center">
           <button
+            ref={assigneeRef}
             type="button"
             className="t-task-inline-btn"
-            onClick={(e) => { e.stopPropagation(); if (!readOnly) setShowAssigneeMenu(v => !v); }}
+            onClick={(e) => { e.stopPropagation(); if (!readOnly) togglePopover("assignee"); }}
           >
             {task.assigneeId ? (
               <div className="t-avatar">{task.assigneeId.slice(0, 2).toUpperCase()}</div>
@@ -262,105 +297,38 @@ export const TaskRow = memo(function TaskRow({
               <span className="t-task-empty">—</span>
             )}
           </button>
-          {showAssigneeMenu && (
-            <div className="t-inline-popover" onClick={(e) => e.stopPropagation()}>
-              <input
-                autoFocus
-                className="t-inline-popover-input"
-                placeholder="Inicjały (np. MK)"
-                defaultValue={task.assigneeId ?? ""}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    const v = e.currentTarget.value.trim() || null;
-                    saveField({ assigneeId: v });
-                    setShowAssigneeMenu(false);
-                  } else if (e.key === "Escape") setShowAssigneeMenu(false);
-                }}
-                onBlur={(e) => {
-                  const v = e.currentTarget.value.trim() || null;
-                  if (v !== (task.assigneeId ?? null)) saveField({ assigneeId: v });
-                  setShowAssigneeMenu(false);
-                }}
-              />
-            </div>
-          )}
         </div>
 
         {/* 7: Status */}
-        <div className="t-task-col-center" style={{ position: "relative" }}>
+        <div className="t-task-col-center">
           <button
+            ref={statusRef}
             type="button"
             className="t-task-inline-btn"
-            onClick={(e) => { e.stopPropagation(); if (!readOnly) setShowStatusMenu(v => !v); }}
+            onClick={(e) => { e.stopPropagation(); if (!readOnly) togglePopover("status"); }}
           >
             <span className={badgeClass(task.done)}>
               <span className="t-badge-dot" />
               {task.done ? "Zrobione" : "Do zrobienia"}
             </span>
           </button>
-          {showStatusMenu && (
-            <div className="t-inline-popover" onClick={(e) => e.stopPropagation()}>
-              {([
-                [false, "Do zrobienia"],
-                [true, "Zrobione"],
-              ] as const).map(([done, label]) => (
-                <button
-                  key={String(done)}
-                  className={`t-inline-popover-item${task.done === done ? " t-inline-popover-item--active" : ""}`}
-                  onClick={() => {
-                    if (task.done !== done) {
-                      startTransition(async () => {
-                        await toggleTask(task.id);
-                        router.refresh();
-                      });
-                    }
-                    setShowStatusMenu(false);
-                  }}
-                >
-                  <span className={`t-badge-dot t-badge-dot--${done ? "done" : "todo"}`} /> {label}
-                </button>
-              ))}
-            </div>
-          )}
         </div>
 
         {/* 8: Date */}
-        <div className="t-task-col-center" style={{ position: "relative" }}>
+        <div className="t-task-col-center">
           <button
+            ref={dateRef}
             type="button"
             className="t-task-inline-btn"
-            onClick={(e) => { e.stopPropagation(); if (!readOnly) setShowDatePicker(v => !v); }}
+            onClick={(e) => { e.stopPropagation(); if (!readOnly) togglePopover("date"); }}
           >
             <span className={`t-task-date${due?.late ? " t-task-date--overdue" : ""}`}>
               {due?.text ?? "—"}
             </span>
           </button>
-          {showDatePicker && (
-            <div className="t-inline-popover t-inline-popover--date" onClick={(e) => e.stopPropagation()}>
-              <input
-                type="date"
-                autoFocus
-                defaultValue={task.deadline ? new Date(task.deadline).toISOString().split("T")[0] : ""}
-                onChange={(e) => {
-                  const v = e.currentTarget.value;
-                  saveField({ deadline: v || null });
-                  setShowDatePicker(false);
-                }}
-                className="t-inline-popover-input"
-              />
-              {task.deadline && (
-                <button
-                  className="t-inline-popover-item"
-                  onClick={() => { saveField({ deadline: null }); setShowDatePicker(false); }}
-                >
-                  ✕ Usuń datę
-                </button>
-              )}
-            </div>
-          )}
         </div>
 
-        {/* 8: Subtask count */}
+        {/* 9: Subtask count */}
         <div className="t-task-col-center">
           {hasSubtasks ? (
             <span className="t-subtask-count" onClick={(e) => { e.stopPropagation(); setSubtasksOpen(!subtasksOpen); }}>
@@ -371,6 +339,98 @@ export const TaskRow = memo(function TaskRow({
           )}
         </div>
       </div>
+
+      {/* ===== PORTALED POPOVERS ===== */}
+
+      {activePopover === "priority" && (
+        <Popover anchorRef={prioRef} onClose={closePopover}>
+          {([
+            [3, "🔥", "Pilne"],
+            [1, "🔘", "Normalne"],
+            [0, "🧊", "Niskie"],
+          ] as const).map(([val, emoji, label]) => (
+            <button
+              key={val}
+              className={`t-inline-popover-item${(task.priority === val || (task.priority >= 3 && val === 3) || (task.priority >= 1 && task.priority < 3 && val === 1)) ? " t-inline-popover-item--active" : ""}`}
+              onClick={() => { saveField({ priority: val }); closePopover(); }}
+            >
+              {emoji} {label}
+            </button>
+          ))}
+        </Popover>
+      )}
+
+      {activePopover === "assignee" && (
+        <Popover anchorRef={assigneeRef} onClose={closePopover}>
+          <input
+            autoFocus
+            className="t-inline-popover-input"
+            placeholder="Inicjały (np. MK)"
+            defaultValue={task.assigneeId ?? ""}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                const v = e.currentTarget.value.trim() || null;
+                saveField({ assigneeId: v });
+                closePopover();
+              } else if (e.key === "Escape") closePopover();
+            }}
+            onBlur={(e) => {
+              const v = e.currentTarget.value.trim() || null;
+              if (v !== (task.assigneeId ?? null)) saveField({ assigneeId: v });
+              closePopover();
+            }}
+          />
+        </Popover>
+      )}
+
+      {activePopover === "status" && (
+        <Popover anchorRef={statusRef} onClose={closePopover}>
+          {([
+            [false, "Do zrobienia"],
+            [true, "Zrobione"],
+          ] as const).map(([done, label]) => (
+            <button
+              key={String(done)}
+              className={`t-inline-popover-item${task.done === done ? " t-inline-popover-item--active" : ""}`}
+              onClick={() => {
+                if (task.done !== done) {
+                  startTransition(async () => {
+                    await toggleTask(task.id);
+                    router.refresh();
+                  });
+                }
+                closePopover();
+              }}
+            >
+              <span className={`t-badge-dot t-badge-dot--${done ? "done" : "todo"}`} /> {label}
+            </button>
+          ))}
+        </Popover>
+      )}
+
+      {activePopover === "date" && (
+        <Popover anchorRef={dateRef} onClose={closePopover} className="t-inline-popover--date">
+          <input
+            type="date"
+            autoFocus
+            defaultValue={task.deadline ? new Date(task.deadline).toISOString().split("T")[0] : ""}
+            onChange={(e) => {
+              const v = e.currentTarget.value;
+              saveField({ deadline: v || null });
+              closePopover();
+            }}
+            className="t-inline-popover-input"
+          />
+          {task.deadline && (
+            <button
+              className="t-inline-popover-item"
+              onClick={() => { saveField({ deadline: null }); closePopover(); }}
+            >
+              ✕ Usuń datę
+            </button>
+          )}
+        </Popover>
+      )}
 
       {/* Inline subtaski */}
       {subtasksOpen && (hasSubtasks || addingSubtask) && (

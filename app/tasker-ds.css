@@ -301,16 +301,21 @@
   justify-content: center;
 }
 
+/* Popover open = blokuj hover na task row */
+.t-task-row--popover-open {
+  background: var(--bg-surface) !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
 .t-inline-popover {
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 50;
-  background: var(--bg-surface);
+  position: fixed;
+  z-index: 9999;
+  background: #FFFFFF;
   border: 1.5px solid var(--border-default);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-xl);
   padding: 4px;
   min-width: 140px;
   white-space: nowrap;
