@@ -33,9 +33,6 @@ export function ProblemsSection({
       <div className="t-section-header">
         <h3 className="t-section-title">Problemy</h3>
         <span className="t-section-counter">{problems.length}</span>
-        {!readOnly && contextId ? (
-          <LinearAddItem kind="problem" contextId={contextId} />
-        ) : null}
       </div>
       <div className="t-task-list-wrapper">
         <SortableContext items={sortItems} strategy={verticalListSortingStrategy}>
@@ -47,6 +44,9 @@ export function ProblemsSection({
             ))}
           </motion.div>
         </SortableContext>
+        {!readOnly && contextId ? (
+          <LinearAddItem kind="problem" contextId={contextId} />
+        ) : null}
       </div>
     </div>
   );
