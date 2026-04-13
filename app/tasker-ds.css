@@ -326,6 +326,168 @@
   padding: 8px;
 }
 
+/* ---------- CALENDAR POPOVER ---------- */
+.t-inline-popover--calendar {
+  padding: 0;
+  border: none;
+  min-width: auto;
+  background: #FFFFFF;
+  box-shadow: 0 4px 16px rgba(31,31,46,0.08);
+  border-radius: var(--radius-lg);
+}
+
+.t-cal {
+  width: 296px;
+  font-family: var(--font-family);
+  padding: 12px;
+}
+
+.t-cal-quick {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.t-cal-pill {
+  padding: 4px 10px;
+  border: 1px solid var(--border-default);
+  border-radius: 100px;
+  background: none;
+  font-size: 12px;
+  font-family: inherit;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 120ms ease;
+}
+
+.t-cal-pill:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.t-cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.t-cal-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.t-cal-nav {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 16px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 100ms ease;
+}
+
+.t-cal-nav:hover {
+  background: var(--bg-surface-hover);
+}
+
+.t-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.t-cal-dayname {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-align: center;
+  padding: 4px 0;
+  text-transform: uppercase;
+}
+
+.t-cal-day {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: background 100ms ease;
+}
+
+.t-cal-day:hover {
+  background: #F5F5F5;
+}
+
+.t-cal-day--other {
+  color: #ccc;
+}
+
+.t-cal-day--today {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.t-cal-today-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent);
+  position: absolute;
+  bottom: 3px;
+}
+
+.t-cal-day--selected {
+  background: var(--accent) !important;
+  color: #FFFFFF !important;
+  font-weight: 700;
+}
+
+.t-cal-day--selected .t-cal-today-dot {
+  background: #FFFFFF;
+}
+
+.t-cal-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-default);
+}
+
+.t-cal-footer-btn {
+  background: none;
+  border: none;
+  font-size: 12px;
+  font-family: inherit;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  transition: all 100ms ease;
+}
+
+.t-cal-footer-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-surface-hover);
+}
+
 .t-inline-popover-item {
   display: flex;
   align-items: center;

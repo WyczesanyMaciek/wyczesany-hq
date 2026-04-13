@@ -13,6 +13,7 @@ import type { DashboardTask } from "@/lib/queries/dashboard";
 import { toggleTask, updateTaskDetails } from "@/app/(app)/c/[id]/actions";
 import { toggleSubtask, addSubtask, updateSubtaskTitle } from "@/app/(app)/c/[id]/actions";
 import { formatDue } from "./format";
+import { CalendarPopover } from "./calendar-popover";
 
 function prioEmoji(p: number) {
   if (p >= 3) return "🔥";
@@ -409,26 +410,13 @@ export const TaskRow = memo(function TaskRow({
       )}
 
       {activePopover === "date" && (
-        <Popover anchorRef={dateRef} onClose={closePopover} className="t-inline-popover--date">
-          <input
-            type="date"
-            autoFocus
-            defaultValue={task.deadline ? new Date(task.deadline).toISOString().split("T")[0] : ""}
-            onChange={(e) => {
-              const v = e.currentTarget.value;
-              saveField({ deadline: v || null });
-              closePopover();
-            }}
-            className="t-inline-popover-input"
+        <Popover anchorRef={dateRef} onClose={closePopover} className="t-inline-popover--calendar">
+          <CalendarPopover
+            value={task.deadline ? new Date(task.deadline) : null}
+            onSelect={(iso) => { saveField({ deadline: iso }); closePopover(); }}
+            onClear={() => { saveField({ deadline: null }); closePopover(); }}
+            onCancel={closePopover}
           />
-          {task.deadline && (
-            <button
-              className="t-inline-popover-item"
-              onClick={() => { saveField({ deadline: null }); closePopover(); }}
-            >
-              ✕ Usuń datę
-            </button>
-          )}
         </Popover>
       )}
 
