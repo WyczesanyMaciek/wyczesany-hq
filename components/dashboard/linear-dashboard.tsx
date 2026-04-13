@@ -335,9 +335,9 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
             currentContextId={currentId}
           />
 
-          <IdeasSection ideas={ideas} contextId={currentId} />
+          <IdeasSection ideas={ideas} contextId={currentId} currentContextId={currentId} />
 
-          <ProblemsSection problems={problems} contextId={currentId} />
+          <ProblemsSection problems={problems} contextId={currentId} currentContextId={currentId} />
 
           <div className="t-spacer" />
         </main>

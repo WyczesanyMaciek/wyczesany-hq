@@ -18,11 +18,13 @@ export function IdeasSection({
   ideas,
   contextId,
   readOnly = false,
+  currentContextId,
 }: {
   ideas: DashboardItem[];
   /** ID kontekstu do dodawania pomyslu (null = brak guzika). */
   contextId: string | null;
   readOnly?: boolean;
+  currentContextId?: string | null;
 }) {
   const sortItems = useMemo(() => ideas.map((i) => `idea:${i.id}`), [ideas]);
 
@@ -40,7 +42,7 @@ export function IdeasSection({
           <motion.div variants={listContainer} initial="hidden" animate="show">
             {ideas.map((i) => (
               <motion.div key={i.id} variants={listItem}>
-                <SortableChip kind="idea" item={i} readOnly={readOnly} />
+                <SortableChip kind="idea" item={i} readOnly={readOnly} showContextBadge={i.context.id !== currentContextId} />
               </motion.div>
             ))}
           </motion.div>
@@ -50,7 +52,7 @@ export function IdeasSection({
   );
 }
 
-function SortableChip({ kind, item, readOnly }: { kind: "idea" | "problem"; item: DashboardItem; readOnly: boolean }) {
+function SortableChip({ kind, item, readOnly, showContextBadge = false }: { kind: "idea" | "problem"; item: DashboardItem; readOnly: boolean; showContextBadge?: boolean }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: `${kind}:${item.id}`, disabled: readOnly });
 
@@ -71,7 +73,7 @@ function SortableChip({ kind, item, readOnly }: { kind: "idea" | "problem"; item
         <span className="t-chip-icon">{kind === "idea" ? "💡" : "⚠"}</span>
         <div className="t-chip-content">
           {item.content}
-          <div className="t-chip-meta">{item.context.name}</div>
+          {showContextBadge && <div className="t-chip-meta">{item.context.name}</div>}
         </div>
         {!readOnly && <ChipActions kind={kind} id={item.id} />}
       </div>
