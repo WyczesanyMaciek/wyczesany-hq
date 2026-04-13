@@ -3,7 +3,7 @@
 // TaskRow — CSS Grid z fixed kolumnami (spec: tasker-task-row-grid.md)
 // Grid: grip(24) chevron(20) checkbox(24) name(1fr) assignee(60) status(120) date(80) subtasks(50)
 
-import { memo, useState, useTransition } from "react";
+import { memo, useState, useTransition, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -13,11 +13,16 @@ import { toggleTask, updateTaskDetails } from "@/app/(app)/c/[id]/actions";
 import { toggleSubtask, addSubtask, updateSubtaskTitle } from "@/app/(app)/c/[id]/actions";
 import { formatDue } from "./format";
 
-function prioDotClass(p: number) {
-  if (p >= 3) return "t-priority-dot t-priority-dot--critical";
-  if (p === 2) return "t-priority-dot t-priority-dot--high";
-  if (p === 1) return "t-priority-dot t-priority-dot--medium";
-  return "t-priority-dot t-priority-dot--low";
+function prioEmoji(p: number) {
+  if (p >= 3) return "🔥";
+  if (p >= 1) return "🔘";
+  return "🧊";
+}
+
+function prioLabel(p: number) {
+  if (p >= 3) return "Pilne";
+  if (p >= 1) return "Normalne";
+  return "Niskie";
 }
 
 function badgeClass(done: boolean) {
@@ -42,8 +47,28 @@ export const TaskRow = memo(function TaskRow({
   const [editingName, setEditingName] = useState(false);
   const [subtasksOpen, setSubtasksOpen] = useState(false);
   const [addingSubtask, setAddingSubtask] = useState(false);
+  const [showPrioMenu, setShowPrioMenu] = useState(false);
+  const [showStatusMenu, setShowStatusMenu] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showAssigneeMenu, setShowAssigneeMenu] = useState(false);
+  const rowRef = useRef<HTMLDivElement>(null);
   const due = formatDue(task.deadline);
   const hasSubtasks = task.subtasks && task.subtasks.length > 0;
+
+  // Zamknij popovery przy klik poza wierszem
+  useEffect(() => {
+    if (!showPrioMenu && !showStatusMenu && !showDatePicker && !showAssigneeMenu) return;
+    const handle = (e: MouseEvent) => {
+      if (rowRef.current && !rowRef.current.contains(e.target as Node)) {
+        setShowPrioMenu(false);
+        setShowStatusMenu(false);
+        setShowDatePicker(false);
+        setShowAssigneeMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handle);
+    return () => document.removeEventListener("mousedown", handle);
+  }, [showPrioMenu, showStatusMenu, showDatePicker, showAssigneeMenu]);
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: `task:${task.id}`, disabled: readOnly });
@@ -59,6 +84,13 @@ export const TaskRow = memo(function TaskRow({
     if (readOnly) return;
     startTransition(async () => {
       await toggleTask(task.id);
+      router.refresh();
+    });
+  };
+
+  const saveField = (patch: Parameters<typeof updateTaskDetails>[1]) => {
+    startTransition(async () => {
+      await updateTaskDetails(task.id, patch);
       router.refresh();
     });
   };
@@ -96,7 +128,7 @@ export const TaskRow = memo(function TaskRow({
   };
 
   return (
-    <div ref={setNodeRef} style={dndStyle} {...attributes}>
+    <div ref={(el) => { setNodeRef(el); (rowRef as React.MutableRefObject<HTMLDivElement | null>).current = el; }} style={dndStyle} {...attributes}>
       <div
         className={rowClass}
         onClick={() => { if (!editingName) onSelect(task.id); }}
@@ -150,9 +182,8 @@ export const TaskRow = memo(function TaskRow({
           )}
         </button>
 
-        {/* 4: Nazwa + priority dot */}
+        {/* 4: Nazwa */}
         <div className="t-task-name">
-          <div className={prioDotClass(task.priority)} />
           {editingName ? (
             <input
               autoFocus
@@ -189,28 +220,144 @@ export const TaskRow = memo(function TaskRow({
           )}
         </div>
 
-        {/* 5: Assignee */}
-        <div className="t-task-col-center">
-          {task.assigneeId ? (
-            <div className="t-avatar">{task.assigneeId.slice(0, 2).toUpperCase()}</div>
-          ) : (
-            <span className="t-task-empty">—</span>
+        {/* 5: Priority emoji */}
+        <div className="t-task-col-center" style={{ position: "relative" }}>
+          <button
+            type="button"
+            className="t-task-inline-btn"
+            onClick={(e) => { e.stopPropagation(); if (!readOnly) setShowPrioMenu(v => !v); }}
+            title={prioLabel(task.priority)}
+          >
+            {prioEmoji(task.priority)}
+          </button>
+          {showPrioMenu && (
+            <div className="t-inline-popover" onClick={(e) => e.stopPropagation()}>
+              {([
+                [3, "🔥", "Pilne"],
+                [1, "🔘", "Normalne"],
+                [0, "🧊", "Niskie"],
+              ] as const).map(([val, emoji, label]) => (
+                <button
+                  key={val}
+                  className={`t-inline-popover-item${task.priority === val || (task.priority >= 3 && val === 3) || (task.priority >= 1 && task.priority < 3 && val === 1) ? " t-inline-popover-item--active" : ""}`}
+                  onClick={() => { saveField({ priority: val }); setShowPrioMenu(false); }}
+                >
+                  {emoji} {label}
+                </button>
+              ))}
+            </div>
           )}
         </div>
 
-        {/* 6: Status */}
-        <div className="t-task-col-center">
-          <span className={badgeClass(task.done)}>
-            <span className="t-badge-dot" />
-            {task.done ? "Zrobione" : "Do zrobienia"}
-          </span>
+        {/* 6: Assignee */}
+        <div className="t-task-col-center" style={{ position: "relative" }}>
+          <button
+            type="button"
+            className="t-task-inline-btn"
+            onClick={(e) => { e.stopPropagation(); if (!readOnly) setShowAssigneeMenu(v => !v); }}
+          >
+            {task.assigneeId ? (
+              <div className="t-avatar">{task.assigneeId.slice(0, 2).toUpperCase()}</div>
+            ) : (
+              <span className="t-task-empty">—</span>
+            )}
+          </button>
+          {showAssigneeMenu && (
+            <div className="t-inline-popover" onClick={(e) => e.stopPropagation()}>
+              <input
+                autoFocus
+                className="t-inline-popover-input"
+                placeholder="Inicjały (np. MK)"
+                defaultValue={task.assigneeId ?? ""}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    const v = e.currentTarget.value.trim() || null;
+                    saveField({ assigneeId: v });
+                    setShowAssigneeMenu(false);
+                  } else if (e.key === "Escape") setShowAssigneeMenu(false);
+                }}
+                onBlur={(e) => {
+                  const v = e.currentTarget.value.trim() || null;
+                  if (v !== (task.assigneeId ?? null)) saveField({ assigneeId: v });
+                  setShowAssigneeMenu(false);
+                }}
+              />
+            </div>
+          )}
         </div>
 
-        {/* 7: Date */}
-        <div className="t-task-col-center">
-          <span className={`t-task-date${due?.late ? " t-task-date--overdue" : ""}`}>
-            {due?.text ?? "—"}
-          </span>
+        {/* 7: Status */}
+        <div className="t-task-col-center" style={{ position: "relative" }}>
+          <button
+            type="button"
+            className="t-task-inline-btn"
+            onClick={(e) => { e.stopPropagation(); if (!readOnly) setShowStatusMenu(v => !v); }}
+          >
+            <span className={badgeClass(task.done)}>
+              <span className="t-badge-dot" />
+              {task.done ? "Zrobione" : "Do zrobienia"}
+            </span>
+          </button>
+          {showStatusMenu && (
+            <div className="t-inline-popover" onClick={(e) => e.stopPropagation()}>
+              {([
+                [false, "Do zrobienia"],
+                [true, "Zrobione"],
+              ] as const).map(([done, label]) => (
+                <button
+                  key={String(done)}
+                  className={`t-inline-popover-item${task.done === done ? " t-inline-popover-item--active" : ""}`}
+                  onClick={() => {
+                    if (task.done !== done) {
+                      startTransition(async () => {
+                        await toggleTask(task.id);
+                        router.refresh();
+                      });
+                    }
+                    setShowStatusMenu(false);
+                  }}
+                >
+                  <span className={`t-badge-dot t-badge-dot--${done ? "done" : "todo"}`} /> {label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* 8: Date */}
+        <div className="t-task-col-center" style={{ position: "relative" }}>
+          <button
+            type="button"
+            className="t-task-inline-btn"
+            onClick={(e) => { e.stopPropagation(); if (!readOnly) setShowDatePicker(v => !v); }}
+          >
+            <span className={`t-task-date${due?.late ? " t-task-date--overdue" : ""}`}>
+              {due?.text ?? "—"}
+            </span>
+          </button>
+          {showDatePicker && (
+            <div className="t-inline-popover t-inline-popover--date" onClick={(e) => e.stopPropagation()}>
+              <input
+                type="date"
+                autoFocus
+                defaultValue={task.deadline ? new Date(task.deadline).toISOString().split("T")[0] : ""}
+                onChange={(e) => {
+                  const v = e.currentTarget.value;
+                  saveField({ deadline: v || null });
+                  setShowDatePicker(false);
+                }}
+                className="t-inline-popover-input"
+              />
+              {task.deadline && (
+                <button
+                  className="t-inline-popover-item"
+                  onClick={() => { saveField({ deadline: null }); setShowDatePicker(false); }}
+                >
+                  ✕ Usuń datę
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
         {/* 8: Subtask count */}
