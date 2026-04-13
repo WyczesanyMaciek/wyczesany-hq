@@ -1054,6 +1054,11 @@
   box-shadow: var(--shadow-sm);
 }
 
+.t-chip-row--selected {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
 .t-chip-grip {
   cursor: grab;
   display: flex;

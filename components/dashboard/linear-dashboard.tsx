@@ -28,7 +28,7 @@ import {
   closestCorners,
 } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
-import type { DashboardData, DashboardTask } from "@/lib/queries/dashboard";
+import type { DashboardData, DashboardTask, DashboardItem } from "@/lib/queries/dashboard";
 import {
   reorderTasks,
   reorderProjects,
@@ -39,6 +39,7 @@ import {
 } from "@/app/(app)/c/[id]/actions";
 import { LinearNewProjectButton } from "./linear-new-project";
 import { TaskDetailPanel } from "./shared/task-detail-panel";
+import { ItemDetailPanel } from "./shared/item-detail-panel";
 import { ProjectsSection } from "./sections/projects-section";
 import { TasksSection } from "./sections/tasks-section";
 import { IdeasSection } from "./sections/ideas-section";
@@ -48,6 +49,7 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
   const router = useRouter();
   const [, startTransition] = useTransition();
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+  const [selectedItem, setSelectedItem] = useState<{ id: string; kind: "idea" | "problem" } | null>(null);
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const [filterStatuses, setFilterStatuses] = useState<Set<string>>(new Set());
   const [filterPriorities, setFilterPriorities] = useState<Set<number>>(new Set());
@@ -117,9 +119,26 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
 
   const selected = selectedTaskId ? taskMap.get(selectedTaskId) ?? null : null;
 
+  const handleSelectTask = (id: string) => {
+    setSelectedTaskId(id);
+    setSelectedItem(null);
+  };
+
+  const handleSelectItem = (id: string, kind: "idea" | "problem") => {
+    setSelectedItem({ id, kind });
+    setSelectedTaskId(null);
+  };
+
+  // Znajdz wybrany pomysl/problem
+  const selectedItemData: DashboardItem | null = selectedItem
+    ? (selectedItem.kind === "idea"
+        ? ideas.find(i => i.id === selectedItem.id)
+        : problems.find(p => p.id === selectedItem.id)) ?? null
+    : null;
+
   // Skroty klawiszowe
   const hotkeys = useMemo(() => ({
-    Escape: () => setSelectedTaskId(null),
+    Escape: () => { setSelectedTaskId(null); setSelectedItem(null); },
   }), []);
   useHotkeys(hotkeys);
 
@@ -320,7 +339,7 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
           <ProjectsSection
             projects={filteredProjects}
             selectedTaskId={selectedTaskId}
-            onSelectTask={setSelectedTaskId}
+            onSelectTask={handleSelectTask}
             collapsed={collapsed}
             onToggleCollapse={toggleCollapse}
             contextId={currentId}
@@ -330,26 +349,35 @@ export function LinearDashboard({ data }: { data: DashboardData }) {
           <TasksSection
             looseTasks={filteredLoose}
             selectedTaskId={selectedTaskId}
-            onSelectTask={setSelectedTaskId}
+            onSelectTask={handleSelectTask}
             contextId={currentId}
             currentContextId={currentId}
           />
 
-          <IdeasSection ideas={ideas} contextId={currentId} currentContextId={currentId} />
+          <IdeasSection ideas={ideas} contextId={currentId} currentContextId={currentId} onSelectItem={(id) => handleSelectItem(id, "idea")} selectedItemId={selectedItem?.kind === "idea" ? selectedItem.id : null} />
 
-          <ProblemsSection problems={problems} contextId={currentId} currentContextId={currentId} />
+          <ProblemsSection problems={problems} contextId={currentId} currentContextId={currentId} onSelectItem={(id) => handleSelectItem(id, "problem")} selectedItemId={selectedItem?.kind === "problem" ? selectedItem.id : null} />
 
           <div className="t-spacer" />
         </main>
 
         {/* ============ PRAWY PANEL ============ */}
-        <TaskDetailPanel
-          key={selectedTaskId ?? "none"}
-          task={selected?.task ?? null}
-          projectName={selected?.projectName ?? null}
-          projects={projects.map((p) => ({ id: p.id, name: p.name }))}
-          onDeleted={() => setSelectedTaskId(null)}
-        />
+        {selectedItem ? (
+          <ItemDetailPanel
+            key={`${selectedItem.kind}:${selectedItem.id}`}
+            item={selectedItemData}
+            kind={selectedItem.kind}
+            onClosed={() => setSelectedItem(null)}
+          />
+        ) : (
+          <TaskDetailPanel
+            key={selectedTaskId ?? "none"}
+            task={selected?.task ?? null}
+            projectName={selected?.projectName ?? null}
+            projects={projects.map((p) => ({ id: p.id, name: p.name }))}
+            onDeleted={() => setSelectedTaskId(null)}
+          />
+        )}
       </div>
     </DndContext>
   );

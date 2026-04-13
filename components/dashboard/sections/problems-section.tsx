@@ -19,12 +19,16 @@ export function ProblemsSection({
   contextId,
   readOnly = false,
   currentContextId,
+  onSelectItem,
+  selectedItemId,
 }: {
   problems: DashboardItem[];
   /** ID kontekstu do dodawania problemu (null = brak guzika). */
   contextId: string | null;
   readOnly?: boolean;
   currentContextId?: string | null;
+  onSelectItem?: (id: string) => void;
+  selectedItemId?: string | null;
 }) {
   const sortItems = useMemo(() => problems.map((p) => `problem:${p.id}`), [problems]);
 
@@ -39,7 +43,7 @@ export function ProblemsSection({
           <motion.div variants={listContainer} initial="hidden" animate="show">
             {problems.map((p) => (
               <motion.div key={p.id} variants={listItem}>
-                <SortableChip kind="problem" item={p} readOnly={readOnly} showContextBadge={p.context.id !== currentContextId} />
+                <SortableChip kind="problem" item={p} readOnly={readOnly} showContextBadge={p.context.id !== currentContextId} onSelect={onSelectItem} selected={selectedItemId === p.id} />
               </motion.div>
             ))}
           </motion.div>
@@ -52,7 +56,7 @@ export function ProblemsSection({
   );
 }
 
-function SortableChip({ kind, item, readOnly, showContextBadge = false }: { kind: "idea" | "problem"; item: DashboardItem; readOnly: boolean; showContextBadge?: boolean }) {
+function SortableChip({ kind, item, readOnly, showContextBadge = false, onSelect, selected = false }: { kind: "idea" | "problem"; item: DashboardItem; readOnly: boolean; showContextBadge?: boolean; onSelect?: (id: string) => void; selected?: boolean }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: `${kind}:${item.id}`, disabled: readOnly });
 
@@ -64,7 +68,7 @@ function SortableChip({ kind, item, readOnly, showContextBadge = false }: { kind
 
   return (
     <div ref={setNodeRef} style={style} {...attributes}>
-      <div className="t-chip-row">
+      <div className={`t-chip-row${selected ? " t-chip-row--selected" : ""}`} onClick={() => onSelect?.(item.id)}>
         {!readOnly && (
           <span className="t-chip-grip" {...listeners} onClick={(e) => e.stopPropagation()}>
             <GripVertical size={14} />
